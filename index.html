@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mr. Blues - La Raccolta degli Aromi | Vini Germani Terzi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+        
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #1a1a1a;
+            font-family: 'Lato', sans-serif;
+            touch-action: none; /* Previene lo scroll su mobile */
+        }
+        
+        h1, h2, h3, .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            background-color: #12485c; /* Colore di fallback per il gioco */
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Splash Screen con Immagine Allegata */
+        #splashScreen {
+            background-image: linear-gradient(rgba(18, 72, 92, 0.4), rgba(18, 72, 92, 0.9)), url('1000087388.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #0e3747; /* Fallback se l'immagine manca */
+        }
+
+        .solid-bg {
+            background: rgba(18, 72, 92, 0.98);
+        }
+
+        .btn-primary {
+            background-color: #d1a34a; /* Oro */
+            color: #12485c;
+            padding: 12px 30px;
+            border-radius: 9999px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid #d1a34a;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: transparent;
+            color: #d1a34a;
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 9999px;
+            font-size: 1rem;
+            border: 2px solid #fff;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #fff;
+            color: #12485c;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            color: #d1a34a;
+            font-size: 1.5rem;
+            font-family: 'Playfair Display', serif;
+            z-index: 5;
+            pointer-events: none;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .life-icon {
+            color: #7c1932;
+        }
+
+        /* Banner Promozionale */
+        .promo-banner {
+            background: linear-gradient(135deg, #d1a34a, #b38836);
+            color: #12485c;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 2px solid #fff;
+            max-width: 400px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="hud" class="hidden">
+        <div>Score: <span id="scoreDisplay">0</span></div>
+        <div><span id="livesDisplay">❤❤❤</span></div>
+    </div>
+
+    <!-- Splash Screen -->
+    <div id="splashScreen" class="overlay">
+        <h1 class="text-5xl md:text-7xl text-white mb-2 serif" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">Mr. Blues</h1>
+        <h2 class="text-2xl md:text-3xl text-[#d1a34a] mb-10 serif italic" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">Vini Germani Terzi</h2>
+        
+        <div class="promo-banner mb-10">
+            <h3 class="serif font-bold text-xl mb-1 flex items-center justify-center">
+                <span class="text-2xl mr-2">🏆</span> SFIDA DEGUSTAZIONE
+            </h3>
+            <p class="text-sm font-bold">Il primo a raggiungere <strong>10.000 punti</strong> avrà in omaggio una coppia di calici originali Mr. Blues!</p>
+        </div>
+
+        <button id="btnEnter" class="btn-primary w-64">Entra nel Gioco</button>
+    </div>
+
+    <!-- Age Gate -->
+    <div id="ageGate" class="overlay solid-bg hidden">
+        <h1 class="text-4xl md:text-5xl text-white mb-2 serif">Verifica Età</h1>
+        <p class="text-white mb-8 text-lg max-w-md">Per accedere a questa esperienza devi avere l'età legale per il consumo di alcolici nel tuo paese.</p>
+        <button id="btnAgeYes" class="btn-primary mb-4 w-64">Sì, ho più di 18 anni</button>
+        <button id="btnAgeNo" class="btn-secondary w-64">No, sono minorenne</button>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="startScreen" class="overlay solid-bg hidden">
+        <h2 class="text-3xl text-[#d1a34a] mb-6 serif italic">Regole della Degustazione</h2>
+        
+        <div class="bg-[#0e3747] p-6 rounded-xl border border-[#d1a34a] max-w-md mb-8">
+            <p class="text-white text-sm md:text-base mb-6">
+                Trascina il calice per raccogliere le note aromatiche. Evita i sassi!
+            </p>
+            <div class="flex justify-around items-center mb-6">
+                <div class="text-center">
+                    <!-- Preview Ciliegia -->
+                    <div class="w-12 h-12 mx-auto relative mb-1">
+                        <div class="absolute w-5 h-5 bg-[#7c1932] rounded-full bottom-2 left-1 shadow-inner border border-[#4a0f1e]"></div>
+                        <div class="absolute w-5 h-5 bg-[#7c1932] rounded-full bottom-1 right-1 shadow-inner border border-[#4a0f1e]"></div>
+                    </div>
+                    <span class="text-xs text-white">Ciliegia<br><span class="text-[#d1a34a] font-bold">+10</span></span>
+                </div>
+                <div class="text-center">
+                    <!-- Preview Lampone -->
+                    <div class="w-12 h-12 mx-auto relative mb-1">
+                        <div class="absolute w-7 h-8 bg-[#e8436b] rounded-full bottom-2 left-2.5 border border-[#9c2543]" style="border-radius: 40% 40% 60% 60%;"></div>
+                    </div>
+                    <span class="text-xs text-white">Lampone<br><span class="text-[#d1a34a] font-bold">+15</span></span>
+                </div>
+            </div>
+            <p class="text-white text-sm md:text-base border-t border-[#12485c] pt-4 flex items-center justify-center">
+                <span class="text-2xl mr-2">🪨</span> I sassi rompono il calice!
+            </p>
+        </div>
+
+        <button id="btnStart" class="btn-primary">Inizia</button>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="overlay solid-bg hidden">
+        <h2 class="text-3xl text-white mb-2 serif">Degustazione Conclusa</h2>
+        <p class="text-[#d1a34a] text-xl mb-6">Punteggio Aromatico: <span id="finalScore" class="font-bold text-4xl">0</span></p>
+        
+        <p id="marketingMessage" class="text-white mb-8 max-w-md text-center italic"></p>
+
+        <!-- CTA Aggiornata: mailto -->
+        <a href="mailto:info@vinigermaniterzi.com?subject=Acquisto%20Pinot%20Nero%20Mr.%20Blues&body=Salve,%20ho%20appena%20giocato%20al%20vostro%20mini-gioco%20e%20vorrei%20avere%20maggiori%20informazioni%20sull'acquisto%20del%20Pinot%20Nero%20Mr.%20Blues." 
+           class="btn-primary mb-4 w-64 block text-center no-underline">
+           Acquista Ora
+        </a>
+        <button id="btnRestart" class="btn-secondary w-64">Riprova</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        // --- Setup Canvas ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let GAME_WIDTH = window.innerWidth;
+        let GAME_HEIGHT = window.innerHeight;
+        canvas.width = GAME_WIDTH;
+        canvas.height = GAME_HEIGHT;
+
+        // --- Variabili di Stato ---
+        let gameState = 'SPLASH'; // SPLASH, AGE_GATE, START, PLAYING, GAMEOVER
+        let score = 0;
+        let lives = 3;
+        let animationId;
+        let frameCount = 0;
+        
+        const COLORS = {
+            burgundy: '#7c1932', // Ciliegia scura
+            raspberry: '#e8436b', // Rosa lampone
+            stem: '#4a5e2a', // Verde gambo
+            glass: 'rgba(255, 255, 255, 0.4)'
+        };
+
+        const glass = {
+            x: GAME_WIDTH / 2,
+            y: GAME_HEIGHT - 120,
+            width: 80,
+            height: 100,
+            fillLevel: 0
+        };
+
+        let items = [];
+        
+        // Rimossa la foglia, ricalibrate le probabilità
+        const itemTypes = [
+            { type: 'cherry', radius: 18, score: 10, speed: 3.5, prob: 0.45 },
+            { type: 'raspberry', radius: 16, score: 15, speed: 4.0, prob: 0.35 },
+            { type: 'rock', radius: 20, score: 0, speed: 4.5, prob: 0.20 }
+        ];
+
+        // --- Resize ---
+        window.addEventListener('resize', () => {
+            GAME_WIDTH = window.innerWidth;
+            GAME_HEIGHT = window.innerHeight;
+            canvas.width = GAME_WIDTH;
+            canvas.height = GAME_HEIGHT;
+            glass.y = GAME_HEIGHT - 120;
+            if(glass.x > GAME_WIDTH) glass.x = GAME_WIDTH / 2;
+        });
+
+        // --- Input (Touch & Mouse) ---
+        function moveGlass(clientX) {
+            if (gameState !== 'PLAYING') return;
+            glass.x = clientX;
+            if (glass.x < glass.width / 2) glass.x = glass.width / 2;
+            if (glass.x > GAME_WIDTH - glass.width / 2) glass.x = GAME_WIDTH - glass.width / 2;
+        }
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            moveGlass(e.touches[0].clientX);
+        }, { passive: false });
+
+        canvas.addEventListener('mousemove', (e) => {
+            moveGlass(e.clientX);
+        });
+
+        // --- UI Navigation ---
+        document.getElementById('btnEnter').addEventListener('click', () => {
+            document.getElementById('splashScreen').classList.add('hidden');
+            document.getElementById('ageGate').classList.remove('hidden');
+            gameState = 'AGE_GATE';
+        });
+
+        document.getElementById('btnAgeYes').addEventListener('click', () => {
+            document.getElementById('ageGate').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            gameState = 'START';
+        });
+
+        document.getElementById('btnAgeNo').addEventListener('click', () => {
+            alert("Spiacenti, l'accesso è riservato ai maggiorenni.");
+        });
+
+        document.getElementById('btnStart').addEventListener('click', startGame);
+        document.getElementById('btnRestart').addEventListener('click', startGame);
+
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('hud').classList.remove('hidden');
+            
+            score = 0;
+            lives = 3;
+            glass.fillLevel = 0;
+            items = [];
+            frameCount = 0;
+            gameState = 'PLAYING';
+            
+            updateHUD();
+            if (animationId) cancelAnimationFrame(animationId);
+            gameLoop();
+        }
+
+        function gameOver() {
+            gameState = 'GAMEOVER';
+            document.getElementById('hud').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.remove('hidden');
+            document.getElementById('finalScore').innerText = score;
+            
+            const msgEl = document.getElementById('marketingMessage');
+            if(score >= 10000) {
+                msgEl.innerText = "🏆 INCREDIBILE! Hai superato i 10.000 punti! Contattaci subito per richiedere i tuoi calici in omaggio.";
+            } else if (score > 2000) {
+                msgEl.innerText = "Ottimo palato! Hai sfiorato il premio. Consola i tuoi sensi assaporando il vero Mr. Blues.";
+            } else {
+                msgEl.innerText = "La ricerca della perfezione richiede tempo. Ordina Mr. Blues per trovare la giusta ispirazione.";
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreDisplay').innerText = score;
+            let livesText = "";
+            for(let i=0; i<3; i++) {
+                livesText += i < lives ? "❤" : "🖤";
+            }
+            document.getElementById('livesDisplay').innerHTML = `<span class="life-icon">${livesText}</span>`;
+        }
+
+        // --- Disegno Rendering ---
+        function drawGlass() {
+            ctx.save();
+            ctx.translate(glass.x, glass.y);
+
+            // Liquido interno
+            if (glass.fillLevel > 0) {
+                const maxWineHeight = glass.height * 0.7;
+                const currentWineHeight = maxWineHeight * Math.min(glass.fillLevel, 1);
+                
+                ctx.fillStyle = COLORS.burgundy;
+                ctx.beginPath();
+                ctx.ellipse(0, -currentWineHeight/2, glass.width/2 - 4, currentWineHeight/2, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Bordo Calice
+            ctx.strokeStyle = COLORS.glass;
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            
+            // Coppa
+            ctx.beginPath();
+            ctx.moveTo(-glass.width/2, -glass.height/2);
+            ctx.quadraticCurveTo(-glass.width/2, glass.height/4, 0, glass.height/2);
+            ctx.quadraticCurveTo(glass.width/2, glass.height/4, glass.width/2, -glass.height/2);
+            ctx.stroke();
+
+            // Stelo
+            ctx.beginPath();
+            ctx.moveTo(0, glass.height/2);
+            ctx.lineTo(0, glass.height);
+            ctx.stroke();
+
+            // Base
+            ctx.beginPath();
+            ctx.moveTo(-glass.width/3, glass.height);
+            ctx.lineTo(glass.width/3, glass.height);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        // Funzioni Vettoriali Migliorate
+        function drawCherry(radius) {
+            // Gambi
+            ctx.strokeStyle = COLORS.stem;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-3, -radius+4);
+            ctx.quadraticCurveTo(5, -radius-15, 10, -radius-15);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(8, -radius+2);
+            ctx.quadraticCurveTo(12, -radius-12, 10, -radius-15);
+            ctx.stroke();
+
+            // Corpo Ciliegia Sinistra
+            let grad1 = ctx.createRadialGradient(-5, -radius/2, 2, -3, 0, radius);
+            grad1.addColorStop(0, '#a12343');
+            grad1.addColorStop(1, '#520b1e');
+            ctx.fillStyle = grad1;
+            ctx.beginPath();
+            ctx.arc(-5, 0, radius*0.8, 0, Math.PI*2);
+            ctx.fill();
+
+            // Corpo Ciliegia Destra (Leggermente più piccola/in secondo piano)
+            let grad2 = ctx.createRadialGradient(8, -radius/2+2, 2, 8, 2, radius*0.7);
+            grad2.addColorStop(0, '#b82a4d');
+            grad2.addColorStop(1, '#631026');
+            ctx.fillStyle = grad2;
+            ctx.beginPath();
+            ctx.arc(8, 2, radius*0.75, 0, Math.PI*2);
+            ctx.fill();
+        }
+
+        function drawRaspberry(radius) {
+            // Sepali (foglioline verdi)
+            ctx.fillStyle = COLORS.stem;
+            ctx.beginPath();
+            ctx.moveTo(0, -radius*0.8);
+            ctx.lineTo(-radius*0.6, -radius*1.1);
+            ctx.lineTo(-radius*0.2, -radius*0.7);
+            ctx.lineTo(0, -radius*1.2);
+            ctx.lineTo(radius*0.2, -radius*0.7);
+            ctx.lineTo(radius*0.6, -radius*1.1);
+            ctx.closePath();
+            ctx.fill();
+
+            // Cluster di palline (forma a nido d'ape per il lampone)
+            ctx.fillStyle = COLORS.raspberry;
+            const drops = [
+                {x: 0, y: radius*0.6, r: radius*0.4},
+                {x: -radius*0.4, y: radius*0.3, r: radius*0.4},
+                {x: radius*0.4, y: radius*0.3, r: radius*0.4},
+                {x: -radius*0.5, y: -radius*0.2, r: radius*0.4},
+                {x: radius*0.5, y: -radius*0.2, r: radius*0.4},
+                {x: 0, y: -radius*0.1, r: radius*0.45},
+                {x: 0, y: -radius*0.5, r: radius*0.5}
+            ];
+
+            drops.forEach(d => {
+                // Sfumatura per ogni singola "bolla" del lampone
+                let grad = ctx.createRadialGradient(d.x - d.r*0.3, d.y - d.r*0.3, d.r*0.1, d.x, d.y, d.r);
+                grad.addColorStop(0, '#ff6b8f');
+                grad.addColorStop(1, COLORS.raspberry);
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, d.r, 0, Math.PI*2);
+                ctx.fill();
+            });
+        }
+
+        function drawRock(radius) {
+            // Generazione forma asimmetrica per il sasso
+            let grad = ctx.createLinearGradient(-radius, -radius, radius, radius);
+            grad.addColorStop(0, '#a8abae');
+            grad.addColorStop(0.5, '#6a6d70');
+            grad.addColorStop(1, '#3a3c3f');
+            
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.moveTo(-radius*0.8, -radius*0.4);
+            ctx.lineTo(-radius*0.2, -radius*0.9);
+            ctx.lineTo(radius*0.6, -radius*0.7);
+            ctx.lineTo(radius*0.9, radius*0.1);
+            ctx.lineTo(radius*0.3, radius*0.8);
+            ctx.lineTo(-radius*0.6, radius*0.6);
+            ctx.closePath();
+            ctx.fill();
+
+            // Linee di fessura per dettaglio
+            ctx.strokeStyle = '#2a2c2f';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(-radius*0.4, -radius*0.2);
+            ctx.lineTo(radius*0.3, radius*0.4);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(radius*0.1, 0);
+            ctx.lineTo(radius*0.6, -radius*0.2);
+            ctx.stroke();
+        }
+
+        function drawItem(item) {
+            ctx.save();
+            ctx.translate(item.x, item.y);
+            
+            // Rotazione leggera basata sul frame per dare dinamismo
+            ctx.rotate(Math.sin(frameCount * 0.05 + item.x) * 0.2);
+
+            if (item.type === 'cherry') {
+                drawCherry(item.radius);
+            } else if (item.type === 'raspberry') {
+                drawRaspberry(item.radius);
+            } else if (item.type === 'rock') {
+                drawRock(item.radius);
+            }
+
+            ctx.restore();
+        }
+
+        // --- Logica Motore di Gioco ---
+        function spawnItem() {
+            let rand = Math.random();
+            let cumulativeProb = 0;
+            let selectedType = itemTypes[0];
+
+            for (let type of itemTypes) {
+                cumulativeProb += type.prob;
+                if (rand <= cumulativeProb) {
+                    selectedType = type;
+                    break;
+                }
+            }
+
+            // Difficoltà scalabile: per arrivare a 10.000 punti serve velocità
+            let speedMultiplier = 1 + (score / 1500); // Scala più velocemente per rendere i 10k difficili
+
+            items.push({
+                x: Math.random() * (GAME_WIDTH - selectedType.radius * 2) + selectedType.radius,
+                y: -selectedType.radius,
+                ...selectedType,
+                speed: selectedType.speed * speedMultiplier
+            });
+        }
+
+        function update() {
+            frameCount++;
+            
+            // Aumenta il rate di spawn man mano che il punteggio sale
+            let spawnRate = Math.max(15, 60 - Math.floor(score / 150)); 
+            if (frameCount % spawnRate === 0) {
+                spawnItem();
+            }
+
+            for (let i = items.length - 1; i >= 0; i--) {
+                let item = items[i];
+                item.y += item.speed;
+
+                // Collision Detection
+                let glassTop = glass.y - glass.height/2;
+                let glassLeft = glass.x - glass.width/2;
+                let glassRight = glass.x + glass.width/2;
+                
+                if (item.y + item.radius > glassTop && item.y - item.radius < glass.y) {
+                    if (item.x > glassLeft && item.x < glassRight) {
+                        
+                        if (item.type === 'rock') {
+                            lives--;
+                            // Effetto visivo scontro (lampeggio rosso)
+                            canvas.style.backgroundColor = '#5c1212';
+                            setTimeout(() => canvas.style.backgroundColor = '#12485c', 100);
+
+                            if(lives <= 0) {
+                                updateHUD();
+                                gameOver();
+                                return;
+                            }
+                        } else {
+                            score += item.score;
+                            glass.fillLevel += 0.03; 
+                        }
+                        updateHUD();
+                        items.splice(i, 1);
+                        continue;
+                    }
+                }
+
+                if (item.y - item.radius > GAME_HEIGHT) {
+                    items.splice(i, 1);
+                }
+            }
+            
+            if(glass.fillLevel > 0) glass.fillLevel -= 0.0005;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+            drawGlass();
+            items.forEach(drawItem);
+        }
+
+        function gameLoop() {
+            if (gameState === 'PLAYING') {
+                update();
+                draw();
+                animationId = requestAnimationFrame(gameLoop);
+            }
+        }
+    </script>
+</body>
+</html>
