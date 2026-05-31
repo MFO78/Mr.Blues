@@ -52,7 +52,6 @@
             background-color: #0e3747;
         }
 
-        /* Posizionamento assoluto per i loghi nella Splash Page */
         .corner-logo {
             position: absolute;
             top: max(1rem, env(safe-area-inset-top));
@@ -62,14 +61,14 @@
 
         .corner-logo-left {
             left: 1rem;
-            height: 5rem; /* ~80px */
+            height: 5rem;
             width: auto;
             object-fit: contain;
         }
 
         .corner-logo-right {
             right: 1rem;
-            height: 4rem; /* ~64px */
+            height: 4rem;
             width: 4rem;
             object-fit: cover;
             border-radius: 9999px;
@@ -154,6 +153,12 @@
             50% { transform: scale(1.03); }
             100% { transform: scale(1); }
         }
+
+        /* Utility per le preview Canvas */
+        .preview-canvas {
+            display: block;
+            margin: 0 auto 4px auto;
+        }
     </style>
 </head>
 <body>
@@ -165,7 +170,6 @@
 
     <!-- Splash Screen -->
     <div id="splashScreen" class="overlay">
-        <!-- Loghi posizionati negli angoli -->
         <img src="logo_gold.png" alt="Germani Terzi" class="corner-logo corner-logo-left">
         <img src="Mrblues.jpg" alt="Mr. Blues" class="corner-logo corner-logo-right">
 
@@ -192,37 +196,48 @@
 
     <!-- Start Screen -->
     <div id="startScreen" class="overlay solid-bg hidden">
-        <h2 class="text-2xl md:text-3xl text-[#d1a34a] mb-4 serif italic">Regole della Degustazione</h2>
+        <h2 class="text-2xl md:text-3xl text-[#d1a34a] mb-3 serif italic">Regole della Degustazione</h2>
         
-        <div class="bg-[#0e3747] p-4 md:p-6 rounded-xl border border-[#d1a34a] max-w-md mb-6 w-full max-w-[90%]">
-            <p class="text-white text-xs md:text-sm mb-4">
-                Trascina il calice per raccogliere gli aromi e i simboli del brand. Evita i sassi!
+        <div class="bg-[#0e3747] p-3 md:p-5 rounded-xl border border-[#d1a34a] max-w-md mb-5 w-full max-w-[95%]">
+            <p class="text-white text-xs md:text-sm mb-3">
+                Trascina il calice per raccogliere gli aromi. Attenzione ai sassi!
             </p>
             
-            <div class="grid grid-cols-3 gap-3 mb-4">
+            <!-- Riga 1: Frutti (Canvas Rendering) -->
+            <div class="grid grid-cols-4 gap-1 mb-2 justify-items-center">
                 <div class="text-center">
-                    <span class="text-[10px] md:text-xs text-white">Ciliegia <br><span class="text-[#d1a34a] font-bold">+10</span></span>
+                    <canvas id="prev-cherry" width="40" height="40" class="preview-canvas"></canvas>
+                    <span class="text-[10px] md:text-xs text-white block leading-tight">Ciliegia<br><span class="text-[#d1a34a] font-bold">+10</span></span>
                 </div>
                 <div class="text-center">
-                    <span class="text-[10px] md:text-xs text-white">Lampone <br><span class="text-[#d1a34a] font-bold">+15</span></span>
+                    <canvas id="prev-rasp" width="40" height="40" class="preview-canvas"></canvas>
+                    <span class="text-[10px] md:text-xs text-white block leading-tight">Lampone<br><span class="text-[#d1a34a] font-bold">+15</span></span>
                 </div>
                 <div class="text-center">
-                    <span class="text-[10px] md:text-xs text-white">Mora/Uva <br><span class="text-[#d1a34a] font-bold">+20</span></span>
+                    <canvas id="prev-black" width="40" height="40" class="preview-canvas"></canvas>
+                    <span class="text-[10px] md:text-xs text-white block leading-tight">Mora<br><span class="text-[#d1a34a] font-bold">+20</span></span>
                 </div>
-                <div class="text-center col-span-3 mt-2 pt-2 border-t border-[#12485c] flex justify-center gap-6">
-                    <div>
-                        <img src="logo_gold.png" class="h-8 mx-auto mb-1">
-                        <span class="text-[10px] md:text-xs text-white">Bonus GT <span class="text-[#d1a34a] font-bold">+50</span></span>
-                    </div>
-                    <div>
-                        <img src="Mrblues.jpg" class="h-8 w-8 mx-auto rounded-full border border-[#d1a34a] mb-1">
-                        <span class="text-[10px] md:text-xs text-white">Bonus Blues <span class="text-[#d1a34a] font-bold">+50</span></span>
-                    </div>
+                <div class="text-center">
+                    <canvas id="prev-grape" width="40" height="40" class="preview-canvas"></canvas>
+                    <span class="text-[10px] md:text-xs text-white block leading-tight">Uva<br><span class="text-[#d1a34a] font-bold">+20</span></span>
                 </div>
             </div>
-            <p class="text-white text-xs md:text-sm border-t border-[#12485c] pt-3 flex items-center justify-center">
-                <span class="text-xl mr-2">🪨</span> I sassi rompono il calice!
-            </p>
+
+            <!-- Riga 2: Ostacoli e Loghi (Canvas + Raster) -->
+            <div class="grid grid-cols-3 gap-1 mt-2 pt-2 border-t border-[#12485c] justify-items-center items-end">
+                <div class="text-center">
+                    <canvas id="prev-rock" width="40" height="40" class="preview-canvas"></canvas>
+                    <span class="text-[10px] md:text-xs text-white block leading-tight">Sasso<br><span class="text-[#e8436b] font-bold">K.O.</span></span>
+                </div>
+                <div class="text-center">
+                    <img src="logo_gold.png" class="h-8 md:h-10 w-auto mb-1 mx-auto object-contain">
+                    <span class="text-[10px] md:text-xs text-white block leading-tight">Bonus GT<br><span class="text-[#d1a34a] font-bold">+50</span></span>
+                </div>
+                <div class="text-center">
+                    <img src="Mrblues.jpg" class="h-8 w-8 md:h-10 md:w-10 rounded-full border border-[#d1a34a] mb-1 mx-auto object-cover">
+                    <span class="text-[10px] md:text-xs text-white block leading-tight">Bonus Blues<br><span class="text-[#d1a34a] font-bold">+50</span></span>
+                </div>
+            </div>
         </div>
 
         <button id="btnStart" class="btn-primary">Inizia</button>
@@ -245,11 +260,164 @@
     <canvas id="gameCanvas"></canvas>
 
     <script>
-        // --- Setup Canvas & Assets ---
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        // --- Core Costants & Colors ---
+        const COLORS = {
+            burgundy: '#7c1932',
+            raspberry: '#e8436b',
+            blackberry: '#1f111f',
+            grape: '#5e235e',
+            stem: '#4a5e2a',
+            glass: 'rgba(255, 255, 255, 0.45)',
+            glassHighlight: 'rgba(255, 255, 255, 0.8)'
+        };
+
+        // --- Pure Vector Rendering Functions (Refactored per accettare ctx come parametro) ---
+        function drawCherry(ctx, radius) {
+            ctx.strokeStyle = COLORS.stem;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-3, -radius+4);
+            ctx.quadraticCurveTo(5, -radius-15, 10, -radius-15);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(8, -radius+2);
+            ctx.quadraticCurveTo(12, -radius-12, 10, -radius-15);
+            ctx.stroke();
+
+            let grad1 = ctx.createRadialGradient(-5, -radius/2, 2, -3, 0, radius);
+            grad1.addColorStop(0, '#a12343');
+            grad1.addColorStop(1, '#520b1e');
+            ctx.fillStyle = grad1;
+            ctx.beginPath();
+            ctx.arc(-5, 0, radius*0.8, 0, Math.PI*2);
+            ctx.fill();
+
+            let grad2 = ctx.createRadialGradient(8, -radius/2+2, 2, 8, 2, radius*0.7);
+            grad2.addColorStop(0, '#b82a4d');
+            grad2.addColorStop(1, '#631026');
+            ctx.fillStyle = grad2;
+            ctx.beginPath();
+            ctx.arc(8, 2, radius*0.75, 0, Math.PI*2);
+            ctx.fill();
+        }
+
+        function drawBerry(ctx, radius, baseColor, highlightColor) {
+            ctx.fillStyle = COLORS.stem;
+            ctx.beginPath();
+            ctx.moveTo(0, -radius*0.8);
+            ctx.lineTo(-radius*0.6, -radius*1.1);
+            ctx.lineTo(-radius*0.2, -radius*0.7);
+            ctx.lineTo(0, -radius*1.2);
+            ctx.lineTo(radius*0.2, -radius*0.7);
+            ctx.lineTo(radius*0.6, -radius*1.1);
+            ctx.closePath();
+            ctx.fill();
+
+            const drops = [
+                {x: 0, y: radius*0.6, r: radius*0.4},
+                {x: -radius*0.4, y: radius*0.3, r: radius*0.4},
+                {x: radius*0.4, y: radius*0.3, r: radius*0.4},
+                {x: -radius*0.5, y: -radius*0.2, r: radius*0.4},
+                {x: radius*0.5, y: -radius*0.2, r: radius*0.4},
+                {x: 0, y: -radius*0.1, r: radius*0.45},
+                {x: 0, y: -radius*0.5, r: radius*0.5}
+            ];
+
+            drops.forEach(d => {
+                let grad = ctx.createRadialGradient(d.x - d.r*0.3, d.y - d.r*0.3, d.r*0.1, d.x, d.y, d.r);
+                grad.addColorStop(0, highlightColor);
+                grad.addColorStop(1, baseColor);
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, d.r, 0, Math.PI*2);
+                ctx.fill();
+            });
+        }
+
+        function drawGrapeCluster(ctx, radius) {
+            ctx.strokeStyle = '#6e4726';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, -radius);
+            ctx.lineTo(0, -radius*1.5);
+            ctx.stroke();
+
+            const grapes = [
+                {x: 0, y: radius*0.8, r: radius*0.3},
+                {x: -radius*0.3, y: radius*0.4, r: radius*0.35},
+                {x: radius*0.3, y: radius*0.4, r: radius*0.35},
+                {x: -radius*0.55, y: 0, r: radius*0.35},
+                {x: 0, y: 0, r: radius*0.35},
+                {x: radius*0.55, y: 0, r: radius*0.35},
+                {x: -radius*0.4, y: -radius*0.4, r: radius*0.4},
+                {x: radius*0.4, y: -radius*0.4, r: radius*0.4},
+                {x: 0, y: -radius*0.5, r: radius*0.4}
+            ];
+
+            grapes.forEach(g => {
+                let grad = ctx.createRadialGradient(g.x - g.r*0.2, g.y - g.r*0.2, g.r*0.1, g.x, g.y, g.r);
+                grad.addColorStop(0, '#a165a1');
+                grad.addColorStop(1, COLORS.grape);
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(g.x, g.y, g.r, 0, Math.PI*2);
+                ctx.fill();
+            });
+        }
+
+        function drawRock(ctx, radius) {
+            let grad = ctx.createLinearGradient(-radius, -radius, radius, radius);
+            grad.addColorStop(0, '#a8abae');
+            grad.addColorStop(0.5, '#6a6d70');
+            grad.addColorStop(1, '#3a3c3f');
+            
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.moveTo(-radius*0.8, -radius*0.4);
+            ctx.lineTo(-radius*0.2, -radius*0.9);
+            ctx.lineTo(radius*0.6, -radius*0.7);
+            ctx.lineTo(radius*0.9, radius*0.1);
+            ctx.lineTo(radius*0.3, radius*0.8);
+            ctx.lineTo(-radius*0.6, radius*0.6);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.strokeStyle = '#2a2c2f';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(-radius*0.4, -radius*0.2);
+            ctx.lineTo(radius*0.3, radius*0.4);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(radius*0.1, 0);
+            ctx.lineTo(radius*0.6, -radius*0.2);
+            ctx.stroke();
+        }
+
+        // --- Preview Initialization ---
+        function renderPreviews() {
+            const render = (id, drawFn) => {
+                const c = document.getElementById(id);
+                if(!c) return;
+                const cCtx = c.getContext('2d');
+                cCtx.clearRect(0, 0, c.width, c.height);
+                cCtx.save();
+                cCtx.translate(20, 24); // Centratura specifica (Y leggermente abbassata per via dei gambi)
+                drawFn(cCtx);
+                cCtx.restore();
+            };
+
+            render('prev-cherry', (ctx) => drawCherry(ctx, 14));
+            render('prev-rasp',   (ctx) => drawBerry(ctx, 13, COLORS.raspberry, '#ff6b8f'));
+            render('prev-black',  (ctx) => drawBerry(ctx, 13, COLORS.blackberry, '#4a2c4a'));
+            render('prev-grape',  (ctx) => drawGrapeCluster(ctx, 13));
+            render('prev-rock',   (ctx) => drawRock(ctx, 15));
+        }
+
+        // --- Setup Main Game Canvas & Assets ---
+        const mainCanvas = document.getElementById('gameCanvas');
+        const mainCtx = mainCanvas.getContext('2d');
         
-        // ATTENZIONE: Assicurati che il file si chiami esattamente logo_gold.png sul server
         const imgLogoGT = new Image();
         imgLogoGT.src = 'logo_gold.png';
         const imgLogoBlues = new Image();
@@ -261,8 +429,8 @@
         function resizeCanvas() {
             GAME_WIDTH = window.innerWidth;
             GAME_HEIGHT = window.innerHeight;
-            canvas.width = GAME_WIDTH;
-            canvas.height = GAME_HEIGHT;
+            mainCanvas.width = GAME_WIDTH;
+            mainCanvas.height = GAME_HEIGHT;
             glass.y = GAME_HEIGHT - 150;
             if(glass.x > GAME_WIDTH) glass.x = GAME_WIDTH / 2;
         }
@@ -277,16 +445,6 @@
         let animationId;
         let frameCount = 0;
         
-        const COLORS = {
-            burgundy: '#7c1932',
-            raspberry: '#e8436b',
-            blackberry: '#1f111f',
-            grape: '#5e235e',
-            stem: '#4a5e2a',
-            glass: 'rgba(255, 255, 255, 0.45)',
-            glassHighlight: 'rgba(255, 255, 255, 0.8)'
-        };
-
         const glass = {
             x: GAME_WIDTH / 2,
             y: 0, 
@@ -319,12 +477,12 @@
             if (glass.x > GAME_WIDTH - glass.width / 2) glass.x = GAME_WIDTH - glass.width / 2;
         }
 
-        canvas.addEventListener('touchmove', (e) => {
+        mainCanvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
             moveGlass(e.touches[0].clientX);
         }, { passive: false });
 
-        canvas.addEventListener('mousemove', (e) => moveGlass(e.clientX));
+        mainCanvas.addEventListener('mousemove', (e) => moveGlass(e.clientX));
 
         // --- UI Navigation ---
         document.getElementById('btnEnter').addEventListener('click', () => {
@@ -337,6 +495,7 @@
             document.getElementById('ageGate').classList.add('hidden');
             document.getElementById('startScreen').classList.remove('hidden');
             gameState = 'START';
+            renderPreviews(); // Rende i canvas delle regole solo quando richiesto
         });
 
         document.getElementById('btnAgeNo').addEventListener('click', () => {
@@ -387,7 +546,7 @@
             document.getElementById('livesDisplay').innerHTML = `<span class="life-icon">${livesText}</span>`;
         }
 
-        // --- Disegno Rendering ---
+        // --- Main Drawing Functions ---
         function defineGlassBowlPath(ctx, g) {
             ctx.beginPath();
             ctx.moveTo(-g.rimWidth/2, -g.height/2);
@@ -396,7 +555,7 @@
             ctx.closePath();
         }
 
-        function drawGlass() {
+        function drawGlass(ctx) {
             ctx.save();
             ctx.translate(glass.x, glass.y);
 
@@ -451,130 +610,7 @@
             ctx.restore();
         }
 
-        // --- Funzioni Vettoriali Avanzate Ripristinate ---
-        function drawCherry(radius) {
-            ctx.strokeStyle = COLORS.stem;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(-3, -radius+4);
-            ctx.quadraticCurveTo(5, -radius-15, 10, -radius-15);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(8, -radius+2);
-            ctx.quadraticCurveTo(12, -radius-12, 10, -radius-15);
-            ctx.stroke();
-
-            let grad1 = ctx.createRadialGradient(-5, -radius/2, 2, -3, 0, radius);
-            grad1.addColorStop(0, '#a12343');
-            grad1.addColorStop(1, '#520b1e');
-            ctx.fillStyle = grad1;
-            ctx.beginPath();
-            ctx.arc(-5, 0, radius*0.8, 0, Math.PI*2);
-            ctx.fill();
-
-            let grad2 = ctx.createRadialGradient(8, -radius/2+2, 2, 8, 2, radius*0.7);
-            grad2.addColorStop(0, '#b82a4d');
-            grad2.addColorStop(1, '#631026');
-            ctx.fillStyle = grad2;
-            ctx.beginPath();
-            ctx.arc(8, 2, radius*0.75, 0, Math.PI*2);
-            ctx.fill();
-        }
-
-        function drawBerry(radius, baseColor, highlightColor) {
-            ctx.fillStyle = COLORS.stem;
-            ctx.beginPath();
-            ctx.moveTo(0, -radius*0.8);
-            ctx.lineTo(-radius*0.6, -radius*1.1);
-            ctx.lineTo(-radius*0.2, -radius*0.7);
-            ctx.lineTo(0, -radius*1.2);
-            ctx.lineTo(radius*0.2, -radius*0.7);
-            ctx.lineTo(radius*0.6, -radius*1.1);
-            ctx.closePath();
-            ctx.fill();
-
-            const drops = [
-                {x: 0, y: radius*0.6, r: radius*0.4},
-                {x: -radius*0.4, y: radius*0.3, r: radius*0.4},
-                {x: radius*0.4, y: radius*0.3, r: radius*0.4},
-                {x: -radius*0.5, y: -radius*0.2, r: radius*0.4},
-                {x: radius*0.5, y: -radius*0.2, r: radius*0.4},
-                {x: 0, y: -radius*0.1, r: radius*0.45},
-                {x: 0, y: -radius*0.5, r: radius*0.5}
-            ];
-
-            drops.forEach(d => {
-                let grad = ctx.createRadialGradient(d.x - d.r*0.3, d.y - d.r*0.3, d.r*0.1, d.x, d.y, d.r);
-                grad.addColorStop(0, highlightColor);
-                grad.addColorStop(1, baseColor);
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.arc(d.x, d.y, d.r, 0, Math.PI*2);
-                ctx.fill();
-            });
-        }
-
-        function drawGrapeCluster(radius) {
-            ctx.strokeStyle = '#6e4726';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(0, -radius);
-            ctx.lineTo(0, -radius*1.5);
-            ctx.stroke();
-
-            const grapes = [
-                {x: 0, y: radius*0.8, r: radius*0.3},
-                {x: -radius*0.3, y: radius*0.4, r: radius*0.35},
-                {x: radius*0.3, y: radius*0.4, r: radius*0.35},
-                {x: -radius*0.55, y: 0, r: radius*0.35},
-                {x: 0, y: 0, r: radius*0.35},
-                {x: radius*0.55, y: 0, r: radius*0.35},
-                {x: -radius*0.4, y: -radius*0.4, r: radius*0.4},
-                {x: radius*0.4, y: -radius*0.4, r: radius*0.4},
-                {x: 0, y: -radius*0.5, r: radius*0.4}
-            ];
-
-            grapes.forEach(g => {
-                let grad = ctx.createRadialGradient(g.x - g.r*0.2, g.y - g.r*0.2, g.r*0.1, g.x, g.y, g.r);
-                grad.addColorStop(0, '#a165a1');
-                grad.addColorStop(1, COLORS.grape);
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.arc(g.x, g.y, g.r, 0, Math.PI*2);
-                ctx.fill();
-            });
-        }
-
-        function drawRock(radius) {
-            let grad = ctx.createLinearGradient(-radius, -radius, radius, radius);
-            grad.addColorStop(0, '#a8abae');
-            grad.addColorStop(0.5, '#6a6d70');
-            grad.addColorStop(1, '#3a3c3f');
-            
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.moveTo(-radius*0.8, -radius*0.4);
-            ctx.lineTo(-radius*0.2, -radius*0.9);
-            ctx.lineTo(radius*0.6, -radius*0.7);
-            ctx.lineTo(radius*0.9, radius*0.1);
-            ctx.lineTo(radius*0.3, radius*0.8);
-            ctx.lineTo(-radius*0.6, radius*0.6);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.strokeStyle = '#2a2c2f';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(-radius*0.4, -radius*0.2);
-            ctx.lineTo(radius*0.3, radius*0.4);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(radius*0.1, 0);
-            ctx.lineTo(radius*0.6, -radius*0.2);
-            ctx.stroke();
-        }
-
-        function drawItem(item) {
+        function drawItem(ctx, item) {
             ctx.save();
             ctx.translate(item.x, item.y);
             ctx.rotate(Math.sin(frameCount * 0.05 + item.x) * 0.2);
@@ -599,11 +635,11 @@
                     ctx.stroke();
                 }
             }
-            else if (item.type === 'cherry') drawCherry(item.radius);
-            else if (item.type === 'raspberry') drawBerry(item.radius, COLORS.raspberry, '#ff6b8f');
-            else if (item.type === 'blackberry') drawBerry(item.radius, COLORS.blackberry, '#4a2c4a');
-            else if (item.type === 'grape') drawGrapeCluster(item.radius);
-            else if (item.type === 'rock') drawRock(item.radius);
+            else if (item.type === 'cherry') drawCherry(ctx, item.radius);
+            else if (item.type === 'raspberry') drawBerry(ctx, item.radius, COLORS.raspberry, '#ff6b8f');
+            else if (item.type === 'blackberry') drawBerry(ctx, item.radius, COLORS.blackberry, '#4a2c4a');
+            else if (item.type === 'grape') drawGrapeCluster(ctx, item.radius);
+            else if (item.type === 'rock') drawRock(ctx, item.radius);
 
             ctx.restore();
         }
@@ -647,8 +683,8 @@
                         
                         if (item.type === 'rock') {
                             lives--;
-                            canvas.style.backgroundColor = '#5c1212';
-                            setTimeout(() => canvas.style.backgroundColor = '#12485c', 100);
+                            mainCanvas.style.backgroundColor = '#5c1212';
+                            setTimeout(() => mainCanvas.style.backgroundColor = '#12485c', 100);
 
                             if(lives <= 0) {
                                 updateHUD();
@@ -671,9 +707,9 @@
         }
 
         function draw() {
-            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-            drawGlass();
-            items.forEach(drawItem);
+            mainCtx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+            drawGlass(mainCtx);
+            items.forEach(item => drawItem(mainCtx, item));
         }
 
         function gameLoop() {
