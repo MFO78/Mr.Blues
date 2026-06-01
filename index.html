@@ -439,27 +439,49 @@
         }
 
         function drawSalami(ctx, r) {
-            // Nuova fetta di salame diagonale, organica (no spago/linee rette)
-            ctx.save(); ctx.rotate(Math.PI/6);
-            
-            // Involucro (bordo scuro esterno)
-            ctx.fillStyle = '#6d1000'; 
-            ctx.beginPath(); ctx.ellipse(0, 0, r*0.8, r*1.0, 0, 0, Math.PI*2); ctx.fill();
-            
-            // Corpo di carne
-            ctx.fillStyle = '#c62828'; 
-            ctx.beginPath(); ctx.ellipse(0, 0, r*0.75, r*0.95, 0, 0, Math.PI*2); ctx.fill();
-            
-            // Grasso (punti bianchi)
-            ctx.fillStyle = 'rgba(245,245,245,0.82)';
-            SALAMI_FAT.forEach(f => { ctx.beginPath(); ctx.ellipse(f[0]*r*0.85, f[1]*r*0.85, 2.2, 2.8, 0, 0, Math.PI*2); ctx.fill(); });
-            
-            // Pepe nero
-            ctx.fillStyle = '#1a1a1a';
-            SALAMI_PEPPER.forEach(p => { ctx.beginPath(); ctx.arc(p[0]*r*0.9, p[1]*r*0.9, 1.2, 0, Math.PI*2); ctx.fill(); });
-            
+            ctx.save();
+            ctx.rotate(Math.PI / 7);
+
+            // 1 — Skin ring
+            const skinG = ctx.createRadialGradient(0,0,r*0.62,0,0,r);
+            skinG.addColorStop(0,'#7b0d0d'); skinG.addColorStop(1,'#3d0000');
+            ctx.fillStyle = skinG;
+            ctx.beginPath(); ctx.ellipse(0,0,r,r,0,0,Math.PI*2); ctx.fill();
+
+            // 2 — Meat body
+            const meatG = ctx.createRadialGradient(-r*0.15,-r*0.15,r*0.05,0,0,r*0.84);
+            meatG.addColorStop(0,'#d32f2f'); meatG.addColorStop(0.6,'#b71c1c'); meatG.addColorStop(1,'#7b0d0d');
+            ctx.fillStyle = meatG;
+            ctx.beginPath(); ctx.ellipse(0,0,r*0.84,r*0.84,0,0,Math.PI*2); ctx.fill();
+
+            // 3 — Fat marbling: 3 irregular blobs
+            ctx.fillStyle = 'rgba(250,240,228,0.90)';
+            [[r*0.28, r*0.18, r*0.095, r*0.07, 0.3],
+             [-r*0.30,-r*0.24, r*0.085, r*0.065,-0.4],
+             [-r*0.05,-r*0.46, r*0.07,  r*0.055, 0.1]
+            ].forEach(([fx,fy,fw,fh,fr2]) => {
+                ctx.save(); ctx.translate(fx,fy); ctx.rotate(fr2);
+                ctx.beginPath(); ctx.ellipse(0,0,fw,fh,0,0,Math.PI*2); ctx.fill();
+                ctx.restore();
+            });
+
+            // 4 — Pepper flecks
+            ctx.fillStyle = 'rgba(20,10,5,0.85)';
+            SALAMI_PEPPER.forEach(p => {
+                ctx.beginPath(); ctx.arc(p[0]*r*0.72,p[1]*r*0.72,r*0.038,0,Math.PI*2); ctx.fill();
+            });
+
+            // 5 — Specular highlight
+            const hlG = ctx.createRadialGradient(-r*0.3,-r*0.3,0,0,0,r*0.9);
+            hlG.addColorStop(0,'rgba(255,200,180,0.18)');
+            hlG.addColorStop(0.5,'rgba(255,150,120,0.06)');
+            hlG.addColorStop(1,'rgba(0,0,0,0)');
+            ctx.fillStyle = hlG;
+            ctx.beginPath(); ctx.ellipse(0,0,r,r,0,0,Math.PI*2); ctx.fill();
+
             ctx.restore();
         }
+
 
         function drawCheese(ctx, r) {
             ctx.fillStyle = '#fbc02d'; ctx.beginPath(); ctx.moveTo(0, -r); ctx.lineTo(r*.8, 0); ctx.lineTo(0, r*.5); ctx.lineTo(-r*.8, 0); ctx.closePath(); ctx.fill();
@@ -762,40 +784,50 @@
             const sub = encodeURIComponent('Acquisto Pinot Nero Mr. Blues - Germani Terzi');
             const body = encodeURIComponent(
                 'Gentile Team Germani Terzi,\n\n' +
-                'Ho appena giocato al vostro gioco degustazione Mr. Blues, totalizzando ' + pts + ' punti!\n\n' +
-                'Vorrei acquistare il Pinot Nero Mr. Blues. Potreste inviarmi informazioni su:\n' +
-                ' - Disponibilita e annate\n' +
-                ' - Prezzi e modalita di spedizione\n' +
-                ' - Eventuali confezioni regalo\n\n' +
-                'Cordiali saluti.'
+                'Ho appena giocato al vostro gioco degustazione "Mr. Blues" e ho totalizzato ' + pts + ' punti!\n\n' +
+                'Sono interessato ad acquistare il Pinot Nero Mr. Blues e vi chiedo cortesemente:\n\n' +
+                '  - Prezzo per singola bottiglia\n' +
+                '  - Prezzo per cassa da 6 bottiglie\n' +
+                '  - Prezzo per cassa da 12 bottiglie\n' +
+                '  - Modalita e costi di spedizione\n\n' +
+                'Potete contattarmi a questo indirizzo per ulteriori informazioni o per finalizzare l\'ordine.\n\n' +
+                'In attesa di un vostro gentile riscontro,\n' +
+                'cordiali saluti.'
             );
             const mailUrl = `mailto:info@vinigermaniterzi.com?subject=${sub}&body=${body}`;
-            // window.open works in sandboxed iframes; location.href may be blocked
             const opened = window.open(mailUrl, '_self');
             if (!opened) { window.location.href = mailUrl; }
         }
 
                 document.getElementById('btnShare').addEventListener('click', async () => {
-            const shareText = `🍷 Ho totalizzato ${score} punti nel gioco degustazione del Pinot Nero Mr. Blues di Germani Terzi! Riesci a battermi?`;
+            const gameUrl  = 'https://mfo78.github.io/Mr.Blues/';
+            const shareMsg = `🍷 Ho totalizzato ${score} punti nel gioco ufficiale del Pinot Nero Mr. Blues di Germani Terzi!\nRiesci a battermi? 🎮\n${gameUrl}`;
+            
+            // Try Web Share API with hero image (best for mobile/WhatsApp)
             try {
-                if (finalScreenshotData && navigator.canShare) {
-                    const blob = await (await fetch(finalScreenshotData)).blob();
-                    const file = new File([blob], `mrblues_${score}.jpg`, { type: 'image/jpeg' });
-                    if (navigator.canShare({ files: [file] })) {
-                        await navigator.share({ title: 'Mr. Blues — Pinot Nero Germani Terzi', text: shareText, files: [file] });
-                        return;
-                    }
-                }
-                if (navigator.share) {
-                    await navigator.share({ title: 'Mr. Blues — Pinot Nero Germani Terzi', text: shareText });
+                const heroResp = await fetch('1000087388-2.jpg');
+                const heroBlob = await heroResp.blob();
+                const heroFile = new File([heroBlob], 'mr-blues-pinot-nero.jpg', { type: 'image/jpeg' });
+                if (navigator.canShare && navigator.canShare({ files: [heroFile] })) {
+                    await navigator.share({
+                        title: 'Mr. Blues — Pinot Nero Germani Terzi',
+                        text: shareMsg,
+                        files: [heroFile]
+                    });
                     return;
                 }
-                throw new Error('no-share-api');
-            } catch (err) {
-                // Universal WhatsApp fallback (mobile deep-link + web)
-                const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-                window.open(waUrl, '_blank');
-            }
+            } catch(_) {}
+            
+            // Fallback: text only Web Share
+            try {
+                if (navigator.share) {
+                    await navigator.share({ title: 'Mr. Blues — Pinot Nero Germani Terzi', text: shareMsg });
+                    return;
+                }
+            } catch(_) {}
+            
+            // Final fallback: WhatsApp web/deep-link
+            window.open(`https://wa.me/?text=${encodeURIComponent(shareMsg)}`, '_blank');
         });
 
         function updateHUD() {
