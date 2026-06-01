@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mr. Blues - La Raccolta degli Aromi | Vini Germani Terzi</title>
+    <title>Mr. Blues - Sensoriale & Abbinamenti | Vini Germani Terzi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
@@ -17,6 +17,8 @@
             background-color: #1a1a1a;
             font-family: 'Lato', sans-serif;
             touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
         }
         
         h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
@@ -40,12 +42,12 @@
             align-items: center;
             z-index: 10;
             text-align: center;
-            padding: 15px;
+            padding: 10px;
             box-sizing: border-box;
         }
 
-        #splashScreen {
-            background-image: linear-gradient(rgba(18, 72, 92, 0.6), rgba(18, 72, 92, 0.95)), url('1000087388.jpg');
+        #splashScreen, #levelSelectScreen {
+            background-image: linear-gradient(rgba(18, 72, 92, 0.7), rgba(18, 72, 92, 0.98)), url('1000087388.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -58,32 +60,18 @@
             z-index: 20;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
         }
-
-        .corner-logo-left {
-            left: 1rem;
-            height: 5rem;
-            width: auto;
-            object-fit: contain;
-        }
-
-        .corner-logo-right {
-            right: 1rem;
-            height: 4rem;
-            width: 4rem;
-            object-fit: cover;
-            border-radius: 9999px;
-            border: 2px solid #d1a34a;
-        }
+        .corner-logo-left { left: 1rem; height: 5rem; width: auto; object-fit: contain; }
+        .corner-logo-right { right: 1rem; height: 4rem; width: 4rem; object-fit: cover; border-radius: 9999px; border: 2px solid #d1a34a; }
 
         .solid-bg { background: rgba(18, 72, 92, 0.98); }
 
         .btn-primary {
             background-color: #d1a34a;
             color: #12485c;
-            padding: 12px 30px;
+            padding: 12px 20px;
             border-radius: 9999px;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
             border: 2px solid #d1a34a;
             transition: all 0.3s ease;
             cursor: pointer;
@@ -92,31 +80,31 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             width: 100%;
             max-width: 280px;
+            margin-bottom: 12px;
         }
-
-        .btn-primary:hover {
-            background-color: transparent;
-            color: #d1a34a;
-        }
+        .btn-primary:hover { background-color: transparent; color: #d1a34a; }
         
         .btn-secondary {
             background-color: transparent;
             color: #fff;
-            padding: 12px 30px;
+            padding: 12px 20px;
             border-radius: 9999px;
             font-size: 1rem;
             border: 2px solid #fff;
-            margin-top: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
             max-width: 280px;
+            margin-bottom: 12px;
         }
+        .btn-secondary:hover { background-color: #fff; color: #12485c; }
         
-        .btn-secondary:hover {
-            background-color: #fff;
-            color: #12485c;
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: white;
+            border-color: #25D366;
         }
+        .btn-whatsapp:hover { background-color: transparent; color: #25D366; }
 
         .hidden { display: none !important; }
 
@@ -140,7 +128,7 @@
         .promo-banner {
             background: linear-gradient(135deg, #d1a34a, #b38836);
             color: #12485c;
-            padding: 15px 20px;
+            padding: 10px 15px;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             border: 2px solid #fff;
@@ -148,20 +136,30 @@
             animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+        .preview-canvas { display: block; margin: 0 auto 2px auto; }
+    
+        /* Responsività automatica: se lo schermo è più largo di 768px (PC/Tablet Landscape) */
+        @media (min-width: 768px) {
+            body {
+                background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)), url('1000087388-2.jpg');
+                background-size: cover;
+                background-position: center;
+            }
+            #gameContainer {
+                border-left: 2px solid #d1a34a;
+                border-right: 2px solid #d1a34a;
+                border-radius: 8px;
+                margin-top: 2vh;
+                height: 96vh;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+            }
         }
 
-        /* Utility per le preview Canvas */
-        .preview-canvas {
-            display: block;
-            margin: 0 auto 4px auto;
-        }
     </style>
 </head>
 <body>
+<div id="gameContainer">
 
     <div id="hud" class="hidden">
         <div>Score: <span id="scoreDisplay">0</span></div>
@@ -174,551 +172,595 @@
         <img src="Mrblues.jpg" alt="Mr. Blues" class="corner-logo corner-logo-right">
 
         <h1 class="text-4xl md:text-6xl text-white mb-2 serif mt-16" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">Mr. Blues</h1>
-        <h2 class="text-xl md:text-2xl text-[#d1a34a] mb-8 serif italic" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">La Raccolta degli Aromi</h2>
+        <h2 class="text-xl md:text-2xl text-[#d1a34a] mb-6 serif italic" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">L'Esperienza del Pinot Nero</h2>
         
-        <div class="promo-banner mb-8">
+        <div class="promo-banner mb-6">
             <h3 class="serif font-bold text-lg md:text-xl mb-1 flex items-center justify-center">
                 <span class="text-2xl mr-2">🏆</span> SFIDA DEGUSTAZIONE
             </h3>
-            <p class="text-xs md:text-sm font-bold">Il primo a raggiungere <strong>10.000 punti</strong> avrà in omaggio una coppia di calici originali Mr. Blues!</p>
+            <p class="text-xs md:text-sm font-bold">Raggiungi <strong>10.000 punti</strong> per vincere una coppia di calici originali Mr. Blues!</p>
         </div>
 
-        <button id="btnEnter" class="btn-primary">Entra nel Gioco</button>
+        <button id="btnEnter" class="btn-primary">Entra</button>
     </div>
 
     <!-- Age Gate -->
     <div id="ageGate" class="overlay solid-bg hidden">
         <h1 class="text-4xl md:text-5xl text-white mb-2 serif">Verifica Età</h1>
-        <p class="text-white mb-8 text-base md:text-lg max-w-md px-4">Per accedere a questa esperienza devi avere l'età legale per il consumo di alcolici nel tuo paese.</p>
-        <button id="btnAgeYes" class="btn-primary mb-4">Sì, ho più di 18 anni</button>
+        <p class="text-white mb-8 text-base md:text-lg max-w-md px-4">Per accedere devi avere l'età legale per il consumo di alcolici nel tuo paese.</p>
+        <button id="btnAgeYes" class="btn-primary">Sì, ho più di 18 anni</button>
         <button id="btnAgeNo" class="btn-secondary">No, sono minorenne</button>
     </div>
 
-    <!-- Start Screen -->
-    <div id="startScreen" class="overlay solid-bg hidden">
-        <h2 class="text-2xl md:text-3xl text-[#d1a34a] mb-3 serif italic">Regole della Degustazione</h2>
+    <!-- Level Selection -->
+    <div id="levelSelectScreen" class="overlay hidden">
+        <img src="logo_gold.png" class="corner-logo corner-logo-left">
+        <h2 class="text-3xl md:text-4xl text-[#d1a34a] mb-8 serif italic mt-12">Scegli il Percorso</h2>
         
-        <div class="bg-[#0e3747] p-3 md:p-5 rounded-xl border border-[#d1a34a] max-w-md mb-5 w-full max-w-[95%]">
-            <p class="text-white text-xs md:text-sm mb-3">
-                Trascina il calice per raccogliere gli aromi. Attenzione ai sassi!
-            </p>
-            
-            <!-- Riga 1: Frutti (Canvas Rendering) -->
-            <div class="grid grid-cols-4 gap-1 mb-2 justify-items-center">
-                <div class="text-center">
-                    <canvas id="prev-cherry" width="40" height="40" class="preview-canvas"></canvas>
-                    <span class="text-[10px] md:text-xs text-white block leading-tight">Ciliegia<br><span class="text-[#d1a34a] font-bold">+10</span></span>
-                </div>
-                <div class="text-center">
-                    <canvas id="prev-rasp" width="40" height="40" class="preview-canvas"></canvas>
-                    <span class="text-[10px] md:text-xs text-white block leading-tight">Lampone<br><span class="text-[#d1a34a] font-bold">+15</span></span>
-                </div>
-                <div class="text-center">
-                    <canvas id="prev-black" width="40" height="40" class="preview-canvas"></canvas>
-                    <span class="text-[10px] md:text-xs text-white block leading-tight">Mora<br><span class="text-[#d1a34a] font-bold">+20</span></span>
-                </div>
-                <div class="text-center">
-                    <canvas id="prev-grape" width="40" height="40" class="preview-canvas"></canvas>
-                    <span class="text-[10px] md:text-xs text-white block leading-tight">Uva<br><span class="text-[#d1a34a] font-bold">+20</span></span>
-                </div>
+        <div class="w-full max-w-md px-4 space-y-4">
+            <div class="bg-[#0e3747] p-4 rounded-xl border border-[#d1a34a] shadow-lg">
+                <h3 class="text-xl text-white serif mb-2">1. Profilo Sensoriale</h3>
+                <p class="text-sm text-gray-300 mb-4">Scopri i sentori di piccoli frutti rossi, viola e uva. Difendi la vigna dalle intemperie.</p>
+                <button onclick="selectLevel('SENSORIALE')" class="btn-primary w-full m-0">Gioca Profilo</button>
             </div>
 
-            <!-- Riga 2: Ostacoli e Loghi (Canvas + Raster) -->
-            <div class="grid grid-cols-3 gap-1 mt-2 pt-2 border-t border-[#12485c] justify-items-center items-end">
-                <div class="text-center">
-                    <canvas id="prev-rock" width="40" height="40" class="preview-canvas"></canvas>
-                    <span class="text-[10px] md:text-xs text-white block leading-tight">Sasso<br><span class="text-[#e8436b] font-bold">K.O.</span></span>
-                </div>
-                <div class="text-center">
-                    <img src="logo_gold.png" class="h-8 md:h-10 w-auto mb-1 mx-auto object-contain">
-                    <span class="text-[10px] md:text-xs text-white block leading-tight">Bonus GT<br><span class="text-[#d1a34a] font-bold">+50</span></span>
-                </div>
-                <div class="text-center">
-                    <img src="Mrblues.jpg" class="h-8 w-8 md:h-10 md:w-10 rounded-full border border-[#d1a34a] mb-1 mx-auto object-cover">
-                    <span class="text-[10px] md:text-xs text-white block leading-tight">Bonus Blues<br><span class="text-[#d1a34a] font-bold">+50</span></span>
-                </div>
+            <div class="bg-[#0e3747] p-4 rounded-xl border border-[#d1a34a] shadow-lg">
+                <h3 class="text-xl text-white serif mb-2">2. Abbinamenti Gastronomici</h3>
+                <p class="text-sm text-gray-300 mb-4">Esplora i pairing perfetti con salumi DOP e risotti. Evita gli abbinamenti errati che rovinano il gusto.</p>
+                <button onclick="selectLevel('ABBINAMENTI')" class="btn-primary w-full m-0">Gioca Abbinamenti</button>
             </div>
         </div>
+    </div>
 
-        <button id="btnStart" class="btn-primary">Inizia</button>
+    <!-- Start Screen (Dynamic Rules) -->
+    <div id="startScreen" class="overlay solid-bg hidden">
+        <h2 id="levelTitle" class="text-2xl md:text-3xl text-[#d1a34a] mb-2 serif italic">Regole</h2>
+        
+        <div class="bg-[#0e3747] p-3 md:p-4 rounded-xl border border-[#d1a34a] max-w-md mb-4 w-full max-w-[95%]">
+            <p id="levelDesc" class="text-white text-xs md:text-sm mb-3"></p>
+            <div id="dynamicRulesContainer" class="w-full"></div>
+        </div>
+
+        <button id="btnStart" class="btn-primary">Inizia Degustazione</button>
+        <button onclick="goBackToLevels()" class="btn-secondary text-sm py-2">Torna ai Livelli</button>
     </div>
 
     <!-- Game Over Screen -->
-    <div id="gameOverScreen" class="overlay solid-bg hidden">
-        <h2 class="text-3xl text-white mb-2 serif">Degustazione Conclusa</h2>
-        <p class="text-[#d1a34a] text-xl mb-4">Punteggio Aromatico: <br><span id="finalScore" class="font-bold text-5xl">0</span></p>
+    <div id="gameOverScreen" class="overlay solid-bg hidden overflow-y-auto">
+        <h2 class="text-3xl text-white mb-2 serif mt-8">Degustazione Conclusa</h2>
+        <p class="text-[#d1a34a] text-xl mb-4">Punteggio: <br><span id="finalScore" class="font-bold text-5xl">0</span></p>
         
         <p id="marketingMessage" class="text-white text-sm md:text-base mb-6 max-w-md text-center italic px-4"></p>
 
-        <a href="mailto:info@vinigermaniterzi.com?subject=Acquisto%20Pinot%20Nero%20Mr.%20Blues&body=Salve,%20ho%20appena%20giocato%20al%20vostro%20mini-gioco%20e%20vorrei%20avere%20maggiori%20informazioni%20sull'acquisto%20del%20Pinot%20Nero%20Mr.%20Blues." 
-           class="btn-primary mb-4 block text-center no-underline flex items-center justify-center">
+        <button id="btnShare" class="btn-primary btn-whatsapp block text-center no-underline flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+            </svg>
+            Condividi Score
+        </button>
+
+        <a href="https://www.germaniterzi.com" target="_blank"
+           class="btn-primary block text-center no-underline flex items-center justify-center">
            Acquista Ora
         </a>
-        <button id="btnRestart" class="btn-secondary">Riprova</button>
+        <button id="btnRestart" class="btn-secondary">Riprova Livello</button>
+        <button onclick="goBackToLevels()" class="btn-secondary border-none underline">Cambia Livello</button>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
     <script>
-        // --- Core Costants & Colors ---
+        // --- Web Audio API Synthesizer ---
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'catch') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if (type === 'bad') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now);
+                osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+                gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'ko') {
+                osc.type = 'square'; osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 0.4);
+                gain.gain.setValueAtTime(0.15, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
+            } else if (type === '1up') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(554.37, now + 0.1);
+                osc.frequency.setValueAtTime(659.25, now + 0.2);
+                osc.frequency.setValueAtTime(880, now + 0.3);
+                gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.5);
+                osc.start(now); osc.stop(now + 0.5);
+            }
+        }
+
+        // --- Core Colors ---
         const COLORS = {
-            burgundy: '#7c1932',
-            raspberry: '#e8436b',
-            blackberry: '#1f111f',
-            grape: '#5e235e',
-            stem: '#4a5e2a',
-            glass: 'rgba(255, 255, 255, 0.45)',
-            glassHighlight: 'rgba(255, 255, 255, 0.8)'
+            burgundy: '#7c1932', raspberry: '#e8436b', strawberry: '#d32f2f', grape: '#5e235e',
+            rose: '#e91e63', violet: '#7f00ff',
+            cheese_body: '#fbc02d', cheese_crust: '#f57f17', salami: '#c62828', risotto: '#fdd835', meat: '#8d6e63',
+            pizza_crust: '#ffb300', pizza_sauce: '#d32f2f', cake: '#8e24aa',
+            hail: '#e0f7fa', water: '#0288d1', rock: '#6a6d70',
+            stem: '#4a5e2a', glass: 'rgba(255, 255, 255, 0.45)', glassHighlight: 'rgba(255, 255, 255, 0.8)'
         };
 
-        // --- Pure Vector Rendering Functions (Refactored per accettare ctx come parametro) ---
-        function drawCherry(ctx, radius) {
-            ctx.strokeStyle = COLORS.stem;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(-3, -radius+4);
-            ctx.quadraticCurveTo(5, -radius-15, 10, -radius-15);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(8, -radius+2);
-            ctx.quadraticCurveTo(12, -radius-12, 10, -radius-15);
-            ctx.stroke();
+        // --- Hardcoded (Non-jittering) Arrays for Vector Textures ---
+        const STRAWBERRY_SEEDS = [[-0.3, -0.4], [0.3, -0.4], [0, -0.1], [-0.4, 0.2], [0.4, 0.2], [0, 0.5], [-0.2, 0.8], [0.2, 0.8]];
+        const SALAMI_FAT = [[0, 0.4], [-0.3, 0.1], [0.2, -0.2], [-0.1, -0.5], [0.1, -0.7], [0.3, 0.3], [-0.3, -0.2]];
+        const SALAMI_PEPPER = [[-0.2, 0.3], [0.3, 0.5], [-0.1, -0.3], [0.2, -0.5]];
+        const RISOTTO_RICE = [[-0.4, 0], [0.4, 0.2], [-0.2, 0.4], [0.2, -0.2], [0, 0.3], [-0.5, -0.1], [0.5, 0], [-0.1, -0.3]];
+        const BERRY_DROPS = [{x:0, y:0.5, r:0.4}, {x:-0.45, y:0.2, r:0.4}, {x:0.45, y:0.2, r:0.4}, {x:-0.5, y:-0.25, r:0.4}, {x:0.5, y:-0.25, r:0.4}, {x:-0.2, y:-0.4, r:0.45}, {x:0.2, y:-0.4, r:0.45}, {x:0, y:0, r:0.45}];
+        const GRAPES_POS = [{x:0, y:0.8, r:0.3}, {x:-0.3, y:0.4, r:0.35}, {x:0.3, y:0.4, r:0.35}, {x:-0.5, y:0, r:0.35}, {x:0, y:0, r:0.35}, {x:0.5, y:0, r:0.35}, {x:-0.35, y:-0.4, r:0.4}, {x:0.35, y:-0.4, r:0.4}, {x:0, y:-0.5, r:0.4}];
 
-            let grad1 = ctx.createRadialGradient(-5, -radius/2, 2, -3, 0, radius);
-            grad1.addColorStop(0, '#a12343');
-            grad1.addColorStop(1, '#520b1e');
-            ctx.fillStyle = grad1;
-            ctx.beginPath();
-            ctx.arc(-5, 0, radius*0.8, 0, Math.PI*2);
-            ctx.fill();
+        // --- Deterministic Vector Drawing Functions ---
 
-            let grad2 = ctx.createRadialGradient(8, -radius/2+2, 2, 8, 2, radius*0.7);
-            grad2.addColorStop(0, '#b82a4d');
-            grad2.addColorStop(1, '#631026');
-            ctx.fillStyle = grad2;
-            ctx.beginPath();
-            ctx.arc(8, 2, radius*0.75, 0, Math.PI*2);
-            ctx.fill();
+        function drawCherry(ctx, r) {
+            ctx.strokeStyle = COLORS.stem; ctx.lineWidth = 2; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(-2, -r+2); ctx.quadraticCurveTo(4, -r-10, 8, -r-10); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(6, -r+1); ctx.quadraticCurveTo(10, -r-8, 8, -r-10); ctx.stroke();
+            let g1 = ctx.createRadialGradient(-4, -r/3, 1, -2, 0, r); g1.addColorStop(0, '#ff477e'); g1.addColorStop(0.2, '#a12343'); g1.addColorStop(1, '#520b1e');
+            ctx.fillStyle = g1; ctx.beginPath(); ctx.arc(-4, 0, r*0.8, 0, Math.PI*2); ctx.fill();
+            let g2 = ctx.createRadialGradient(5, -r/3+1, 1, 6, 1, r*0.7); g2.addColorStop(0, '#ff477e'); g2.addColorStop(0.2, '#b82a4d'); g2.addColorStop(1, '#631026');
+            ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(5, 1, r*0.75, 0, Math.PI*2); ctx.fill();
         }
 
-        function drawBerry(ctx, radius, baseColor, highlightColor) {
+        function drawBerry(ctx, r, color, hi) {
+            ctx.fillStyle = COLORS.stem; ctx.beginPath();
+            ctx.moveTo(0,-r*.7); ctx.lineTo(-r*.6,-r*1.1); ctx.lineTo(-r*.2,-r*.8); ctx.lineTo(0,-r*1.2); ctx.lineTo(r*.2,-r*.8); ctx.lineTo(r*.6,-r*1.1); ctx.closePath(); ctx.fill();
+            BERRY_DROPS.forEach(d => {
+                let g = ctx.createRadialGradient(d.x*r-d.r*r*.3, d.y*r-d.r*r*.3, d.r*r*.1, d.x*r, d.y*r, d.r*r);
+                g.addColorStop(0, hi); g.addColorStop(1, color);
+                ctx.fillStyle = g; ctx.beginPath(); ctx.arc(d.x*r, d.y*r, d.r*r, 0, Math.PI*2); ctx.fill();
+            });
+        }
+
+        function drawStrawberry(ctx, r) {
             ctx.fillStyle = COLORS.stem;
-            ctx.beginPath();
-            ctx.moveTo(0, -radius*0.8);
-            ctx.lineTo(-radius*0.6, -radius*1.1);
-            ctx.lineTo(-radius*0.2, -radius*0.7);
-            ctx.lineTo(0, -radius*1.2);
-            ctx.lineTo(radius*0.2, -radius*0.7);
-            ctx.lineTo(radius*0.6, -radius*1.1);
-            ctx.closePath();
-            ctx.fill();
-
-            const drops = [
-                {x: 0, y: radius*0.6, r: radius*0.4},
-                {x: -radius*0.4, y: radius*0.3, r: radius*0.4},
-                {x: radius*0.4, y: radius*0.3, r: radius*0.4},
-                {x: -radius*0.5, y: -radius*0.2, r: radius*0.4},
-                {x: radius*0.5, y: -radius*0.2, r: radius*0.4},
-                {x: 0, y: -radius*0.1, r: radius*0.45},
-                {x: 0, y: -radius*0.5, r: radius*0.5}
-            ];
-
-            drops.forEach(d => {
-                let grad = ctx.createRadialGradient(d.x - d.r*0.3, d.y - d.r*0.3, d.r*0.1, d.x, d.y, d.r);
-                grad.addColorStop(0, highlightColor);
-                grad.addColorStop(1, baseColor);
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.arc(d.x, d.y, d.r, 0, Math.PI*2);
-                ctx.fill();
-            });
-        }
-
-        function drawGrapeCluster(ctx, radius) {
-            ctx.strokeStyle = '#6e4726';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(0, -radius);
-            ctx.lineTo(0, -radius*1.5);
-            ctx.stroke();
-
-            const grapes = [
-                {x: 0, y: radius*0.8, r: radius*0.3},
-                {x: -radius*0.3, y: radius*0.4, r: radius*0.35},
-                {x: radius*0.3, y: radius*0.4, r: radius*0.35},
-                {x: -radius*0.55, y: 0, r: radius*0.35},
-                {x: 0, y: 0, r: radius*0.35},
-                {x: radius*0.55, y: 0, r: radius*0.35},
-                {x: -radius*0.4, y: -radius*0.4, r: radius*0.4},
-                {x: radius*0.4, y: -radius*0.4, r: radius*0.4},
-                {x: 0, y: -radius*0.5, r: radius*0.4}
-            ];
-
-            grapes.forEach(g => {
-                let grad = ctx.createRadialGradient(g.x - g.r*0.2, g.y - g.r*0.2, g.r*0.1, g.x, g.y, g.r);
-                grad.addColorStop(0, '#a165a1');
-                grad.addColorStop(1, COLORS.grape);
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.arc(g.x, g.y, g.r, 0, Math.PI*2);
-                ctx.fill();
-            });
-        }
-
-        function drawRock(ctx, radius) {
-            let grad = ctx.createLinearGradient(-radius, -radius, radius, radius);
-            grad.addColorStop(0, '#a8abae');
-            grad.addColorStop(0.5, '#6a6d70');
-            grad.addColorStop(1, '#3a3c3f');
+            ctx.beginPath(); ctx.moveTo(0,-r*.6); ctx.lineTo(-r*.7,-r*.4); ctx.lineTo(-r*.4,-r*.2); ctx.lineTo(-r*.6,0); 
+            ctx.lineTo(-r*.2,-r*.1); ctx.lineTo(0,r*.1); ctx.lineTo(r*.2,-r*.1); ctx.lineTo(r*.6,0); ctx.lineTo(r*.4,-r*.2); ctx.lineTo(r*.7,-r*.4); ctx.closePath(); ctx.fill();
             
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.moveTo(-radius*0.8, -radius*0.4);
-            ctx.lineTo(-radius*0.2, -radius*0.9);
-            ctx.lineTo(radius*0.6, -radius*0.7);
-            ctx.lineTo(radius*0.9, radius*0.1);
-            ctx.lineTo(radius*0.3, radius*0.8);
-            ctx.lineTo(-radius*0.6, radius*0.6);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.strokeStyle = '#2a2c2f';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(-radius*0.4, -radius*0.2);
-            ctx.lineTo(radius*0.3, radius*0.4);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(radius*0.1, 0);
-            ctx.lineTo(radius*0.6, -radius*0.2);
-            ctx.stroke();
+            let g = ctx.createRadialGradient(-r*.2, -r*.2, r*.1, 0, 0, r);
+            g.addColorStop(0, '#ff8a80'); g.addColorStop(0.3, '#d32f2f'); g.addColorStop(1, '#b71c1c');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.moveTo(0, -r*.4); ctx.bezierCurveTo(-r, -r*.8, -r*1.1, r*.2, 0, r*.9); ctx.bezierCurveTo(r*1.1, r*.2, r, -r*.8, 0, -r*.4); ctx.fill();
+            
+            // Semi neri
+            ctx.fillStyle = '#1a1a1a';
+            STRAWBERRY_SEEDS.forEach(s => {
+                ctx.beginPath(); ctx.ellipse(s[0]*r, s[1]*r, 1.2, 2.2, 0, 0, Math.PI*2); ctx.fill();
+            });
         }
 
-        // --- Preview Initialization ---
-        function renderPreviews() {
-            const render = (id, drawFn) => {
-                const c = document.getElementById(id);
-                if(!c) return;
-                const cCtx = c.getContext('2d');
-                cCtx.clearRect(0, 0, c.width, c.height);
-                cCtx.save();
-                cCtx.translate(20, 24); // Centratura specifica (Y leggermente abbassata per via dei gambi)
-                drawFn(cCtx);
-                cCtx.restore();
-            };
-
-            render('prev-cherry', (ctx) => drawCherry(ctx, 14));
-            render('prev-rasp',   (ctx) => drawBerry(ctx, 13, COLORS.raspberry, '#ff6b8f'));
-            render('prev-black',  (ctx) => drawBerry(ctx, 13, COLORS.blackberry, '#4a2c4a'));
-            render('prev-grape',  (ctx) => drawGrapeCluster(ctx, 13));
-            render('prev-rock',   (ctx) => drawRock(ctx, 15));
+        function drawGrapeCluster(ctx, r) {
+            ctx.strokeStyle = '#5d4037'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, -r*.8); ctx.lineTo(0, -r*1.5); ctx.stroke();
+            GRAPES_POS.forEach(g => {
+                let grad = ctx.createRadialGradient(g.x*r-g.r*r*.2, g.y*r-g.r*r*.2, g.r*r*.1, g.x*r, g.y*r, g.r*r);
+                grad.addColorStop(0, '#ba68c8'); grad.addColorStop(1, COLORS.grape);
+                ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(g.x*r, g.y*r, g.r*r, 0, Math.PI*2); ctx.fill();
+            });
         }
 
-        // --- Setup Main Game Canvas & Assets ---
+        function drawFlower(ctx, r, color) {
+            if (color === COLORS.rose) {
+                // Nuova Rosa - stile più realistico, petali sovrapposti a spirale
+                ctx.save();
+                // Base/calice
+                ctx.fillStyle = '#1b5e20';
+                ctx.beginPath(); ctx.ellipse(0, r*0.3, r*0.4, r*0.2, 0, 0, Math.PI*2); ctx.fill();
+
+                // Petali esterni
+                const gExt = ctx.createRadialGradient(0, 0, r*0.2, 0, 0, r);
+                gExt.addColorStop(0, '#e91e63'); gExt.addColorStop(1, '#880e4f');
+                ctx.fillStyle = gExt;
+                for (let i = 0; i < 5; i++) {
+                    ctx.save(); ctx.rotate((i * Math.PI * 2 / 5));
+                    ctx.beginPath(); ctx.bezierCurveTo(r*0.6, -r*0.2, r*0.8, -r*0.8, 0, -r); ctx.bezierCurveTo(-r*0.8, -r*0.8, -r*0.6, -r*0.2, 0, 0); ctx.fill();
+                    ctx.restore();
+                }
+
+                // Petali medi
+                const gMid = ctx.createRadialGradient(0, 0, 0, 0, 0, r*0.7);
+                gMid.addColorStop(0, '#f06292'); gMid.addColorStop(1, '#ad1457');
+                ctx.fillStyle = gMid;
+                for (let i = 0; i < 4; i++) {
+                    ctx.save(); ctx.rotate((i * Math.PI * 2 / 4) + Math.PI/4);
+                    ctx.beginPath(); ctx.bezierCurveTo(r*0.5, -r*0.1, r*0.6, -r*0.6, 0, -r*0.7); ctx.bezierCurveTo(-r*0.6, -r*0.6, -r*0.5, -r*0.1, 0, 0); ctx.fill();
+                    ctx.restore();
+                }
+
+                // Centro a spirale
+                ctx.strokeStyle = '#fce4ec'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+                ctx.beginPath();
+                for (let i = 0; i < 20; i++) {
+                    let a = i * 0.4; let dist = (i / 20) * (r * 0.4);
+                    let x = Math.cos(a) * dist; let y = Math.sin(a) * dist;
+                    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                }
+                ctx.stroke();
+                ctx.restore();
+            } else {
+                // Viola originale
+                const pCount = 6; 
+                const angleStep = Math.PI * 2 / pCount;
+                const darkColor = '#4a148c';
+                for(let i=0; i<pCount; i++) {
+                    ctx.save(); ctx.rotate(i * angleStep);
+                    let g = ctx.createRadialGradient(0, -r*.4, r*.1, 0, -r*.4, r*.7);
+                    g.addColorStop(0, color); g.addColorStop(1, darkColor); ctx.fillStyle = g;
+                    ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(r*.5, -r*.3, r*.4, -r*.9, 0, -r); ctx.bezierCurveTo(-r*.4, -r*.9, -r*.5, -r*.3, 0, 0); ctx.fill();
+                    ctx.restore();
+                }
+                // Centro viola
+                ctx.fillStyle = '#ffeb3b';
+                ctx.beginPath(); ctx.arc(0,0, r*0.2, 0, Math.PI*2); ctx.fill();
+            }
+        }
+
+        // --- Level Configurations ---
+        const ITEMS = {
+            cherry: { id:'cherry', type:'cherry', radius:16, score:10, speed:3.5 },
+            rasp:   { id:'rasp', type:'rasp', radius:15, score:15, speed:3.8 },
+            straw:  { id:'straw', type:'straw', radius:17, score:15, speed:3.6 },
+            grape:  { id:'grape', type:'grape', radius:18, score:20, speed:3.5 },
+            rose:   { id:'rose', type:'rose', radius:15, score:20, speed:4.0 },
+            violet: { id:'violet', type:'violet', radius:15, score:20, speed:4.0 },
+            rock:   { id:'rock', type:'rock', radius:18, score:0, action:'KO', speed:4.5 },
+            hail:   { id:'hail', type:'hail', radius:16, score:0, action:'KO', speed:5.0 },
+            water:  { id:'water', type:'water', radius:18, score:0, action:'KO', speed:4.2 },
+            
+            salami: { id:'salami', type:'salami', radius:16, score:10, speed:3.5 },
+            cheese: { id:'cheese', type:'cheese', radius:16, score:15, speed:3.7 },
+            risotto:{ id:'risotto', type:'risotto', radius:20, score:20, speed:3.4 },
+            meat:   { id:'meat', type:'meat', radius:18, score:20, speed:3.9 },
+            pizza:  { id:'pizza', type:'pizza', radius:18, score:-50, action:'PENALTY', speed:4.5 },
+            cake:   { id:'cake', type:'cake', radius:16, score:-50, action:'PENALTY', speed:4.5 },
+
+            logo_gt: { id:'logo_gt', type:'logo_gt', radius:22, score:50, speed:4.8 },
+            logo_bl: { id:'logo_bl', type:'logo_bl', radius:20, score:50, speed:4.8 }
+        };
+
+        const LEVEL_CONFIG = {
+            SENSORIALE: {
+                title: "Profilo Sensoriale",
+                desc: "Raccogli aromi di frutti rossi, fiori e uva. Attento alle calamità!",
+                items: [
+                    {...ITEMS.cherry, prob:0.15}, {...ITEMS.rasp, prob:0.12}, {...ITEMS.straw, prob:0.12}, {...ITEMS.grape, prob:0.12},
+                    {...ITEMS.rose, prob:0.10}, {...ITEMS.violet, prob:0.10},
+                    {...ITEMS.logo_gt, prob:0.04}, {...ITEMS.logo_bl, prob:0.05}, // Assicura presenza loghi
+                    {...ITEMS.rock, prob:0.07}, {...ITEMS.hail, prob:0.07}, {...ITEMS.water, prob:0.06}
+                ],
+                // Grid corretta per mostrare TUTTI i bonus
+                gridHTML: `
+                    <div class="grid grid-cols-4 gap-1 border-b border-[#12485c] pb-2 mb-2 items-end">
+                        ${makeGridItem('cherry', 'Ciliegia', '+10')} ${makeGridItem('rasp', 'Lampone', '+15')} 
+                        ${makeGridItem('straw', 'Fragola', '+15')} ${makeGridItem('grape', 'Uva', '+20')}
+                    </div>
+                    <div class="grid grid-cols-4 gap-1 border-b border-[#12485c] pb-2 mb-2 items-end">
+                        ${makeGridItem('rose', 'Rosa', '+20')} ${makeGridItem('violet', 'Viola', '+20')}
+                        ${makeGridImg('logo_gold.png', 'Bonus GT', '+50')} ${makeGridImg('Mrblues.jpg', 'Bonus MB', '+50', true)}
+                    </div>
+                    <div class="grid grid-cols-3 gap-1 items-end">
+                        ${makeGridItem('rock', 'Sasso', 'K.O.', true)} ${makeGridItem('hail', 'Grandine', 'K.O.', true)} 
+                        ${makeGridItem('water', 'Alluvione', 'K.O.', true)}
+                    </div>
+                `
+            },
+            ABBINAMENTI: {
+                title: "Abbinamenti Gastronomici",
+                desc: "Raccogli i cibi della tradizione per il pairing perfetto. Evita dolci e pizza!",
+                items: [
+                    {...ITEMS.salami, prob:0.20}, {...ITEMS.cheese, prob:0.20}, 
+                    {...ITEMS.risotto, prob:0.15}, {...ITEMS.meat, prob:0.15},
+                    {...ITEMS.logo_gt, prob:0.05}, {...ITEMS.logo_bl, prob:0.05},
+                    {...ITEMS.pizza, prob:0.10}, {...ITEMS.cake, prob:0.10}
+                ],
+                gridHTML: `
+                    <div class="grid grid-cols-4 gap-1 border-b border-[#12485c] pb-2 mb-2 items-end">
+                        ${makeGridItem('salami', 'Salumi', '+10')} ${makeGridItem('cheese', 'Formaggi', '+15')}
+                        ${makeGridItem('risotto', 'Risotto', '+20')} ${makeGridItem('meat', 'Bistecca', '+20')}
+                    </div>
+                    <div class="grid grid-cols-4 gap-1 items-end">
+                        ${makeGridItem('pizza', 'Pizza', '-50 pt', true)} ${makeGridItem('cake', 'Dolci', '-50 pt', true)}
+                        ${makeGridImg('logo_gold.png', 'Bonus GT', '+50')} ${makeGridImg('Mrblues.jpg', 'Bonus MB', '+50', true)}
+                    </div>
+                `
+            }
+        };
+
+        function makeGridItem(id, name, pts, isBad=false) {
+            const color = isBad ? 'text-[#e8436b]' : 'text-[#d1a34a]';
+            return `<div class="text-center w-full flex flex-col justify-end h-full">
+                <canvas id="prev-${id}" width="40" height="40" class="preview-canvas mt-auto mb-1"></canvas>
+                <span class="text-[9px] md:text-[11px] text-white block leading-tight truncate">${name}<br><span class="${color} font-bold">${pts}</span></span>
+            </div>`;
+        }
+        function makeGridImg(src, name, pts, isRound=false) {
+            const cls = isRound ? "h-9 w-9 rounded-full border border-[#d1a34a] object-cover mx-auto" : "h-9 w-auto object-contain mx-auto";
+            return `<div class="text-center w-full flex flex-col justify-end h-full">
+                <img src="${src}" class="${cls} mb-1">
+                <span class="text-[9px] md:text-[11px] text-white block leading-tight truncate">${name}<br><span class="text-[#d1a34a] font-bold">${pts}</span></span>
+            </div>`;
+        }
+
+        // --- Core Engine Variables ---
         const mainCanvas = document.getElementById('gameCanvas');
         const mainCtx = mainCanvas.getContext('2d');
+        const imgLogoGT = new Image(); imgLogoGT.src = 'logo_gold.png';
+        const imgLogoBlues = new Image(); imgLogoBlues.src = 'Mrblues.jpg';
         
-        const imgLogoGT = new Image();
-        imgLogoGT.src = 'logo_gold.png';
-        const imgLogoBlues = new Image();
-        imgLogoBlues.src = 'Mrblues.jpg';
+        let GAME_WIDTH = window.innerWidth, GAME_HEIGHT = window.innerHeight;
+        let gameState = 'SPLASH', currentLevelKey = 'SENSORIALE';
+        let score = 0, lives = 3, lastLifeScore = 0, frameCount = 0, animationId, items = [], floatingTexts = [];
+        
+        const glass = { x: GAME_WIDTH/2, y: 0, width: 90, rimWidth: 55, height: 90, stemHeight: 50, baseWidth: 60, fillLevel: 0 };
+        let finalScreenshotData = null;
 
-        let GAME_WIDTH = window.innerWidth;
-        let GAME_HEIGHT = window.innerHeight;
-        
         function resizeCanvas() {
-            GAME_WIDTH = window.innerWidth;
-            GAME_HEIGHT = window.innerHeight;
-            mainCanvas.width = GAME_WIDTH;
-            mainCanvas.height = GAME_HEIGHT;
-            glass.y = GAME_HEIGHT - 150;
-            if(glass.x > GAME_WIDTH) glass.x = GAME_WIDTH / 2;
+            const container = document.getElementById('gameContainer');
+            GAME_WIDTH = container.clientWidth; GAME_HEIGHT = container.clientHeight;
+            mainCanvas.width = GAME_WIDTH; mainCanvas.height = GAME_HEIGHT;
+            glass.y = GAME_HEIGHT - 140; if(glass.x > GAME_WIDTH) glass.x = GAME_WIDTH/2;
         }
-        
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 100));
 
-        // --- Variabili di Stato ---
-        let gameState = 'SPLASH';
-        let score = 0;
-        let lives = 3;
-        let animationId;
-        let frameCount = 0;
-        
-        const glass = {
-            x: GAME_WIDTH / 2,
-            y: 0, 
-            width: 90,
-            rimWidth: 55,
-            height: 90,
-            stemHeight: 50,
-            baseWidth: 60,
-            fillLevel: 0
-        };
-        resizeCanvas();
-
-        let items = [];
-        
-        const itemTypes = [
-            { type: 'cherry', radius: 18, score: 10, speed: 3.5, prob: 0.20 },
-            { type: 'raspberry', radius: 16, score: 15, speed: 4.0, prob: 0.20 },
-            { type: 'grape', radius: 17, score: 20, speed: 3.8, prob: 0.15 },
-            { type: 'blackberry', radius: 16, score: 20, speed: 4.2, prob: 0.15 },
-            { type: 'logo_gt', radius: 24, score: 50, speed: 4.5, prob: 0.05 },
-            { type: 'logo_blues', radius: 22, score: 50, speed: 4.5, prob: 0.05 },
-            { type: 'rock', radius: 20, score: 0, speed: 4.5, prob: 0.20 }
-        ];
-
-        // --- Input Handling ---
+        // --- Input ---
         function moveGlass(clientX) {
             if (gameState !== 'PLAYING') return;
-            glass.x = clientX;
-            if (glass.x < glass.width / 2) glass.x = glass.width / 2;
-            if (glass.x > GAME_WIDTH - glass.width / 2) glass.x = GAME_WIDTH - glass.width / 2;
+            const rect = mainCanvas.getBoundingClientRect();
+            let x = clientX - rect.left;
+            glass.x = Math.max(glass.width/2, Math.min(x, GAME_WIDTH - glass.width/2));
         }
-
-        mainCanvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            moveGlass(e.touches[0].clientX);
-        }, { passive: false });
-
+        mainCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); moveGlass(e.touches[0].clientX); }, { passive: false });
         mainCanvas.addEventListener('mousemove', (e) => moveGlass(e.clientX));
 
-        // --- UI Navigation ---
+        // --- UI Flow ---
         document.getElementById('btnEnter').addEventListener('click', () => {
+            initAudio(); // Attiva Audio API
             document.getElementById('splashScreen').classList.add('hidden');
             document.getElementById('ageGate').classList.remove('hidden');
-            gameState = 'AGE_GATE';
+            resizeCanvas();
         });
 
         document.getElementById('btnAgeYes').addEventListener('click', () => {
             document.getElementById('ageGate').classList.add('hidden');
-            document.getElementById('startScreen').classList.remove('hidden');
-            gameState = 'START';
-            renderPreviews(); // Rende i canvas delle regole solo quando richiesto
+            document.getElementById('levelSelectScreen').classList.remove('hidden');
         });
+        document.getElementById('btnAgeNo').addEventListener('click', () => alert("Spiacenti, accesso negato."));
 
-        document.getElementById('btnAgeNo').addEventListener('click', () => {
-            alert("Spiacenti, l'accesso è riservato ai maggiorenni.");
-        });
+        function selectLevel(levelKey) {
+            currentLevelKey = levelKey;
+            const config = LEVEL_CONFIG[levelKey];
+            
+            document.getElementById('levelSelectScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            
+            document.getElementById('levelTitle').innerText = config.title;
+            document.getElementById('levelDesc').innerText = config.desc;
+            document.getElementById('dynamicRulesContainer').innerHTML = config.gridHTML;
+            
+            setTimeout(() => {
+                const render = (id, fn) => {
+                    const c = document.getElementById('prev-'+id); if(!c) return;
+                    const ctx = c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height);
+                    ctx.save(); ctx.translate(c.width/2, c.height/2 + (id==='cherry'||id==='straw'||id==='grape'?2:0)); fn(ctx); ctx.restore();
+                }
+                render('cherry', c=>drawCherry(c,14)); render('rasp', c=>drawBerry(c,14,COLORS.raspberry,'#ff6b8f'));
+                render('straw', c=>drawStrawberry(c,14)); render('grape', c=>drawGrapeCluster(c,14));
+                render('rose', c=>drawFlower(c,14,COLORS.rose)); render('violet', c=>drawFlower(c,14,COLORS.violet)); 
+                render('rock', c=>drawRock(c,15)); render('hail', c=>drawHail(c,15)); render('water', c=>drawWater(c,15));
+                render('salami', c=>drawSalami(c,14)); render('cheese', c=>drawCheese(c,14));
+                render('risotto', c=>drawRisotto(c,15)); render('meat', c=>drawMeat(c,14));
+                render('pizza', c=>drawPizza(c,15)); render('cake', c=>drawCake(c,14));
+            }, 50);
+        }
+
+        function goBackToLevels() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('levelSelectScreen').classList.remove('hidden');
+        }
 
         document.getElementById('btnStart').addEventListener('click', startGame);
-        document.getElementById('btnRestart').addEventListener('click', startGame);
+        document.getElementById('btnRestart').addEventListener('click', () => selectLevel(currentLevelKey));
 
         function startGame() {
             document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('gameOverScreen').classList.add('hidden');
             document.getElementById('hud').classList.remove('hidden');
-            
-            score = 0;
-            lives = 3;
-            glass.fillLevel = 0;
-            items = [];
-            frameCount = 0;
+            score = 0; lives = 3; lastLifeScore = 0; glass.fillLevel = 0; items = []; floatingTexts = []; frameCount = 0;
             gameState = 'PLAYING';
-            
             updateHUD();
-            resizeCanvas();
-            if (animationId) cancelAnimationFrame(animationId);
+            if(animationId) cancelAnimationFrame(animationId);
             gameLoop();
         }
 
         function gameOver() {
             gameState = 'GAMEOVER';
+            playSound('ko'); // Audio Feedback
+            
+            // Generate Screenshot
+            try { finalScreenshotData = mainCanvas.toDataURL('image/jpeg', 0.9); } catch(e) { console.error(e); }
+            
             document.getElementById('hud').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.remove('hidden');
             document.getElementById('finalScore').innerText = score;
             
             const msgEl = document.getElementById('marketingMessage');
-            if(score >= 10000) {
-                msgEl.innerText = "🏆 INCREDIBILE! Hai superato i 10.000 punti! Contattaci subito per richiedere i tuoi calici in omaggio.";
-            } else if (score > 2000) {
-                msgEl.innerText = "Ottimo palato! Hai sfiorato il premio. Consola i tuoi sensi assaporando il vero Mr. Blues.";
-            } else {
-                msgEl.innerText = "La ricerca della perfezione richiede tempo. Ordina Mr. Blues per trovare la giusta ispirazione.";
-            }
+            if(score >= 10000) msgEl.innerText = "🏆 INCREDIBILE! Contattaci per richiedere i calici in omaggio.";
+            else if (score > 2000) msgEl.innerText = "Ottimo palato! Sfiorato il premio. Consola i sensi con Mr. Blues.";
+            else msgEl.innerText = "La ricerca della perfezione richiede tempo. Riprova o gusta Mr. Blues.";
         }
+
+        // --- WhatsApp API ---
+        document.getElementById('btnShare').addEventListener('click', async () => {
+            const shareText = `🍷 Ho totalizzato ${score} punti nel gioco degustazione del Pinot Nero Mr. Blues! Riesci a battermi?`;
+            
+            try {
+                if(!finalScreenshotData) throw new Error("No image");
+                const blob = await (await fetch(finalScreenshotData)).blob();
+                const file = new File([blob], 'mrblues_score.jpg', { type: 'image/jpeg' });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ title: 'Mr. Blues Score', text: shareText, files: [file] });
+                } else { throw new Error("Web Share Files not supported"); }
+            } catch (err) {
+                console.log('Fallback Share:', err);
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+            }
+        });
 
         function updateHUD() {
             document.getElementById('scoreDisplay').innerText = score;
-            let livesText = "";
-            for(let i=0; i<3; i++) livesText += i < lives ? "❤" : "🖤";
-            document.getElementById('livesDisplay').innerHTML = `<span class="life-icon">${livesText}</span>`;
+            let ht = ""; for(let i=0; i<3; i++) ht += i < lives ? "❤" : "🖤";
+            document.getElementById('livesDisplay').innerHTML = `<span class="life-icon">${ht}</span>`;
         }
 
-        // --- Main Drawing Functions ---
-        function defineGlassBowlPath(ctx, g) {
-            ctx.beginPath();
-            ctx.moveTo(-g.rimWidth/2, -g.height/2);
-            ctx.bezierCurveTo(-g.width/2 - 10, -g.height/4, -g.width/2, g.height/2, 0, g.height/2);
-            ctx.bezierCurveTo(g.width/2, g.height/2, g.width/2 + 10, -g.height/4, g.rimWidth/2, -g.height/2);
-            ctx.closePath();
+        function spawnFloatingText(x, y, text, color) {
+            floatingTexts.push({ x, y, text, color, age: 0 });
         }
 
-        function drawGlass(ctx) {
-            ctx.save();
-            ctx.translate(glass.x, glass.y);
-
-            if (glass.fillLevel > 0) {
-                ctx.save();
-                defineGlassBowlPath(ctx, glass);
-                ctx.clip(); 
-
-                const liquidHeight = glass.height * glass.fillLevel;
-                const liquidY = (glass.height/2) - liquidHeight;
-                
-                ctx.fillStyle = COLORS.burgundy;
-                ctx.fillRect(-glass.width, liquidY, glass.width * 2, glass.height);
-                
-                if(glass.fillLevel < 0.98) {
-                    ctx.fillStyle = '#9c2543';
-                    ctx.beginPath();
-                    const currentWidth = glass.width * (0.5 + Math.sin(glass.fillLevel * Math.PI) * 0.5);
-                    ctx.ellipse(0, liquidY, currentWidth/2, 4, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                ctx.restore();
-            }
-
-            ctx.strokeStyle = COLORS.glass;
-            ctx.lineWidth = 3;
-            ctx.lineJoin = 'round';
-            
-            defineGlassBowlPath(ctx, glass);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.ellipse(0, -glass.height/2, glass.rimWidth/2, 4, 0, 0, Math.PI*2);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(0, glass.height/2);
-            ctx.lineTo(0, glass.height/2 + glass.stemHeight);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.ellipse(0, glass.height/2 + glass.stemHeight, glass.baseWidth/2, 6, 0, 0, Math.PI*2);
-            ctx.stroke();
-
-            ctx.strokeStyle = COLORS.glassHighlight;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(-glass.rimWidth/2 + 5, -glass.height/2 + 10);
-            ctx.bezierCurveTo(-glass.width/2 + 5, -glass.height/4, -glass.width/2 + 15, glass.height/4, -10, glass.height/2 - 10);
-            ctx.stroke();
-
-            ctx.restore();
-        }
-
-        function drawItem(ctx, item) {
-            ctx.save();
-            ctx.translate(item.x, item.y);
-            ctx.rotate(Math.sin(frameCount * 0.05 + item.x) * 0.2);
-
-            if (item.type === 'logo_gt') {
-                if(imgLogoGT.complete) {
-                    ctx.drawImage(imgLogoGT, -item.radius, -item.radius, item.radius*2, item.radius*2);
-                }
-            } else if (item.type === 'logo_blues') {
-                if(imgLogoBlues.complete) {
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(0, 0, item.radius, 0, Math.PI*2);
-                    ctx.clip(); 
-                    ctx.drawImage(imgLogoBlues, -item.radius, -item.radius, item.radius*2, item.radius*2);
-                    ctx.restore();
-                    
-                    ctx.strokeStyle = '#d1a34a';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.arc(0, 0, item.radius, 0, Math.PI*2);
-                    ctx.stroke();
-                }
-            }
-            else if (item.type === 'cherry') drawCherry(ctx, item.radius);
-            else if (item.type === 'raspberry') drawBerry(ctx, item.radius, COLORS.raspberry, '#ff6b8f');
-            else if (item.type === 'blackberry') drawBerry(ctx, item.radius, COLORS.blackberry, '#4a2c4a');
-            else if (item.type === 'grape') drawGrapeCluster(ctx, item.radius);
-            else if (item.type === 'rock') drawRock(ctx, item.radius);
-
-            ctx.restore();
-        }
-
-        // --- Logica Motore di Gioco ---
+        // --- Game Engine ---
         function spawnItem() {
-            let rand = Math.random();
-            let cumulativeProb = 0;
-            let selectedType = itemTypes[0];
-
-            for (let type of itemTypes) {
-                cumulativeProb += type.prob;
-                if (rand <= cumulativeProb) { selectedType = type; break; }
-            }
-
-            let speedMultiplier = 1 + (score / 1500);
-            items.push({
-                x: Math.random() * (GAME_WIDTH - selectedType.radius * 2) + selectedType.radius,
-                y: -selectedType.radius,
-                ...selectedType,
-                speed: selectedType.speed * speedMultiplier
-            });
+            let rand = Math.random(), cumul = 0, cfg = LEVEL_CONFIG[currentLevelKey].items, sel = cfg[0];
+            for (let t of cfg) { cumul += t.prob; if(rand <= cumul) { sel = t; break; } }
+            items.push({ x: Math.random()*(GAME_WIDTH - sel.radius*2) + sel.radius, y: -sel.radius, ...sel, speed: sel.speed * (1 + score/2000) });
         }
 
         function update() {
             frameCount++;
-            
-            let spawnRate = Math.max(12, 50 - Math.floor(score / 150)); 
-            if (frameCount % spawnRate === 0) spawnItem();
+            if (frameCount % Math.max(15, 60 - Math.floor(score/150)) === 0) spawnItem();
+
+            // Meccanica 1-Up (Vita Extra ogni 1000 punti)
+            if (score - lastLifeScore >= 1000) {
+                if(lives < 5) lives++; // Limite 5 vite
+                lastLifeScore += 1000;
+                playSound('1up');
+                spawnFloatingText(glass.x, glass.y - 60, "VITA EXTRA!", "#25D366");
+                updateHUD();
+            }
 
             for (let i = items.length - 1; i >= 0; i--) {
-                let item = items[i];
-                item.y += item.speed;
-
-                let glassTop = glass.y - glass.height/2;
-                let glassLeft = glass.x - glass.rimWidth/2;
-                let glassRight = glass.x + glass.rimWidth/2;
+                let it = items[i]; it.y += it.speed;
+                let gT = glass.y - glass.height/2, gL = glass.x - glass.rimWidth/2, gR = glass.x + glass.rimWidth/2;
                 
-                if (item.y + item.radius > glassTop && item.y - item.radius < glassTop + 20) {
-                    if (item.x > glassLeft && item.x < glassRight) {
+                if (it.y + it.radius > gT && it.y - it.radius < gT + 15) {
+                    if (it.x > gL && it.x < gR) {
                         
-                        if (item.type === 'rock') {
+                        // K.O. Logic Fix
+                        if (it.action === 'KO') {
                             lives--;
-                            mainCanvas.style.backgroundColor = '#5c1212';
-                            setTimeout(() => mainCanvas.style.backgroundColor = '#12485c', 100);
-
-                            if(lives <= 0) {
-                                updateHUD();
-                                gameOver();
-                                return;
-                            }
+                            playSound('bad');
+                            mainCanvas.style.backgroundColor = '#5c1212'; setTimeout(() => mainCanvas.style.backgroundColor = '#12485c', 100);
+                            updateHUD(); // Aggiorna i cuori prima del return
+                            items.splice(i, 1);
+                            if(lives <= 0) { gameOver(); return; }
+                            continue;
+                        } 
+                        else if (it.action === 'PENALTY') {
+                            playSound('bad');
+                            score = Math.max(0, score + it.score);
+                            spawnFloatingText(it.x, gT, "-50", "#e8436b");
+                            mainCanvas.style.backgroundColor = '#5c3a12'; setTimeout(() => mainCanvas.style.backgroundColor = '#12485c', 100);
+                            glass.fillLevel = Math.max(0, glass.fillLevel - 0.1);
                         } else {
-                            score += item.score;
+                            playSound('catch');
+                            score += it.score;
+                            spawnFloatingText(it.x, gT, "+"+it.score, "#d1a34a");
                             glass.fillLevel = Math.min(1, glass.fillLevel + 0.05); 
                         }
-                        updateHUD();
-                        items.splice(i, 1);
-                        continue;
+                        updateHUD(); items.splice(i, 1); continue;
                     }
                 }
-
-                if (item.y - item.radius > GAME_HEIGHT) items.splice(i, 1);
+                if (it.y - it.radius > GAME_HEIGHT) items.splice(i, 1);
             }
-            if(glass.fillLevel > 0) glass.fillLevel -= 0.0003;
+            if(glass.fillLevel > 0) glass.fillLevel -= 0.0002;
+            
+            for(let i=floatingTexts.length-1; i>=0; i--){
+                floatingTexts[i].age++;
+                if(floatingTexts[i].age > 40) floatingTexts.splice(i,1);
+            }
         }
 
-        function draw() {
-            mainCtx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-            drawGlass(mainCtx);
-            items.forEach(item => drawItem(mainCtx, item));
+        function defineGlass(ctx, g) {
+            ctx.beginPath(); ctx.moveTo(-g.rimWidth/2, -g.height/2);
+            ctx.bezierCurveTo(-g.width/2-10, -g.height/4, -g.width/2, g.height/2, 0, g.height/2);
+            ctx.bezierCurveTo(g.width/2, g.height/2, g.width/2+10, -g.height/4, g.rimWidth/2, -g.height/2); ctx.closePath();
+        }
+
+        function drawMain(ctx) {
+            ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+            
+            ctx.save(); ctx.translate(glass.x, glass.y);
+            if (glass.fillLevel > 0) {
+                ctx.save(); defineGlass(ctx, glass); ctx.clip(); 
+                const lY = (glass.height/2) - (glass.height * glass.fillLevel);
+                ctx.fillStyle = COLORS.burgundy; ctx.fillRect(-glass.width, lY, glass.width*2, glass.height);
+                if(glass.fillLevel < 0.98) {
+                    ctx.fillStyle = '#9c2543'; ctx.beginPath();
+                    ctx.ellipse(0, lY, (glass.width*(0.5+Math.sin(glass.fillLevel*Math.PI)*0.5))/2, 4, 0, 0, Math.PI*2); ctx.fill();
+                }
+                ctx.restore();
+            }
+            ctx.strokeStyle = COLORS.glass; ctx.lineWidth = 3; ctx.lineJoin = 'round';
+            defineGlass(ctx, glass); ctx.stroke();
+            ctx.beginPath(); ctx.ellipse(0, -glass.height/2, glass.rimWidth/2, 4, 0, 0, Math.PI*2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, glass.height/2); ctx.lineTo(0, glass.height/2 + glass.stemHeight); ctx.stroke();
+            ctx.beginPath(); ctx.ellipse(0, glass.height/2 + glass.stemHeight, glass.baseWidth/2, 6, 0, 0, Math.PI*2); ctx.stroke();
+            ctx.strokeStyle = COLORS.glassHighlight; ctx.lineWidth = 2; ctx.beginPath();
+            ctx.moveTo(-glass.rimWidth/2+5, -glass.height/2+10);
+            ctx.bezierCurveTo(-glass.width/2+5, -glass.height/4, -glass.width/2+15, glass.height/4, -10, glass.height/2-10); ctx.stroke();
+            ctx.restore();
+
+            items.forEach(it => {
+                ctx.save(); ctx.translate(it.x, it.y); 
+                ctx.rotate(Math.sin(frameCount*0.03 + it.x)*0.1); // Sway smorzato
+                if(it.type === 'cherry') drawCherry(ctx, it.radius);
+                else if(it.type === 'rasp') drawBerry(ctx, it.radius, COLORS.raspberry, '#ff6b8f');
+                else if(it.type === 'straw') drawStrawberry(ctx, it.radius);
+                else if(it.type === 'grape') drawGrapeCluster(ctx, it.radius);
+                else if(it.type === 'rose') drawFlower(ctx, it.radius, COLORS.rose);
+                else if(it.type === 'violet') drawFlower(ctx, it.radius, COLORS.violet);
+                else if(it.type === 'rock') drawRock(ctx, it.radius);
+                else if(it.type === 'hail') drawHail(ctx, it.radius);
+                else if(it.type === 'water') drawWater(ctx, it.radius);
+                else if(it.type === 'salami') drawSalami(ctx, it.radius);
+                else if(it.type === 'cheese') drawCheese(ctx, it.radius);
+                else if(it.type === 'risotto') drawRisotto(ctx, it.radius);
+                else if(it.type === 'meat') drawMeat(ctx, it.radius);
+                else if(it.type === 'pizza') drawPizza(ctx, it.radius);
+                else if(it.type === 'cake') drawCake(ctx, it.radius);
+                else if(it.type === 'logo_gt') drawLogo(ctx, imgLogoGT, it.radius, false);
+                else if(it.type === 'logo_bl') drawLogo(ctx, imgLogoBlues, it.radius, true);
+                ctx.restore();
+            });
+            
+            floatingTexts.forEach(ft => {
+                ctx.save(); ctx.globalAlpha = Math.max(0, 1 - (ft.age/40)); ctx.fillStyle = ft.color;
+                ctx.font = "bold 24px 'Playfair Display'"; ctx.fillText(ft.text, ft.x - 15, ft.y - ft.age); ctx.restore();
+            });
         }
 
         function gameLoop() {
-            if (gameState === 'PLAYING') {
-                update();
-                draw();
-                animationId = requestAnimationFrame(gameLoop);
-            }
+            if (gameState === 'PLAYING') { update(); drawMain(mainCtx); animationId = requestAnimationFrame(gameLoop); }
         }
     </script>
+</div>
 </body>
 </html>
