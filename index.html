@@ -168,8 +168,8 @@
 
     <!-- Splash Screen -->
     <div id="splashScreen" class="overlay">
-        <img src="logo_gold.png" alt="Germani Terzi" class="corner-logo corner-logo-left">
-        <img src="Mrblues.jpg" alt="Mr. Blues" class="corner-logo corner-logo-right">
+        <img src="logo_gold-4.jpg" alt="Germani Terzi" class="corner-logo corner-logo-left">
+        <img src="Mrblues-3.jpg" alt="Mr. Blues" class="corner-logo corner-logo-right">
 
         <h1 class="text-4xl md:text-6xl text-white mb-2 serif mt-16" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">Mr. Blues</h1>
         <h2 class="text-xl md:text-2xl text-[#d1a34a] mb-6 serif italic" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">L'Esperienza del Pinot Nero</h2>
@@ -194,7 +194,7 @@
 
     <!-- Level Selection -->
     <div id="levelSelectScreen" class="overlay hidden">
-        <img src="logo_gold.png" class="corner-logo corner-logo-left">
+        <img src="logo_gold-4.jpg" class="corner-logo corner-logo-left">
         <h2 class="text-3xl md:text-4xl text-[#d1a34a] mb-8 serif italic mt-12">Scegli il Percorso</h2>
         
         <div class="w-full max-w-md px-4 space-y-4">
@@ -453,7 +453,7 @@
                     </div>
                     <div class="grid grid-cols-4 gap-1 border-b border-[#12485c] pb-2 mb-2 items-end">
                         ${makeGridItem('rose', 'Rosa', '+20')} ${makeGridItem('violet', 'Viola', '+20')}
-                        ${makeGridImg('logo_gold.png', 'Bonus GT', '+50')} ${makeGridImg('Mrblues.jpg', 'Bonus MB', '+50', true)}
+                        ${makeGridImg('logo_gold-4.jpg', 'Bonus GT', '+50')} ${makeGridImg('Mrblues-3.jpg', 'Bonus MB', '+50', true)}
                     </div>
                     <div class="grid grid-cols-3 gap-1 items-end">
                         ${makeGridItem('rock', 'Sasso', 'K.O.', true)} ${makeGridItem('hail', 'Grandine', 'K.O.', true)} 
@@ -477,7 +477,7 @@
                     </div>
                     <div class="grid grid-cols-4 gap-1 items-end">
                         ${makeGridItem('pizza', 'Pizza', '-50 pt', true)} ${makeGridItem('cake', 'Dolci', '-50 pt', true)}
-                        ${makeGridImg('logo_gold.png', 'Bonus GT', '+50')} ${makeGridImg('Mrblues.jpg', 'Bonus MB', '+50', true)}
+                        ${makeGridImg('logo_gold-4.jpg', 'Bonus GT', '+50')} ${makeGridImg('Mrblues-3.jpg', 'Bonus MB', '+50', true)}
                     </div>
                 `
             }
@@ -501,8 +501,8 @@
         // --- Core Engine Variables ---
         const mainCanvas = document.getElementById('gameCanvas');
         const mainCtx = mainCanvas.getContext('2d');
-        const imgLogoGT = new Image(); imgLogoGT.src = 'logo_gold.png';
-        const imgLogoBlues = new Image(); imgLogoBlues.src = 'Mrblues.jpg';
+        const imgLogoGT = new Image(); imgLogoGT.src = 'logo_gold-4.jpg';
+        const imgLogoBlues = new Image(); imgLogoBlues.src = 'Mrblues-3.jpg';
         
         let GAME_WIDTH = window.innerWidth, GAME_HEIGHT = window.innerHeight;
         let gameState = 'SPLASH', currentLevelKey = 'SENSORIALE';
