@@ -19,6 +19,36 @@
             touch-action: none;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 100%;
+            background-color: #12485c;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)), url('1000087388.jpg');
+                background-size: cover;
+                background-position: center;
+            }
+            #gameContainer {
+                border-left: 2px solid #d1a34a;
+                border-right: 2px solid #d1a34a;
+                border-radius: 8px;
+                margin-top: 2vh;
+                height: 96vh;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+            }
+            .corner-logo-left { height: 8rem !important; left: 2rem !important; }
+            .corner-logo-right { height: 7rem !important; width: 7rem !important; right: 2rem !important; border-width: 3px !important; }
         }
         
         h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
@@ -138,24 +168,6 @@
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
         .preview-canvas { display: block; margin: 0 auto 2px auto; }
-    
-        /* Responsività automatica: se lo schermo è più largo di 768px (PC/Tablet Landscape) */
-        @media (min-width: 768px) {
-            body {
-                background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)), url('1000087388.jpg');
-                background-size: cover;
-                background-position: center;
-            }
-            #gameContainer {
-                border-left: 2px solid #d1a34a;
-                border-right: 2px solid #d1a34a;
-                border-radius: 8px;
-                margin-top: 2vh;
-                height: 96vh;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-            }
-        }
-
     </style>
 </head>
 <body>
@@ -170,15 +182,13 @@
     <div id="splashScreen" class="overlay">
         <img src="logo_gold.png" alt="Germani Terzi" class="corner-logo corner-logo-left">
         <img src="Mrblues.jpg" alt="Mr. Blues" class="corner-logo corner-logo-right">
-
-        <h1 class="text-4xl md:text-6xl text-white mb-2 serif mt-16" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">Mr. Blues</h1>
-        <h2 class="text-xl md:text-2xl text-[#d1a34a] mb-6 serif italic" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">L'Esperienza del Pinot Nero</h2>
         
-        <div class="promo-banner mb-6">
-            <h3 class="serif font-bold text-lg md:text-xl mb-1 flex items-center justify-center">
-                <span class="text-2xl mr-2">🏆</span> SFIDA DEGUSTAZIONE
-            </h3>
-            <p class="text-xs md:text-sm font-bold">Raggiungi <strong>10.000 punti</strong> per vincere una coppia di calici originali Mr. Blues!</p>
+        <h1 class="text-4xl md:text-6xl text-[#d1a34a] mb-2 serif italic drop-shadow-lg mt-12">Mr. Blues</h1>
+        <p class="text-white text-lg md:text-xl mb-8 tracking-widest">WINE EXPERIENCE</p>
+        
+        <div class="promo-banner mb-8">
+            <p class="font-bold uppercase text-sm mb-1">🍷 Vinci i Calici!</p>
+            <p class="text-xs">Raggiungi 10.000 punti per vincere una coppia di calici originali Mr. Blues!</p>
         </div>
 
         <button id="btnEnter" class="btn-primary">Entra</button>
@@ -247,172 +257,44 @@
         <button onclick="goBackToLevels()" class="btn-secondary border-none underline">Cambia Livello</button>
     </div>
 
-    <canvas id="gameCanvas"></canvas>
+    <!-- Canvas di gioco -->
+    <canvas id="gameCanvas" class="hidden"></canvas>
+    
+    <!-- Audio Elements -->
+    <audio id="bgmSensoriale" loop preload="auto"><source src="https://assets.codepen.io/21542/howq-bgm.mp3" type="audio/mpeg"></audio>
+    <audio id="bgmAbbinamenti" loop preload="auto"><source src="https://assets.codepen.io/21542/howq-bgm.mp3" type="audio/mpeg"></audio>
+    <audio id="sfxCatch" preload="auto"><source src="https://assets.codepen.io/21542/pop.mp3" type="audio/mpeg"></audio>
+    <audio id="sfxBad" preload="auto"><source src="https://assets.codepen.io/21542/error.mp3" type="audio/mpeg"></audio>
+    <audio id="sfxKo" preload="auto"><source src="https://assets.codepen.io/21542/gameover.mp3" type="audio/mpeg"></audio>
+    <audio id="sfx1up" preload="auto"><source src="https://assets.codepen.io/21542/chime.mp3" type="audio/mpeg"></audio>
 
+</div>
     <script>
-        // --- Web Audio API Synthesizer ---
-        let audioCtx;
-        function initAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
+        const mainCanvas = document.getElementById('gameCanvas');
+        const mainCtx = mainCanvas.getContext('2d', { alpha: false });
+        let GAME_WIDTH = window.innerWidth;
+        let GAME_HEIGHT = window.innerHeight;
+        
+        let gameState = 'SPLASH'; // SPLASH, AGE, LEVELS, START, PLAYING, GAMEOVER
+        let currentLevelKey = '';
+        let finalScreenshotData = null;
+
+        function makeGridItem(id, name, pts, isBad=false) {
+            const color = isBad ? 'text-[#e8436b]' : 'text-[#d1a34a]';
+            return `<div class="text-center w-full flex flex-col justify-end h-full">
+                <canvas id="prev-${id}" width="40" height="40" class="preview-canvas mt-auto mb-1"></canvas>
+                <span class="text-[9px] md:text-[11px] text-white block leading-tight truncate">${name}<br><span class="${color} font-bold">${pts}</span></span>
+            </div>`;
         }
 
-        function playSound(type) {
-            if (!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            const now = audioCtx.currentTime;
-
-            if (type === 'catch') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(600, now);
-                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
-                gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                osc.start(now); osc.stop(now + 0.1);
-            } else if (type === 'bad') {
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now);
-                osc.frequency.linearRampToValueAtTime(100, now + 0.2);
-                gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
-                osc.start(now); osc.stop(now + 0.2);
-            } else if (type === 'ko') {
-                osc.type = 'square'; osc.frequency.setValueAtTime(200, now);
-                osc.frequency.exponentialRampToValueAtTime(50, now + 0.4);
-                gain.gain.setValueAtTime(0.15, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
-                osc.start(now); osc.stop(now + 0.4);
-            } else if (type === '1up') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(440, now);
-                osc.frequency.setValueAtTime(554.37, now + 0.1);
-                osc.frequency.setValueAtTime(659.25, now + 0.2);
-                osc.frequency.setValueAtTime(880, now + 0.3);
-                gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.5);
-                osc.start(now); osc.stop(now + 0.5);
-            }
+        function makeGridImg(src, name, pts, isRound=false) {
+            const cls = isRound ? "h-9 w-9 rounded-full border border-[#d1a34a] object-cover mx-auto" : "h-9 w-auto object-contain mx-auto";
+            return `<div class="text-center w-full flex flex-col justify-end h-full">
+                <img src="${src}" class="${cls} mb-1">
+                <span class="text-[9px] md:text-[11px] text-white block leading-tight truncate">${name}<br><span class="text-[#d1a34a] font-bold">${pts}</span></span>
+            </div>`;
         }
 
-        // --- Core Colors ---
-        const COLORS = {
-            burgundy: '#7c1932', raspberry: '#e8436b', strawberry: '#d32f2f', grape: '#5e235e',
-            rose: '#e91e63', violet: '#7f00ff',
-            cheese_body: '#fbc02d', cheese_crust: '#f57f17', salami: '#c62828', risotto: '#fdd835', meat: '#8d6e63',
-            pizza_crust: '#ffb300', pizza_sauce: '#d32f2f', cake: '#8e24aa',
-            hail: '#e0f7fa', water: '#0288d1', rock: '#6a6d70',
-            stem: '#4a5e2a', glass: 'rgba(255, 255, 255, 0.45)', glassHighlight: 'rgba(255, 255, 255, 0.8)'
-        };
-
-        // --- Hardcoded (Non-jittering) Arrays for Vector Textures ---
-        const STRAWBERRY_SEEDS = [[-0.3, -0.4], [0.3, -0.4], [0, -0.1], [-0.4, 0.2], [0.4, 0.2], [0, 0.5], [-0.2, 0.8], [0.2, 0.8]];
-        const SALAMI_FAT = [[0, 0.4], [-0.3, 0.1], [0.2, -0.2], [-0.1, -0.5], [0.1, -0.7], [0.3, 0.3], [-0.3, -0.2]];
-        const SALAMI_PEPPER = [[-0.2, 0.3], [0.3, 0.5], [-0.1, -0.3], [0.2, -0.5]];
-        const RISOTTO_RICE = [[-0.4, 0], [0.4, 0.2], [-0.2, 0.4], [0.2, -0.2], [0, 0.3], [-0.5, -0.1], [0.5, 0], [-0.1, -0.3]];
-        const BERRY_DROPS = [{x:0, y:0.5, r:0.4}, {x:-0.45, y:0.2, r:0.4}, {x:0.45, y:0.2, r:0.4}, {x:-0.5, y:-0.25, r:0.4}, {x:0.5, y:-0.25, r:0.4}, {x:-0.2, y:-0.4, r:0.45}, {x:0.2, y:-0.4, r:0.45}, {x:0, y:0, r:0.45}];
-        const GRAPES_POS = [{x:0, y:0.8, r:0.3}, {x:-0.3, y:0.4, r:0.35}, {x:0.3, y:0.4, r:0.35}, {x:-0.5, y:0, r:0.35}, {x:0, y:0, r:0.35}, {x:0.5, y:0, r:0.35}, {x:-0.35, y:-0.4, r:0.4}, {x:0.35, y:-0.4, r:0.4}, {x:0, y:-0.5, r:0.4}];
-
-        // --- Deterministic Vector Drawing Functions ---
-
-        function drawCherry(ctx, r) {
-            ctx.strokeStyle = COLORS.stem; ctx.lineWidth = 2; ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(-2, -r+2); ctx.quadraticCurveTo(4, -r-10, 8, -r-10); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(6, -r+1); ctx.quadraticCurveTo(10, -r-8, 8, -r-10); ctx.stroke();
-            let g1 = ctx.createRadialGradient(-4, -r/3, 1, -2, 0, r); g1.addColorStop(0, '#ff477e'); g1.addColorStop(0.2, '#a12343'); g1.addColorStop(1, '#520b1e');
-            ctx.fillStyle = g1; ctx.beginPath(); ctx.arc(-4, 0, r*0.8, 0, Math.PI*2); ctx.fill();
-            let g2 = ctx.createRadialGradient(5, -r/3+1, 1, 6, 1, r*0.7); g2.addColorStop(0, '#ff477e'); g2.addColorStop(0.2, '#b82a4d'); g2.addColorStop(1, '#631026');
-            ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(5, 1, r*0.75, 0, Math.PI*2); ctx.fill();
-        }
-
-        function drawBerry(ctx, r, color, hi) {
-            ctx.fillStyle = COLORS.stem; ctx.beginPath();
-            ctx.moveTo(0,-r*.7); ctx.lineTo(-r*.6,-r*1.1); ctx.lineTo(-r*.2,-r*.8); ctx.lineTo(0,-r*1.2); ctx.lineTo(r*.2,-r*.8); ctx.lineTo(r*.6,-r*1.1); ctx.closePath(); ctx.fill();
-            BERRY_DROPS.forEach(d => {
-                let g = ctx.createRadialGradient(d.x*r-d.r*r*.3, d.y*r-d.r*r*.3, d.r*r*.1, d.x*r, d.y*r, d.r*r);
-                g.addColorStop(0, hi); g.addColorStop(1, color);
-                ctx.fillStyle = g; ctx.beginPath(); ctx.arc(d.x*r, d.y*r, d.r*r, 0, Math.PI*2); ctx.fill();
-            });
-        }
-
-        function drawStrawberry(ctx, r) {
-            ctx.fillStyle = COLORS.stem;
-            ctx.beginPath(); ctx.moveTo(0,-r*.6); ctx.lineTo(-r*.7,-r*.4); ctx.lineTo(-r*.4,-r*.2); ctx.lineTo(-r*.6,0); 
-            ctx.lineTo(-r*.2,-r*.1); ctx.lineTo(0,r*.1); ctx.lineTo(r*.2,-r*.1); ctx.lineTo(r*.6,0); ctx.lineTo(r*.4,-r*.2); ctx.lineTo(r*.7,-r*.4); ctx.closePath(); ctx.fill();
-            
-            let g = ctx.createRadialGradient(-r*.2, -r*.2, r*.1, 0, 0, r);
-            g.addColorStop(0, '#ff8a80'); g.addColorStop(0.3, '#d32f2f'); g.addColorStop(1, '#b71c1c');
-            ctx.fillStyle = g;
-            ctx.beginPath(); ctx.moveTo(0, -r*.4); ctx.bezierCurveTo(-r, -r*.8, -r*1.1, r*.2, 0, r*.9); ctx.bezierCurveTo(r*1.1, r*.2, r, -r*.8, 0, -r*.4); ctx.fill();
-            
-            // Semi neri
-            ctx.fillStyle = '#1a1a1a';
-            STRAWBERRY_SEEDS.forEach(s => {
-                ctx.beginPath(); ctx.ellipse(s[0]*r, s[1]*r, 1.2, 2.2, 0, 0, Math.PI*2); ctx.fill();
-            });
-        }
-
-        function drawGrapeCluster(ctx, r) {
-            ctx.strokeStyle = '#5d4037'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(0, -r*.8); ctx.lineTo(0, -r*1.5); ctx.stroke();
-            GRAPES_POS.forEach(g => {
-                let grad = ctx.createRadialGradient(g.x*r-g.r*r*.2, g.y*r-g.r*r*.2, g.r*r*.1, g.x*r, g.y*r, g.r*r);
-                grad.addColorStop(0, '#ba68c8'); grad.addColorStop(1, COLORS.grape);
-                ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(g.x*r, g.y*r, g.r*r, 0, Math.PI*2); ctx.fill();
-            });
-        }
-
-        function drawFlower(ctx, r, color) {
-            if (color === COLORS.rose) {
-                // Nuova Rosa - stile più realistico, petali sovrapposti a spirale
-                ctx.save();
-                // Base/calice
-                ctx.fillStyle = '#1b5e20';
-                ctx.beginPath(); ctx.ellipse(0, r*0.3, r*0.4, r*0.2, 0, 0, Math.PI*2); ctx.fill();
-
-                // Petali esterni
-                const gExt = ctx.createRadialGradient(0, 0, r*0.2, 0, 0, r);
-                gExt.addColorStop(0, '#e91e63'); gExt.addColorStop(1, '#880e4f');
-                ctx.fillStyle = gExt;
-                for (let i = 0; i < 5; i++) {
-                    ctx.save(); ctx.rotate((i * Math.PI * 2 / 5));
-                    ctx.beginPath(); ctx.bezierCurveTo(r*0.6, -r*0.2, r*0.8, -r*0.8, 0, -r); ctx.bezierCurveTo(-r*0.8, -r*0.8, -r*0.6, -r*0.2, 0, 0); ctx.fill();
-                    ctx.restore();
-                }
-
-                // Petali medi
-                const gMid = ctx.createRadialGradient(0, 0, 0, 0, 0, r*0.7);
-                gMid.addColorStop(0, '#f06292'); gMid.addColorStop(1, '#ad1457');
-                ctx.fillStyle = gMid;
-                for (let i = 0; i < 4; i++) {
-                    ctx.save(); ctx.rotate((i * Math.PI * 2 / 4) + Math.PI/4);
-                    ctx.beginPath(); ctx.bezierCurveTo(r*0.5, -r*0.1, r*0.6, -r*0.6, 0, -r*0.7); ctx.bezierCurveTo(-r*0.6, -r*0.6, -r*0.5, -r*0.1, 0, 0); ctx.fill();
-                    ctx.restore();
-                }
-
-                // Centro a spirale
-                ctx.strokeStyle = '#fce4ec'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
-                ctx.beginPath();
-                for (let i = 0; i < 20; i++) {
-                    let a = i * 0.4; let dist = (i / 20) * (r * 0.4);
-                    let x = Math.cos(a) * dist; let y = Math.sin(a) * dist;
-                    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-                }
-                ctx.stroke();
-                ctx.restore();
-            } else {
-                // Viola originale
-                const pCount = 6; 
-                const angleStep = Math.PI * 2 / pCount;
-                const darkColor = '#4a148c';
-                for(let i=0; i<pCount; i++) {
-                    ctx.save(); ctx.rotate(i * angleStep);
-                    let g = ctx.createRadialGradient(0, -r*.4, r*.1, 0, -r*.4, r*.7);
-                    g.addColorStop(0, color); g.addColorStop(1, darkColor); ctx.fillStyle = g;
-                    ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(r*.5, -r*.3, r*.4, -r*.9, 0, -r); ctx.bezierCurveTo(-r*.4, -r*.9, -r*.5, -r*.3, 0, 0); ctx.fill();
-                    ctx.restore();
-                }
-                // Centro viola
-                ctx.fillStyle = '#ffeb3b';
-                ctx.beginPath(); ctx.arc(0,0, r*0.2, 0, Math.PI*2); ctx.fill();
-            }
-        }
-
-        // --- Level Configurations ---
         const ITEMS = {
             cherry: { id:'cherry', type:'cherry', radius:16, score:10, speed:3.5 },
             rasp:   { id:'rasp', type:'rasp', radius:15, score:15, speed:3.8 },
@@ -483,33 +365,25 @@
             }
         };
 
-        function makeGridItem(id, name, pts, isBad=false) {
-            const color = isBad ? 'text-[#e8436b]' : 'text-[#d1a34a]';
-            return `<div class="text-center w-full flex flex-col justify-end h-full">
-                <canvas id="prev-${id}" width="40" height="40" class="preview-canvas mt-auto mb-1"></canvas>
-                <span class="text-[9px] md:text-[11px] text-white block leading-tight truncate">${name}<br><span class="${color} font-bold">${pts}</span></span>
-            </div>`;
-        }
-        function makeGridImg(src, name, pts, isRound=false) {
-            const cls = isRound ? "h-9 w-9 rounded-full border border-[#d1a34a] object-cover mx-auto" : "h-9 w-auto object-contain mx-auto";
-            return `<div class="text-center w-full flex flex-col justify-end h-full">
-                <img src="${src}" class="${cls} mb-1">
-                <span class="text-[9px] md:text-[11px] text-white block leading-tight truncate">${name}<br><span class="text-[#d1a34a] font-bold">${pts}</span></span>
-            </div>`;
-        }
-
-        // --- Core Engine Variables ---
-        const mainCanvas = document.getElementById('gameCanvas');
-        const mainCtx = mainCanvas.getContext('2d');
         const imgLogoGT = new Image(); imgLogoGT.src = 'logo_gold.png';
         const imgLogoBlues = new Image(); imgLogoBlues.src = 'Mrblues.jpg';
-        
-        let GAME_WIDTH = window.innerWidth, GAME_HEIGHT = window.innerHeight;
-        let gameState = 'SPLASH', currentLevelKey = 'SENSORIALE';
+
+        const COLORS = {
+            glass: 'rgba(255,255,255,0.85)', glassHighlight: 'rgba(255,255,255,0.4)', burgundy: '#7c1932',
+            cherry: '#d32f2f', raspberry: '#c2185b', stem: '#2e7d32', grape_dark: '#311b92', grape_light: '#6a1b9a',
+            rose: '#d81b60', violet: '#7b1fa2', rock: '#757575', hail: '#e0e0e0', water: '#0288d1',
+            cheese_body: '#fbc02d', cheese_crust: '#f57f17', salami: '#c62828', risotto: '#fdd835', meat: '#8d6e63',
+            pizza_crust: '#e65100', pizza_sauce: '#d84315', cake: '#f48fb1'
+        };
+
+        const RASPBERRY_BUMPS = [[0,-0.6],[-0.5,-0.3],[0.5,-0.3],[-0.6,0.3],[0.6,0.3],[0,0.7],[-0.3,0.8],[0.3,0.8],[-0.8,0],[0.8,0]];
+        const STRAWBERRY_SEEDS = [[-0.3, -0.4], [0.3, -0.4], [0, -0.1], [-0.4, 0.2], [0.4, 0.2], [0, 0.5], [-0.2, 0.8], [0.2, 0.8]];
+        const GRAPE_BERRIES = [[0, -0.7], [-0.5, -0.4], [0.5, -0.4], [-0.8, 0.1], [0, 0.2], [0.8, 0.1], [-0.4, 0.6], [0.4, 0.6], [0, 1.0]];
+        const SALAMI_FAT = [[0, 0.4], [-0.3, 0.1], [0.2, -0.2], [-0.1, -0.5], [0.1, -0.7], [0.3, 0.3], [-0.3, -0.2]];
+        const SALAMI_PEPPER = [[-0.2, 0.3], [0.3, 0.5], [-0.1, -0.3], [0.2, -0.5]];
+
+        let glass = { x: 0, y: 0, width: 50, height: 60, rimWidth: 36, baseWidth: 30, stemHeight: 40, fillLevel: 0 };
         let score = 0, lives = 3, lastLifeScore = 0, frameCount = 0, animationId, items = [], floatingTexts = [];
-        
-        const glass = { x: GAME_WIDTH/2, y: 0, width: 90, rimWidth: 55, height: 90, stemHeight: 50, baseWidth: 60, fillLevel: 0 };
-        let finalScreenshotData = null;
 
         function resizeCanvas() {
             const container = document.getElementById('gameContainer');
@@ -517,32 +391,35 @@
             mainCanvas.width = GAME_WIDTH; mainCanvas.height = GAME_HEIGHT;
             glass.y = GAME_HEIGHT - 140; if(glass.x > GAME_WIDTH) glass.x = GAME_WIDTH/2;
         }
+
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 100));
 
-        // --- Input ---
-        function moveGlass(clientX) {
-            if (gameState !== 'PLAYING') return;
-            const rect = mainCanvas.getBoundingClientRect();
-            let x = clientX - rect.left;
-            glass.x = Math.max(glass.width/2, Math.min(x, GAME_WIDTH - glass.width/2));
+        function playSound(type) {
+            const sfx = { 'catch': 'sfxCatch', 'bad': 'sfxBad', 'ko': 'sfxKo', '1up': 'sfx1up' }[type];
+            if(sfx) { const a = document.getElementById(sfx); a.currentTime = 0; a.play().catch(()=>{}); }
         }
-        mainCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); moveGlass(e.touches[0].clientX); }, { passive: false });
-        mainCanvas.addEventListener('mousemove', (e) => moveGlass(e.clientX));
+        function playBGM() {
+            const id = currentLevelKey === 'SENSORIALE' ? 'bgmSensoriale' : 'bgmAbbinamenti';
+            const a = document.getElementById(id); a.play().catch(()=>{});
+        }
+        function stopBGM() {
+            ['bgmSensoriale', 'bgmAbbinamenti'].forEach(id => {
+                const a = document.getElementById(id); a.pause(); a.currentTime = 0;
+            });
+        }
 
-        // --- UI Flow ---
-        document.getElementById('btnEnter').addEventListener('click', () => {
-            initAudio(); // Attiva Audio API
-            document.getElementById('splashScreen').classList.add('hidden');
-            document.getElementById('ageGate').classList.remove('hidden');
-            resizeCanvas();
-        });
+        function updateHUD() {
+            document.getElementById('scoreDisplay').innerText = score;
+            let ht = ""; 
+            const maxLives = 5;
+            for(let i=0; i<maxLives; i++) {
+                ht += i < lives ? "❤" : "🖤";
+            }
+            document.getElementById('livesDisplay').innerHTML = `<span class="life-icon">${ht}</span>`;
+        }
 
-        document.getElementById('btnAgeYes').addEventListener('click', () => {
-            document.getElementById('ageGate').classList.add('hidden');
-            document.getElementById('levelSelectScreen').classList.remove('hidden');
-        });
-        document.getElementById('btnAgeNo').addEventListener('click', () => alert("Spiacenti, accesso negato."));
+        function spawnFloatingText(x, y, text, color) { floatingTexts.push({ x, y, text, color, age: 0 }); }
 
         function selectLevel(levelKey) {
             currentLevelKey = levelKey;
@@ -572,23 +449,24 @@
             }, 50);
         }
 
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            mainCanvas.classList.remove('hidden');
+            document.getElementById('hud').classList.remove('hidden');
+            
+            resizeCanvas(); glass.x = GAME_WIDTH / 2;
+            score = 0; lives = 3; lastLifeScore = 0; glass.fillLevel = 0; items = []; floatingTexts = []; frameCount = 0;
+            updateHUD();
+            
+            gameState = 'PLAYING';
+            playBGM();
+            gameLoop();
+        }
+
         function goBackToLevels() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
             document.getElementById('levelSelectScreen').classList.remove('hidden');
-        }
-
-        document.getElementById('btnStart').addEventListener('click', startGame);
-        document.getElementById('btnRestart').addEventListener('click', () => selectLevel(currentLevelKey));
-
-        function startGame() {
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('hud').classList.remove('hidden');
-            score = 0; lives = 3; lastLifeScore = 0; glass.fillLevel = 0; items = []; floatingTexts = []; frameCount = 0;
-            gameState = 'PLAYING';
-            updateHUD();
-            if(animationId) cancelAnimationFrame(animationId);
-            gameLoop();
         }
 
         function gameOver() {
@@ -602,41 +480,14 @@
             document.getElementById('gameOverScreen').classList.remove('hidden');
             document.getElementById('finalScore').innerText = score;
             
-            const msgEl = document.getElementById('marketingMessage');
-            if(score >= 10000) msgEl.innerText = "🏆 INCREDIBILE! Contattaci per richiedere i calici in omaggio.";
-            else if (score > 2000) msgEl.innerText = "Ottimo palato! Sfiorato il premio. Consola i sensi con Mr. Blues.";
-            else msgEl.innerText = "La ricerca della perfezione richiede tempo. Riprova o gusta Mr. Blues.";
-        }
-
-        // --- WhatsApp API ---
-        document.getElementById('btnShare').addEventListener('click', async () => {
-            const shareText = `🍷 Ho totalizzato ${score} punti nel gioco degustazione del Pinot Nero Mr. Blues! Riesci a battermi?`;
+            let msg = score >= 10000 
+                ? "Hai un palato da Master Sommelier! Salva lo screenshot e prenota la tua visita in cantina per ritirare i calici omaggio." 
+                : "Ottimo lavoro! Un po' di allenamento e sarai pronto per degustare tutta l'eleganza di Mr. Blues.";
+            document.getElementById('marketingMessage').innerText = msg;
             
-            try {
-                if(!finalScreenshotData) throw new Error("No image");
-                const blob = await (await fetch(finalScreenshotData)).blob();
-                const file = new File([blob], 'mrblues_score.jpg', { type: 'image/jpeg' });
-
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ title: 'Mr. Blues Score', text: shareText, files: [file] });
-                } else { throw new Error("Web Share Files not supported"); }
-            } catch (err) {
-                console.log('Fallback Share:', err);
-                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
-            }
-        });
-
-        function updateHUD() {
-            document.getElementById('scoreDisplay').innerText = score;
-            let ht = ""; for(let i=0; i<3; i++) ht += i < lives ? "❤" : "🖤";
-            document.getElementById('livesDisplay').innerHTML = `<span class="life-icon">${ht}</span>`;
+            stopBGM();
         }
 
-        function spawnFloatingText(x, y, text, color) {
-            floatingTexts.push({ x, y, text, color, age: 0 });
-        }
-
-        // --- Game Engine ---
         function spawnItem() {
             let rand = Math.random(), cumul = 0, cfg = LEVEL_CONFIG[currentLevelKey].items, sel = cfg[0];
             for (let t of cfg) { cumul += t.prob; if(rand <= cumul) { sel = t; break; } }
@@ -760,7 +611,217 @@
         function gameLoop() {
             if (gameState === 'PLAYING') { update(); drawMain(mainCtx); animationId = requestAnimationFrame(gameLoop); }
         }
+
+        // === RENDERERS (ottimizzati) ===
+        function drawCherry(ctx, r) {
+            ctx.fillStyle = COLORS.stem; ctx.fillRect(-2, -r*1.5, 4, r*1.2);
+            let g = ctx.createRadialGradient(-r*.2, -r*.2, r*.1, 0, 0, r);
+            g.addColorStop(0, '#ff5252'); g.addColorStop(1, COLORS.cherry);
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill();
+        }
+        function drawBerry(ctx, r, c1, c2) {
+            ctx.fillStyle = COLORS.stem; ctx.fillRect(-2, -r*1.2, 4, r);
+            ctx.fillStyle = c1;
+            RASPBERRY_BUMPS.forEach(b => {
+                ctx.beginPath(); ctx.arc(b[0]*r, b[1]*r, r*.4, 0, Math.PI*2); ctx.fill();
+            });
+            ctx.fillStyle = c2;
+            RASPBERRY_BUMPS.forEach(b => {
+                ctx.beginPath(); ctx.arc(b[0]*r - r*.1, b[1]*r - r*.1, r*.15, 0, Math.PI*2); ctx.fill();
+            });
+        }
+        function drawStrawberry(ctx, r) {
+            ctx.fillStyle = COLORS.stem;
+            ctx.beginPath(); ctx.moveTo(0,-r*.6); ctx.lineTo(-r*.7,-r*.4); ctx.lineTo(-r*.4,-r*.2); ctx.lineTo(-r*.6,0); 
+            ctx.lineTo(-r*.2,-r*.1); ctx.lineTo(0,r*.1); ctx.lineTo(r*.2,-r*.1); ctx.lineTo(r*.6,0); ctx.lineTo(r*.4,-r*.2); ctx.lineTo(r*.7,-r*.4); ctx.closePath(); ctx.fill();
+            
+            let g = ctx.createRadialGradient(-r*.2, -r*.2, r*.1, 0, 0, r);
+            g.addColorStop(0, '#ff8a80'); g.addColorStop(0.3, '#d32f2f'); g.addColorStop(1, '#b71c1c');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.moveTo(0, -r*.4); ctx.bezierCurveTo(-r, -r*.8, -r*1.1, r*.2, 0, r*.9); ctx.bezierCurveTo(r*1.1, r*.2, r, -r*.8, 0, -r*.4); ctx.fill();
+            
+            // Semi neri
+            ctx.fillStyle = '#000000';
+            STRAWBERRY_SEEDS.forEach(s => {
+                ctx.beginPath(); ctx.ellipse(s[0]*r, s[1]*r, 1.2, 2.2, 0, 0, Math.PI*2); ctx.fill();
+            });
+        }
+        function drawGrapeCluster(ctx, r) {
+            ctx.fillStyle = COLORS.stem; ctx.fillRect(-2, -r*1.2, 4, r);
+            GRAPE_BERRIES.forEach(b => {
+                let g = ctx.createRadialGradient(b[0]*r - r*.1, b[1]*r - r*.1, r*.05, b[0]*r, b[1]*r, r*.3);
+                g.addColorStop(0, COLORS.grape_light); g.addColorStop(1, COLORS.grape_dark);
+                ctx.fillStyle = g; ctx.beginPath(); ctx.arc(b[0]*r, b[1]*r, r*.35, 0, Math.PI*2); ctx.fill();
+            });
+        }
+        function drawFlower(ctx, r, color) {
+            if (color === COLORS.rose) {
+                ctx.save();
+                ctx.fillStyle = '#1b5e20';
+                ctx.beginPath(); ctx.ellipse(0, r*0.3, r*0.4, r*0.2, 0, 0, Math.PI*2); ctx.fill();
+                const gExt = ctx.createRadialGradient(0, 0, r*0.2, 0, 0, r);
+                gExt.addColorStop(0, '#e91e63'); gExt.addColorStop(1, '#880e4f');
+                ctx.fillStyle = gExt;
+                for (let i = 0; i < 5; i++) {
+                    ctx.save(); ctx.rotate((i * Math.PI * 2 / 5));
+                    ctx.beginPath(); ctx.bezierCurveTo(r*0.6, -r*0.2, r*0.8, -r*0.8, 0, -r); ctx.bezierCurveTo(-r*0.8, -r*0.8, -r*0.6, -r*0.2, 0, 0); ctx.fill();
+                    ctx.restore();
+                }
+                const gMid = ctx.createRadialGradient(0, 0, 0, 0, 0, r*0.7);
+                gMid.addColorStop(0, '#f06292'); gMid.addColorStop(1, '#ad1457');
+                ctx.fillStyle = gMid;
+                for (let i = 0; i < 4; i++) {
+                    ctx.save(); ctx.rotate((i * Math.PI * 2 / 4) + Math.PI/4);
+                    ctx.beginPath(); ctx.bezierCurveTo(r*0.5, -r*0.1, r*0.6, -r*0.6, 0, -r*0.7); ctx.bezierCurveTo(-r*0.6, -r*0.6, -r*0.5, -r*0.1, 0, 0); ctx.fill();
+                    ctx.restore();
+                }
+                ctx.strokeStyle = '#fce4ec'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+                ctx.beginPath();
+                for (let i = 0; i < 20; i++) {
+                    let a = i * 0.4; let dist = (i / 20) * (r * 0.4);
+                    let x = Math.cos(a) * dist; let y = Math.sin(a) * dist;
+                    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                }
+                ctx.stroke();
+                ctx.restore();
+            } else {
+                const pCount = 6; 
+                const angleStep = Math.PI * 2 / pCount;
+                const darkColor = '#4a148c';
+                for(let i=0; i<pCount; i++) {
+                    ctx.save(); ctx.rotate(i * angleStep);
+                    let g = ctx.createRadialGradient(0, -r*.4, r*.1, 0, -r*.4, r*.7);
+                    g.addColorStop(0, color); g.addColorStop(1, darkColor); ctx.fillStyle = g;
+                    ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(r*.5, -r*.3, r*.4, -r*.9, 0, -r); ctx.bezierCurveTo(-r*.4, -r*.9, -r*.5, -r*.3, 0, 0); ctx.fill();
+                    ctx.restore();
+                }
+                ctx.fillStyle = '#ffeb3b';
+                ctx.beginPath(); ctx.arc(0,0, r*0.2, 0, Math.PI*2); ctx.fill();
+            }
+        }
+        function drawRock(ctx, r) {
+            ctx.fillStyle = COLORS.rock; ctx.beginPath(); ctx.moveTo(0,-r); ctx.lineTo(r*.8,-r*.5); ctx.lineTo(r,r*.6); ctx.lineTo(-r*.3,r); ctx.lineTo(-r,r*.2); ctx.lineTo(-r*.6,-r*.8); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.moveTo(0,-r); ctx.lineTo(r*.8,-r*.5); ctx.lineTo(0,0); ctx.fill();
+        }
+        function drawHail(ctx, r) {
+            ctx.fillStyle = COLORS.hail; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(-r*.3,-r*.3,r*.3,0,Math.PI*2); ctx.fill();
+        }
+        function drawWater(ctx, r) {
+            ctx.fillStyle = COLORS.water; ctx.beginPath(); ctx.moveTo(0,-r*1.2); ctx.bezierCurveTo(r,-r*.2, r,r, 0,r); ctx.bezierCurveTo(-r,r, -r,-r*.2, 0,-r*1.2); ctx.fill();
+            ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.beginPath(); ctx.ellipse(-r*.3, r*.2, r*.15, r*.3, Math.PI/6, 0, Math.PI*2); ctx.fill();
+        }
+        function drawSalami(ctx, r) {
+            ctx.save(); ctx.rotate(Math.PI/6);
+            ctx.fillStyle = '#6d1000'; 
+            ctx.beginPath(); ctx.ellipse(0, 0, r*0.8, r*1.0, 0, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#c62828'; 
+            ctx.beginPath(); ctx.ellipse(0, 0, r*0.75, r*0.95, 0, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#ffe0e0';
+            const lessFat = SALAMI_FAT.slice(0, Math.floor(SALAMI_FAT.length / 2));
+            lessFat.forEach(f => { 
+                ctx.beginPath(); 
+                ctx.ellipse(f[0]*r*0.9, f[1]*r*0.9, 1.5, 2.5, f[0], 0, Math.PI*2); 
+                ctx.fill(); 
+            });
+            ctx.restore();
+        }
+        function drawCheese(ctx, r) {
+            ctx.fillStyle = COLORS.cheese_crust; ctx.beginPath(); ctx.moveTo(0,-r); ctx.lineTo(r,r*.8); ctx.lineTo(-r,r*.8); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = COLORS.cheese_body; ctx.beginPath(); ctx.moveTo(0,-r*.8); ctx.lineTo(r*.8,r*.7); ctx.lineTo(-r*.8,r*.7); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = '#f9a825'; ctx.beginPath(); ctx.arc(0, r*.2, r*.2, 0, Math.PI*2); ctx.arc(-r*.3, -r*.1, r*.15, 0, Math.PI*2); ctx.fill();
+        }
+        function drawRisotto(ctx, r) {
+            ctx.fillStyle = '#eeeeee'; ctx.beginPath(); ctx.ellipse(0, 0, r, r*.8, 0, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = COLORS.risotto; ctx.beginPath(); ctx.ellipse(0, 0, r*.8, r*.6, 0, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#e6c200'; ctx.beginPath(); ctx.arc(0,0, r*.15, 0, Math.PI*2); ctx.fill();
+        }
+        function drawMeat(ctx, r) {
+            // Nuova bistecca - forma più riconoscibile da "fiorentina" (T-bone style)
+            ctx.save(); ctx.rotate(-Math.PI/6);
+            ctx.fillStyle = '#e0e0e0';
+            ctx.beginPath(); 
+            ctx.moveTo(-r*0.1, -r*0.8); ctx.lineTo(r*0.1, -r*0.8);
+            ctx.lineTo(r*0.1, r*0.6); ctx.lineTo(-r*0.1, r*0.6);
+            ctx.fill();
+            let g = ctx.createLinearGradient(0, -r, r, r);
+            g.addColorStop(0, '#5d4037'); g.addColorStop(1, '#3e2723');
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.moveTo(r*0.1, -r*0.7);
+            ctx.bezierCurveTo(r*1.2, -r*0.6, r*1.2, r*0.5, r*0.1, r*0.5);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(-r*0.1, -r*0.4);
+            ctx.bezierCurveTo(-r*0.8, -r*0.3, -r*0.6, r*0.3, -r*0.1, r*0.3);
+            ctx.fill();
+            ctx.strokeStyle = '#1a0b08'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+            for(let y = -r*0.5; y < r*0.5; y+= r*0.3) {
+                ctx.beginPath(); ctx.moveTo(-r*0.4, y - r*0.2); ctx.lineTo(r*0.8, y + r*0.2); ctx.stroke();
+            }
+            ctx.restore();
+        }
+        function drawPizza(ctx, r) {
+            ctx.fillStyle = COLORS.pizza_crust; ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0, r, -Math.PI*0.7, -Math.PI*0.3); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = COLORS.pizza_sauce; ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0, r*.8, -Math.PI*0.65, -Math.PI*0.35); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = '#ffeb3b'; ctx.beginPath(); ctx.arc(-r*.2, -r*.5, r*.15, 0, Math.PI*2); ctx.arc(r*.2, -r*.6, r*.1, 0, Math.PI*2); ctx.fill();
+        }
+        function drawCake(ctx, r) {
+            ctx.fillStyle = '#8d6e63'; ctx.beginPath(); ctx.moveTo(0, -r*.2); ctx.lineTo(r, r*.8); ctx.lineTo(-r, r*.8); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = COLORS.cake; ctx.beginPath(); ctx.moveTo(0, -r*.5); ctx.lineTo(r*1.1, r*.2); ctx.lineTo(r*.9, r*.3); ctx.lineTo(-r*.1, -r*.2); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = '#ff5252'; ctx.beginPath(); ctx.arc(-r*.1, -r*.4, r*.2, 0, Math.PI*2); ctx.fill();
+        }
+        function drawLogo(ctx, img, r, isRound) {
+            if(img.complete && img.naturalHeight > 0) {
+                ctx.save(); ctx.beginPath(); 
+                if(isRound) ctx.arc(0,0,r,0,Math.PI*2); else { ctx.rect(-r,-r,r*2,r*2); }
+                ctx.clip(); ctx.drawImage(img, -r, -r, r*2, r*2);
+                if(isRound) { ctx.strokeStyle='#d1a34a'; ctx.lineWidth=2; ctx.stroke(); }
+                ctx.restore();
+            } else {
+                ctx.fillStyle = '#d1a34a'; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+            }
+        }
+
+        // --- Event Listeners ---
+        function moveGlass(clientX) {
+            if (gameState !== 'PLAYING') return;
+            const rect = mainCanvas.getBoundingClientRect();
+            let x = clientX - rect.left;
+            glass.x = Math.max(glass.width/2, Math.min(x, GAME_WIDTH - glass.width/2));
+        }
+        mainCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); moveGlass(e.touches[0].clientX); }, { passive: false });
+        mainCanvas.addEventListener('mousemove', (e) => moveGlass(e.clientX));
+
+        document.getElementById('btnEnter').addEventListener('click', () => {
+            document.getElementById('splashScreen').classList.add('hidden');
+            document.getElementById('ageGate').classList.remove('hidden');
+        });
+        document.getElementById('btnAgeYes').addEventListener('click', () => {
+            document.getElementById('ageGate').classList.add('hidden');
+            document.getElementById('levelSelectScreen').classList.remove('hidden');
+        });
+        document.getElementById('btnAgeNo').addEventListener('click', () => alert("Spiacenti, accesso negato."));
+        document.getElementById('btnStart').addEventListener('click', startGame);
+        document.getElementById('btnRestart').addEventListener('click', () => selectLevel(currentLevelKey));
+
+        document.getElementById('btnShare').addEventListener('click', async () => {
+            const shareText = `🍷 Ho appena segnato ${score} punti degustando Mr. Blues! 
+
+Scopri il pinot nero di Germani Terzi e prova anche tu a vincere i calici originali:
+
+https://www.germaniterzi.com/mrblues`;
+            
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: 'Mr. Blues by Germani Terzi', text: shareText });
+                } catch (e) {
+                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+                }
+            } else {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+            }
+        });
     </script>
-</div>
 </body>
 </html>
