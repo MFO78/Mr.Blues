@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mr. Blues - Sensoriale & Abbinamenti | Vini Germani Terzi</title>
+    <meta property="og:title"       content="Mr. Blues — Pinot Nero Germani Terzi">
+    <meta property="og:description" content="Sfida il tuo palato e vinci un calice originale Mr. Blues!">
+    <meta property="og:image"       content="1000087388-2.jpg">
+    <meta property="og:type"        content="website">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
@@ -19,36 +23,6 @@
             touch-action: none;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
-            display: flex;
-            justify-content: center;
-        }
-
-        #gameContainer {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
-            height: 100%;
-            background-color: #12485c;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-        }
-
-        @media (min-width: 768px) {
-            body {
-                background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)), url('1000087388.jpg');
-                background-size: cover;
-                background-position: center;
-            }
-            #gameContainer {
-                border-left: 2px solid #d1a34a;
-                border-right: 2px solid #d1a34a;
-                border-radius: 8px;
-                margin-top: 2vh;
-                height: 96vh;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-            }
-            .corner-logo-left { height: 8rem !important; left: 2rem !important; }
-            .corner-logo-right { height: 7rem !important; width: 7rem !important; right: 2rem !important; border-width: 3px !important; }
         }
         
         h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
@@ -98,34 +72,38 @@
         .btn-primary {
             background-color: #d1a34a;
             color: #12485c;
-            padding: 12px 20px;
+            padding: 14px 24px;
             border-radius: 9999px;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: clamp(0.88rem, 2.5vw, 1rem);
             border: 2px solid #d1a34a;
             transition: all 0.3s ease;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            min-height: 48px;
             width: 100%;
-            max-width: 280px;
+            max-width: 300px;
             margin-bottom: 12px;
+            -webkit-tap-highlight-color: transparent;
         }
         .btn-primary:hover { background-color: transparent; color: #d1a34a; }
         
         .btn-secondary {
             background-color: transparent;
             color: #fff;
-            padding: 12px 20px;
+            padding: 14px 24px;
             border-radius: 9999px;
-            font-size: 1rem;
+            font-size: clamp(0.88rem, 2.5vw, 1rem);
             border: 2px solid #fff;
             cursor: pointer;
             transition: all 0.3s ease;
+            min-height: 48px;
             width: 100%;
-            max-width: 280px;
+            max-width: 300px;
             margin-bottom: 12px;
+            -webkit-tap-highlight-color: transparent;
         }
         .btn-secondary:hover { background-color: #fff; color: #12485c; }
         
@@ -171,7 +149,6 @@
     </style>
 </head>
 <body>
-<div id="gameContainer">
 
     <div id="hud" class="hidden">
         <div>Score: <span id="scoreDisplay">0</span></div>
@@ -251,9 +228,9 @@
             Condividi Score
         </button>
 
-        <a href="https://www.germaniterzi.com" target="_blank"
-           class="btn-primary block text-center no-underline flex items-center justify-center">
-           Acquista Ora
+        <a id="btnAcquista" href="#" onclick="openAcquistaMail();return false;"
+           class="btn-primary block text-center no-underline flex items-center justify-center gap-2">
+           🛒 Acquista Ora
         </a>
         <button id="btnRestart" class="btn-secondary">Riprova Livello</button>
         <button onclick="goBackToLevels()" class="btn-secondary border-none underline">Cambia Livello</button>
@@ -313,7 +290,7 @@
 
         // --- Hardcoded (Non-jittering) Arrays for Vector Textures ---
         const STRAWBERRY_SEEDS = [[-0.3, -0.4], [0.3, -0.4], [0, -0.1], [-0.4, 0.2], [0.4, 0.2], [0, 0.5], [-0.2, 0.8], [0.2, 0.8]];
-        const SALAMI_FAT = [[0, 0.4], [-0.3, 0.1], [0.2, -0.2], [-0.1, -0.5], [0.1, -0.7], [0.3, 0.3], [-0.3, -0.2]];
+        const SALAMI_FAT = [[-0.25, 0.15], [0.22, -0.28], [-0.05, -0.55]];
         const SALAMI_PEPPER = [[-0.2, 0.3], [0.3, 0.5], [-0.1, -0.3], [0.2, -0.5]];
         const RISOTTO_RICE = [[-0.4, 0], [0.4, 0.2], [-0.2, 0.4], [0.2, -0.2], [0, 0.3], [-0.5, -0.1], [0.5, 0], [-0.1, -0.3]];
         const BERRY_DROPS = [{x:0, y:0.5, r:0.4}, {x:-0.45, y:0.2, r:0.4}, {x:0.45, y:0.2, r:0.4}, {x:-0.5, y:-0.25, r:0.4}, {x:0.5, y:-0.25, r:0.4}, {x:-0.2, y:-0.4, r:0.45}, {x:0.2, y:-0.4, r:0.45}, {x:0, y:0, r:0.45}];
@@ -352,7 +329,7 @@
             ctx.beginPath(); ctx.moveTo(0, -r*.4); ctx.bezierCurveTo(-r, -r*.8, -r*1.1, r*.2, 0, r*.9); ctx.bezierCurveTo(r*1.1, r*.2, r, -r*.8, 0, -r*.4); ctx.fill();
             
             // Semi neri
-            ctx.fillStyle = '#000000';
+            ctx.fillStyle = '#1a1a1a';
             STRAWBERRY_SEEDS.forEach(s => {
                 ctx.beginPath(); ctx.ellipse(s[0]*r, s[1]*r, 1.2, 2.2, 0, 0, Math.PI*2); ctx.fill();
             });
@@ -369,129 +346,118 @@
         }
 
         function drawFlower(ctx, r, color) {
-            const isRose   = color.indexOf('e91') > -1 || color.indexOf('f06') > -1 || color.indexOf('ec4') > -1;
-            const lightClr = isRose ? '#ffcdd2' : '#e1bee7';
-            const darkClr  = isRose ? '#880e4f' : '#4a148c';
-            const pCount   = 6;
-            for (let i = 0; i < pCount; i++) {
+            const isRose = (color === COLORS.rose);
+            const petalColor   = isRose ? '#e91e63' : '#9c27b0';
+            const petalLight   = isRose ? '#f48fb1' : '#ce93d8';
+            const petalDark    = isRose ? '#880e4f' : '#4a148c';
+
+            // --- Outer petals (5) ---
+            for (let i = 0; i < 5; i++) {
                 ctx.save();
-                ctx.rotate((i / pCount) * Math.PI * 2);
-                let pg = ctx.createLinearGradient(0, 0, 0, -r * 0.95);
-                pg.addColorStop(0, color);
-                pg.addColorStop(1, lightClr);
-                ctx.fillStyle = pg;
+                ctx.rotate((i / 5) * Math.PI * 2);
+                const og = ctx.createLinearGradient(0, 0, 0, -r);
+                og.addColorStop(0, petalLight);
+                og.addColorStop(0.55, petalColor);
+                og.addColorStop(1,    petalDark);
+                ctx.fillStyle = og;
                 ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.bezierCurveTo(r * 0.45, -r * 0.3, r * 0.4, -r * 0.85, 0, -r);
-                ctx.bezierCurveTo(-r * 0.4, -r * 0.85, -r * 0.45, -r * 0.3, 0, 0);
+                ctx.moveTo(0, -r * 0.16);
+                ctx.bezierCurveTo( r*0.48, -r*0.22,  r*0.55, -r*0.85,  r*0.26, -r*0.98);
+                ctx.bezierCurveTo( r*0.06, -r*1.06, -r*0.06, -r*1.06, -r*0.26, -r*0.98);
+                ctx.bezierCurveTo(-r*0.55, -r*0.85, -r*0.48, -r*0.22, 0, -r * 0.16);
                 ctx.fill();
                 ctx.restore();
             }
-            // Stamens inner ring
-            for (let i = 0; i < pCount; i++) {
+            // --- Mid petals (5, offset) ---
+            for (let i = 0; i < 5; i++) {
                 ctx.save();
-                ctx.rotate((i / pCount) * Math.PI * 2 + Math.PI / pCount);
-                ctx.fillStyle = isRose ? 'rgba(255,100,120,0.45)' : 'rgba(170,80,255,0.35)';
+                ctx.rotate((i / 5) * Math.PI * 2 + Math.PI / 5);
+                const mg = ctx.createLinearGradient(0, 0, 0, -r * 0.72);
+                mg.addColorStop(0, petalColor);
+                mg.addColorStop(1, petalDark);
+                ctx.fillStyle = mg;
                 ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.bezierCurveTo(r * 0.28, -r * 0.2, r * 0.22, -r * 0.6, 0, -r * 0.65);
-                ctx.bezierCurveTo(-r * 0.22, -r * 0.6, -r * 0.28, -r * 0.2, 0, 0);
+                ctx.moveTo(0, -r * 0.14);
+                ctx.bezierCurveTo( r*0.32, -r*0.18,  r*0.38, -r*0.62,  r*0.18, -r*0.72);
+                ctx.bezierCurveTo( r*0.04, -r*0.78, -r*0.04, -r*0.78, -r*0.18, -r*0.72);
+                ctx.bezierCurveTo(-r*0.38, -r*0.62, -r*0.32, -r*0.18, 0, -r * 0.14);
                 ctx.fill();
                 ctx.restore();
             }
-            // Yellow centre
-            let cg = ctx.createRadialGradient(-r * 0.06, -r * 0.06, r * 0.02, 0, 0, r * 0.25);
-            cg.addColorStop(0, '#fff59d'); cg.addColorStop(0.7, '#fdd835'); cg.addColorStop(1, '#f9a825');
-            ctx.fillStyle = cg;
-            ctx.beginPath(); ctx.arc(0, 0, r * 0.25, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = 'rgba(255,255,255,0.5)';
-            ctx.beginPath(); ctx.arc(-r * 0.06, -r * 0.08, r * 0.07, 0, Math.PI * 2); ctx.fill();
+            // --- Inner petals (4, tighter) ---
+            for (let i = 0; i < 4; i++) {
+                ctx.save();
+                ctx.rotate((i / 4) * Math.PI * 2 + 0.4);
+                ctx.fillStyle = isRose ? '#c2185b' : '#6a1b9a';
+                ctx.beginPath();
+                ctx.moveTo(0, -r * 0.10);
+                ctx.bezierCurveTo( r*0.20, -r*0.12,  r*0.24, -r*0.44,  r*0.12, -r*0.50);
+                ctx.bezierCurveTo( r*0.02, -r*0.54, -r*0.02, -r*0.54, -r*0.12, -r*0.50);
+                ctx.bezierCurveTo(-r*0.24, -r*0.44, -r*0.20, -r*0.12, 0, -r * 0.10);
+                ctx.fill();
+                ctx.restore();
+            }
+            // --- Centre disc with spiral ---
+            const ig = ctx.createRadialGradient(r*0.05, -r*0.05, r*0.01, 0, 0, r * 0.36);
+            ig.addColorStop(0,   isRose ? '#fce4ec' : '#f3e5f5');
+            ig.addColorStop(0.5, isRose ? '#f06292' : '#ab47bc');
+            ig.addColorStop(1,   isRose ? '#ad1457' : '#6a1b9a');
+            ctx.fillStyle = ig;
+            ctx.beginPath(); ctx.arc(0, 0, r * 0.36, 0, Math.PI * 2); ctx.fill();
+            // Spiral curl lines for realism
+            ctx.strokeStyle = isRose ? 'rgba(136,14,79,0.55)' : 'rgba(74,20,140,0.55)';
+            ctx.lineWidth = 1.2; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.arc(0, 0, r * 0.20, Math.PI * 0.6, Math.PI * 2.4); ctx.stroke();
+            ctx.beginPath(); ctx.arc(r*0.06, r*0.04, r * 0.10, Math.PI * 1.0, Math.PI * 2.8); ctx.stroke();
         }
 
         function drawRock(ctx, r) {
-            const rg = ctx.createLinearGradient(-r, -r * 0.8, r * 0.5, r);
-            rg.addColorStop(0, '#d0d0d0');
-            rg.addColorStop(0.4, '#8e8e8e');
-            rg.addColorStop(1,   '#4a4a4a');
-            ctx.fillStyle = rg;
-            ctx.beginPath();
-            ctx.moveTo(-r * 0.1,  -r * 0.95);
-            ctx.quadraticCurveTo( r * 0.55, -r * 0.95,  r * 0.9,  -r * 0.3);
-            ctx.quadraticCurveTo( r * 1.0,   r * 0.25,  r * 0.4,   r * 0.88);
-            ctx.quadraticCurveTo(-r * 0.2,   r * 1.0,  -r * 0.75,  r * 0.55);
-            ctx.quadraticCurveTo(-r * 1.0,   r * 0.1,  -r * 0.9,  -r * 0.4);
-            ctx.quadraticCurveTo(-r * 0.7,  -r * 0.95, -r * 0.1,  -r * 0.95);
-            ctx.closePath();
-            ctx.fill();
-            // Highlight
-            ctx.fillStyle = 'rgba(255,255,255,0.18)';
-            ctx.beginPath();
-            ctx.moveTo(-r * 0.45, -r * 0.55);
-            ctx.quadraticCurveTo(r * 0.1, -r * 0.7, r * 0.4, -r * 0.35);
-            ctx.quadraticCurveTo(-r * 0.05, -r * 0.15, -r * 0.45, -r * 0.55);
-            ctx.fill();
-            // Cracks
-            ctx.strokeStyle = 'rgba(20,20,20,0.4)';
-            ctx.lineWidth = 1.2; ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(-r*0.35, -r*0.1); ctx.lineTo(r*0.05, r*0.25); ctx.lineTo(-r*0.1, r*0.6); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(r*0.05,  r*0.25); ctx.lineTo(r*0.5,  r*0.1);  ctx.stroke();
+            let g = ctx.createLinearGradient(-r, -r, r, r);
+            g.addColorStop(0, '#b0bec5'); g.addColorStop(0.5, '#78909c'); g.addColorStop(1, '#455a64');
+            ctx.fillStyle = g; ctx.beginPath();
+            ctx.moveTo(-r*.8,-r*.4); ctx.lineTo(-r*.2,-r*.9); ctx.lineTo(r*.6,-r*.7);
+            ctx.lineTo(r*.9,r*.1); ctx.lineTo(r*.3,r*.8); ctx.lineTo(-r*.6,r*.6); ctx.closePath(); ctx.fill();
+            ctx.strokeStyle = '#263238'; ctx.lineWidth=1;
+            ctx.beginPath(); ctx.moveTo(-r*.5,-r*.3); ctx.lineTo(r*.4,r*.2); ctx.stroke();
         }
 
         function drawHail(ctx, r) {
-            const hg = ctx.createRadialGradient(-r * 0.3, -r * 0.35, r * 0.05, 0, 0, r);
-            hg.addColorStop(0, '#ffffff');
-            hg.addColorStop(0.4, '#ddeef5');
-            hg.addColorStop(0.8, '#a8ccd8');
-            hg.addColorStop(1,   '#7aaab8');
-            ctx.fillStyle = hg;
-            ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
-            // Main specular highlight
-            ctx.fillStyle = 'rgba(255,255,255,0.72)';
-            ctx.beginPath(); ctx.ellipse(-r * 0.28, -r * 0.32, r * 0.22, r * 0.3, -0.5, 0, Math.PI * 2); ctx.fill();
-            // Small secondary highlight
-            ctx.fillStyle = 'rgba(255,255,255,0.4)';
-            ctx.beginPath(); ctx.ellipse(r * 0.22, r * 0.28, r * 0.1, r * 0.14, 0.4, 0, Math.PI * 2); ctx.fill();
-            // Ice facet lines
-            ctx.strokeStyle = 'rgba(200,230,245,0.55)';
-            ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(-r*0.45, r*0.15); ctx.lineTo(r*0.2,  r*0.55); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo( r*0.35, -r*0.1); ctx.lineTo(r*0.6,  r*0.42); ctx.stroke();
+            ctx.fillStyle = COLORS.hail; ctx.strokeStyle = '#80deea'; ctx.lineWidth = 1.5;
+            const pts = [ [0.9,0], [0.6,0.7], [-0.2,0.9], [-0.8,0.5], [-0.9,-0.3], [-0.4,-0.8], [0.5,-0.9] ];
+            ctx.beginPath();
+            pts.forEach((p,i) => { if(i===0) ctx.moveTo(p[0]*r, p[1]*r); else ctx.lineTo(p[0]*r, p[1]*r); });
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.beginPath(); ctx.arc(-r*.2,-r*.2,r*.3,0,Math.PI*2); ctx.fill();
         }
 
         function drawWater(ctx, r) {
-            const wg = ctx.createLinearGradient(0, -r, 0, r);
-            wg.addColorStop(0, '#80d8ff');
-            wg.addColorStop(0.45, '#0288d1');
-            wg.addColorStop(1,   '#01579b');
-            ctx.fillStyle = wg;
-            // Classic teardrop
-            ctx.beginPath();
-            ctx.moveTo(0, -r);
-            ctx.bezierCurveTo( r * 0.55, -r * 0.3,  r * 0.82,  r * 0.3,  r * 0.46,  r * 0.65);
-            ctx.bezierCurveTo( r * 0.2,   r,        -r * 0.2,   r,        -r * 0.46,  r * 0.65);
-            ctx.bezierCurveTo(-r * 0.82,  r * 0.3, -r * 0.55, -r * 0.3,   0,         -r);
-            ctx.fill();
-            // Main highlight
-            ctx.fillStyle = 'rgba(255,255,255,0.6)';
-            ctx.beginPath(); ctx.ellipse(-r * 0.22, r * 0.08, r * 0.1, r * 0.3, -0.25, 0, Math.PI * 2); ctx.fill();
-            // Tiny secondary
-            ctx.fillStyle = 'rgba(255,255,255,0.3)';
-            ctx.beginPath(); ctx.ellipse(r * 0.18, -r * 0.12, r * 0.06, r * 0.14, 0.15, 0, Math.PI * 2); ctx.fill();
+            let g = ctx.createRadialGradient(-r*.2, r*.2, r*.1, 0, 0, r);
+            g.addColorStop(0, '#81d4fa'); g.addColorStop(1, COLORS.water);
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.moveTo(0, -r*1.2); ctx.quadraticCurveTo(r, -r*.2, r, r*.4); ctx.arc(0, r*.4, r, 0, Math.PI); ctx.quadraticCurveTo(-r, -r*.2, 0, -r*1.2); ctx.fill();
+            ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.beginPath(); ctx.ellipse(-r*.4, r*.3, r*.15, r*.3, -Math.PI/6, 0, Math.PI*2); ctx.fill();
         }
 
         function drawSalami(ctx, r) {
+            // Nuova fetta di salame diagonale, organica (no spago/linee rette)
             ctx.save(); ctx.rotate(Math.PI/6);
+            
+            // Involucro (bordo scuro esterno)
             ctx.fillStyle = '#6d1000'; 
             ctx.beginPath(); ctx.ellipse(0, 0, r*0.8, r*1.0, 0, 0, Math.PI*2); ctx.fill();
+            
+            // Corpo di carne
             ctx.fillStyle = '#c62828'; 
             ctx.beginPath(); ctx.ellipse(0, 0, r*0.75, r*0.95, 0, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#ffe0e0';
-            const lessFat = SALAMI_FAT.slice(0, Math.floor(SALAMI_FAT.length / 2));
-            lessFat.forEach(f => { 
-                ctx.beginPath(); 
-                ctx.ellipse(f[0]*r*0.9, f[1]*r*0.9, 1.5, 2.5, f[0], 0, Math.PI*2); 
-                ctx.fill(); 
-            });
+            
+            // Grasso (punti bianchi)
+            ctx.fillStyle = 'rgba(245,245,245,0.82)';
+            SALAMI_FAT.forEach(f => { ctx.beginPath(); ctx.ellipse(f[0]*r*0.85, f[1]*r*0.85, 2.2, 2.8, 0, 0, Math.PI*2); ctx.fill(); });
+            
+            // Pepe nero
+            ctx.fillStyle = '#1a1a1a';
+            SALAMI_PEPPER.forEach(p => { ctx.beginPath(); ctx.arc(p[0]*r*0.9, p[1]*r*0.9, 1.2, 0, Math.PI*2); ctx.fill(); });
+            
             ctx.restore();
         }
 
@@ -523,34 +489,35 @@
         }
 
         function drawMeat(ctx, r) {
-            const mg = ctx.createLinearGradient(-r, -r * 0.5, r * 0.5, r);
-            mg.addColorStop(0, '#8d1a1a');
-            mg.addColorStop(0.45, '#a52a2a');
-            mg.addColorStop(1,   '#5c1010');
-            ctx.fillStyle = mg;
-            // Organic steak shape
+            // Nuova bistecca organica (Steak) - senza spigoli rigidi
+            ctx.save(); ctx.rotate(-Math.PI/8);
+            
+            let g = ctx.createLinearGradient(-r, -r, r, r);
+            g.addColorStop(0, '#5d4037'); g.addColorStop(0.5, '#4e342e'); g.addColorStop(1, '#3e2723');
+            ctx.fillStyle = g;
+
+            // Forma organica della carne
             ctx.beginPath();
-            ctx.moveTo(-r * 0.8, -r * 0.35);
-            ctx.bezierCurveTo(-r * 0.5, -r * 0.9,  r * 0.6, -r * 0.85,  r * 0.9, -r * 0.2);
-            ctx.bezierCurveTo( r * 1.05, r * 0.3,  r * 0.55, r * 0.85,  r * 0.0,  r * 0.75);
-            ctx.bezierCurveTo(-r * 0.55, r * 0.65, -r * 0.95, r * 0.2,  -r * 0.8, -r * 0.35);
+            ctx.moveTo(-r*0.8, -r*0.4);
+            ctx.bezierCurveTo(-r*0.5, -r*0.8, r*0.6, -r*0.7, r*0.9, -r*0.2);
+            ctx.bezierCurveTo(r*1.1, r*0.3, r*0.6, r*0.8, 0, r*0.7);
+            ctx.bezierCurveTo(-r*0.6, r*0.6, -r*1.0, r*0.2, -r*0.8, -r*0.4);
             ctx.fill();
-            // Fat marbling seam
-            ctx.strokeStyle = 'rgba(245,230,215,0.7)';
-            ctx.lineWidth = r * 0.15; ctx.lineCap = 'round';
+
+            // Bordo di grasso (solo su un lato)
+            ctx.strokeStyle = '#d7ccc8'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
             ctx.beginPath();
-            ctx.moveTo(-r * 0.6, -r * 0.3);
-            ctx.bezierCurveTo(-r * 0.55, r * 0.1, -r * 0.3, r * 0.45, -r * 0.0, r * 0.55);
+            ctx.moveTo(-r*0.8, -r*0.4);
+            ctx.bezierCurveTo(-r*0.5, -r*0.8, r*0.6, -r*0.7, r*0.9, -r*0.2);
             ctx.stroke();
-            // Grill marks
-            ctx.strokeStyle = 'rgba(20,8,8,0.55)';
-            ctx.lineWidth = 2.2; ctx.lineCap = 'round';
-            [[-0.45, -0.18, 0.25, 0.55], [-0.05, -0.5, 0.6, 0.22], [-0.68, 0.0, -0.1, 0.62]].forEach(l => {
-                ctx.beginPath(); ctx.moveTo(l[0]*r, l[1]*r); ctx.lineTo(l[2]*r, l[3]*r); ctx.stroke();
-            });
-            // Surface sheen
-            ctx.fillStyle = 'rgba(255,255,255,0.12)';
-            ctx.beginPath(); ctx.ellipse(-r * 0.18, -r * 0.32, r * 0.2, r * 0.1, -0.4, 0, Math.PI * 2); ctx.fill();
+
+            // Segni di grigliatura (curvati per seguire il volume)
+            ctx.strokeStyle = '#212121'; ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(-r*0.5, -r*0.1); ctx.lineTo(r*0.2, r*0.5); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-r*0.1, -r*0.4); ctx.lineTo(r*0.6, r*0.2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-r*0.7, 0.1); ctx.lineTo(-r*0.2, r*0.6); ctx.stroke();
+            
+            ctx.restore();
         }
 
         function drawPizza(ctx, r) {
@@ -567,89 +534,13 @@
         }
 
         function drawCake(ctx, r) {
-            // Plate shadow
-            ctx.fillStyle = 'rgba(0,0,0,0.15)';
-            ctx.beginPath(); ctx.ellipse(0, r * 0.88, r * 1.05, r * 0.2, 0, 0, Math.PI * 2); ctx.fill();
-
-            // Side face (left) - dark chocolate
-            ctx.fillStyle = '#3e2723';
-            ctx.beginPath();
-            ctx.moveTo(-r * 0.9, r * 0.1);
-            ctx.lineTo(-r * 0.9, r * 0.72);
-            ctx.lineTo(0, r * 0.82);
-            ctx.lineTo(0, r * 0.2);
-            ctx.closePath(); ctx.fill();
-
-            // Side face (right) - medium chocolate
-            const sg = ctx.createLinearGradient(0, 0, r * 0.9, r * 0.7);
-            sg.addColorStop(0, '#5d4037'); sg.addColorStop(1, '#4e342e');
-            ctx.fillStyle = sg;
-            ctx.beginPath();
-            ctx.moveTo(0, r * 0.2);
-            ctx.lineTo(r * 0.9, r * 0.1);
-            ctx.lineTo(r * 0.9, r * 0.72);
-            ctx.lineTo(0, r * 0.82);
-            ctx.closePath(); ctx.fill();
-
-            // Cream layers on sides (left)
-            [0.38, 0.58].forEach(y => {
-                ctx.fillStyle = '#fff8e1';
-                ctx.beginPath();
-                ctx.moveTo(-r * 0.9, r * y);
-                ctx.lineTo(0, r * (y + 0.08));
-                ctx.lineTo(0, r * (y + 0.12));
-                ctx.lineTo(-r * 0.9, r * (y + 0.04));
-                ctx.closePath(); ctx.fill();
-            });
-            // Cream layers on sides (right)
-            [0.38, 0.58].forEach(y => {
-                ctx.fillStyle = '#fff8e1';
-                ctx.beginPath();
-                ctx.moveTo(r * 0.9, r * y);
-                ctx.lineTo(0, r * (y + 0.08));
-                ctx.lineTo(0, r * (y + 0.12));
-                ctx.lineTo(r * 0.9, r * (y + 0.04));
-                ctx.closePath(); ctx.fill();
-            });
-
-            // Top face - dark chocolate with pink icing
-            const tg = ctx.createLinearGradient(-r * 0.9, -r * 0.05, r * 0.9, r * 0.25);
-            tg.addColorStop(0, '#6d4c41'); tg.addColorStop(1, '#4e342e');
-            ctx.fillStyle = tg;
-            ctx.beginPath();
-            ctx.moveTo(-r * 0.9, r * 0.1);
-            ctx.lineTo(0, r * 0.2);
-            ctx.lineTo(r * 0.9, r * 0.1);
-            ctx.lineTo(0, -r * 0.05);
-            ctx.closePath(); ctx.fill();
-
-            // Pink icing drip on top
-            ctx.fillStyle = '#f48fb1';
-            ctx.beginPath();
-            ctx.moveTo(-r * 0.9, r * 0.1);
-            ctx.lineTo(0, r * 0.2);
-            ctx.lineTo(r * 0.9, r * 0.1);
-            ctx.lineTo(0, -r * 0.05);
-            ctx.closePath(); ctx.fill();
-
-            // Glaze over - lighter gradient
-            const gg = ctx.createLinearGradient(-r * 0.6, -r * 0.05, r * 0.2, r * 0.18);
-            gg.addColorStop(0, 'rgba(255,200,210,0.7)');
-            gg.addColorStop(1, 'rgba(220,80,130,0.2)');
-            ctx.fillStyle = gg;
-            ctx.beginPath();
-            ctx.moveTo(-r * 0.9, r * 0.1); ctx.lineTo(0, r * 0.2);
-            ctx.lineTo(r * 0.9, r * 0.1); ctx.lineTo(0, -r * 0.05);
-            ctx.closePath(); ctx.fill();
-
-            // Cherry on top
-            ctx.fillStyle = '#c62828';
-            ctx.beginPath(); ctx.arc(0, -r * 0.06, r * 0.16, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = 'rgba(255,255,255,0.4)';
-            ctx.beginPath(); ctx.arc(-r * 0.04, -r * 0.1, r * 0.05, 0, Math.PI * 2); ctx.fill();
-            // Cherry stem
-            ctx.strokeStyle = '#2e7d32'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(0, -r * 0.22); ctx.quadraticCurveTo(r * 0.08, -r * 0.38, r * 0.05, -r * 0.42); ctx.stroke();
+            ctx.fillStyle = '#5d4037'; ctx.beginPath(); ctx.moveTo(0, -r*.5); ctx.lineTo(-r*.8, 0); ctx.lineTo(-r*.8, r*.6); ctx.lineTo(0, r); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = '#e1bee7'; ctx.beginPath(); ctx.moveTo(0, -r*.5); ctx.lineTo(r*.8, 0); ctx.lineTo(r*.8, r*.6); ctx.lineTo(0, r); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = '#3e2723'; ctx.beginPath(); ctx.moveTo(0, -r*.2); ctx.lineTo(r*.8, r*.3); ctx.lineTo(r*.8, r*.5); ctx.lineTo(0, 0); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = '#f8bbd0'; ctx.beginPath(); ctx.moveTo(0, -r*.5); ctx.lineTo(-r*.8, 0); ctx.lineTo(0, r*.3); ctx.lineTo(r*.8, 0); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(-r*.8, 0); ctx.quadraticCurveTo(-r*.6, r*.4, -r*.4, r*.1); ctx.quadraticCurveTo(-r*.2, r*.5, 0, r*.3); ctx.fill();
+            ctx.fillStyle = '#d32f2f'; ctx.beginPath(); ctx.arc(0, -r*.4, r*.2, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = COLORS.stem; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(0, -r*.6); ctx.quadraticCurveTo(r*.2, -r*.8, r*.3, -r*.7); ctx.stroke();
         }
 
         function drawLogo(ctx, img, r, isRound) {
@@ -680,8 +571,8 @@
             cheese: { id:'cheese', type:'cheese', radius:16, score:15, speed:3.7 },
             risotto:{ id:'risotto', type:'risotto', radius:20, score:20, speed:3.4 },
             meat:   { id:'meat', type:'meat', radius:18, score:20, speed:3.9 },
-            pizza:  { id:'pizza', type:'pizza', radius:18, score:-50, action:'PENALTY', speed:4.5 },
-            cake:   { id:'cake', type:'cake', radius:16, score:-50, action:'PENALTY', speed:4.5 },
+            pizza:  { id:'pizza', type:'pizza', radius:18, score:0, action:'KO', speed:4.5 },
+            cake:   { id:'cake', type:'cake', radius:16, score:0, action:'KO', speed:4.5 },
 
             logo_gt: { id:'logo_gt', type:'logo_gt', radius:22, score:50, speed:4.8 },
             logo_bl: { id:'logo_bl', type:'logo_bl', radius:20, score:50, speed:4.8 }
@@ -728,7 +619,7 @@
                         ${makeGridItem('risotto', 'Risotto', '+20')} ${makeGridItem('meat', 'Bistecca', '+20')}
                     </div>
                     <div class="grid grid-cols-4 gap-1 items-end">
-                        ${makeGridItem('pizza', 'Pizza', '-50 pt', true)} ${makeGridItem('cake', 'Dolci', '-50 pt', true)}
+                        ${makeGridItem('pizza', 'Pizza', 'K.O.', true)} ${makeGridItem('cake', 'Dolci', 'K.O.', true)}
                         ${makeGridImg('logo_gold.png', 'Bonus GT', '+50')} ${makeGridImg('Mrblues.jpg', 'Bonus MB', '+50', true)}
                     </div>
                 `
@@ -764,8 +655,7 @@
         let finalScreenshotData = null;
 
         function resizeCanvas() {
-            const container = document.getElementById('gameContainer');
-            GAME_WIDTH = container.clientWidth; GAME_HEIGHT = container.clientHeight;
+            GAME_WIDTH = window.innerWidth; GAME_HEIGHT = window.innerHeight;
             const dpr = window.devicePixelRatio || 1;
             mainCanvas.width  = Math.round(GAME_WIDTH  * dpr);
             mainCanvas.height = Math.round(GAME_HEIGHT * dpr);
@@ -774,7 +664,8 @@
             mainCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
             mainCtx.imageSmoothingEnabled = true;
             mainCtx.imageSmoothingQuality = 'high';
-            glass.y = GAME_HEIGHT - 140; if(glass.x > GAME_WIDTH) glass.x = GAME_WIDTH/2;
+            glass.y = GAME_HEIGHT - 140;
+            if(glass.x > GAME_WIDTH) glass.x = GAME_WIDTH / 2;
         }
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 100));
@@ -782,9 +673,7 @@
         // --- Input ---
         function moveGlass(clientX) {
             if (gameState !== 'PLAYING') return;
-            const rect = mainCanvas.getBoundingClientRect();
-            let x = clientX - rect.left;
-            glass.x = Math.max(glass.width/2, Math.min(x, GAME_WIDTH - glass.width/2));
+            glass.x = Math.max(glass.width/2, Math.min(clientX, GAME_WIDTH - glass.width/2));
         }
         mainCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); moveGlass(e.touches[0].clientX); }, { passive: false });
         mainCanvas.addEventListener('mousemove', (e) => moveGlass(e.clientX));
@@ -868,31 +757,55 @@
         }
 
         // --- WhatsApp API ---
-        document.getElementById('btnShare').addEventListener('click', async () => {
-            const shareText = `🍷 Ho totalizzato ${score} punti nel gioco degustazione del Pinot Nero Mr. Blues! Riesci a battermi?`;
-            
-            try {
-                if(!finalScreenshotData) throw new Error("No image");
-                const blob = await (await fetch(finalScreenshotData)).blob();
-                const file = new File([blob], 'mrblues_score.jpg', { type: 'image/jpeg' });
+        function openAcquistaMail() {
+            const pts = (document.getElementById('finalScore') || {}).innerText || '0';
+            const sub = encodeURIComponent('Acquisto Pinot Nero Mr. Blues - Germani Terzi');
+            const body = encodeURIComponent(
+                'Gentile Team Germani Terzi,\n\n' +
+                'Ho appena giocato al vostro gioco degustazione Mr. Blues, totalizzando ' + pts + ' punti!\n\n' +
+                'Vorrei acquistare il Pinot Nero Mr. Blues. Potreste inviarmi informazioni su:\n' +
+                ' - Disponibilita e annate\n' +
+                ' - Prezzi e modalita di spedizione\n' +
+                ' - Eventuali confezioni regalo\n\n' +
+                'Cordiali saluti.'
+            );
+            const mailUrl = `mailto:info@vinigermaniterzi.com?subject=${sub}&body=${body}`;
+            // window.open works in sandboxed iframes; location.href may be blocked
+            const opened = window.open(mailUrl, '_self');
+            if (!opened) { window.location.href = mailUrl; }
+        }
 
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ title: 'Mr. Blues Score', text: shareText, files: [file] });
-                } else { throw new Error("Web Share Files not supported"); }
+                document.getElementById('btnShare').addEventListener('click', async () => {
+            const shareText = `🍷 Ho totalizzato ${score} punti nel gioco degustazione del Pinot Nero Mr. Blues di Germani Terzi! Riesci a battermi?`;
+            try {
+                if (finalScreenshotData && navigator.canShare) {
+                    const blob = await (await fetch(finalScreenshotData)).blob();
+                    const file = new File([blob], `mrblues_${score}.jpg`, { type: 'image/jpeg' });
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({ title: 'Mr. Blues — Pinot Nero Germani Terzi', text: shareText, files: [file] });
+                        return;
+                    }
+                }
+                if (navigator.share) {
+                    await navigator.share({ title: 'Mr. Blues — Pinot Nero Germani Terzi', text: shareText });
+                    return;
+                }
+                throw new Error('no-share-api');
             } catch (err) {
-                console.log('Fallback Share:', err);
-                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+                // Universal WhatsApp fallback (mobile deep-link + web)
+                const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+                window.open(waUrl, '_blank');
             }
         });
 
         function updateHUD() {
             document.getElementById('scoreDisplay').innerText = score;
-            let ht = ""; 
-            const maxLives = 5;
-            for(let i=0; i<maxLives; i++) {
-                ht += i < lives ? "❤" : "🖤";
-            }
-            document.getElementById('livesDisplay').innerHTML = `<span class="life-icon">${ht}</span>`;
+            const heartFull  = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin:0 2px"><path fill="#c0182e" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+            const heartEmpty = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin:0 2px;opacity:0.22"><path fill="#c0182e" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+            let ht = '';
+            const max = Math.max(3, lives);
+            for(let i = 0; i < max; i++) ht += (i < lives) ? heartFull : heartEmpty;
+            document.getElementById('livesDisplay').innerHTML = ht;
         }
 
         function spawnFloatingText(x, y, text, color) {
@@ -962,9 +875,15 @@
         }
 
         function defineGlass(ctx, g) {
-            ctx.beginPath(); ctx.moveTo(-g.rimWidth/2, -g.height/2);
-            ctx.bezierCurveTo(-g.width/2-10, -g.height/4, -g.width/2, g.height/2, 0, g.height/2);
-            ctx.bezierCurveTo(g.width/2, g.height/2, g.width/2+10, -g.height/4, g.rimWidth/2, -g.height/2); ctx.closePath();
+            const hw = g.rimWidth / 2, bw = g.width / 2, hh = g.height / 2;
+            ctx.beginPath();
+            ctx.moveTo(-hw, -hh);
+            // Left side: curves inward then flares at base
+            ctx.bezierCurveTo(-hw - 8,  -hh * 0.4, -bw,  hh * 0.3, -bw * 0.35, hh);
+            ctx.bezierCurveTo(-bw * 0.15, hh + 4,   bw * 0.15, hh + 4,  bw * 0.35, hh);
+            // Right side symmetric
+            ctx.bezierCurveTo( bw,  hh * 0.3,  hw + 8, -hh * 0.4, hw, -hh);
+            ctx.closePath();
         }
 
         function drawMain(ctx) {
@@ -1026,6 +945,5 @@
             if (gameState === 'PLAYING') { update(); drawMain(mainCtx); animationId = requestAnimationFrame(gameLoop); }
         }
     </script>
-</div>
 </body>
 </html>
