@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mr. Blues - Sensoriale & Abbinamenti | Vini Germani Terzi</title>
-    <meta property="og:title"       content="Mr. Blues — Pinot Nero Germani Terzi">
-    <meta property="og:description" content="Sfida il tuo palato e vinci un calice originale Mr. Blues!">
-    <meta property="og:image"       content="1000087388-2.jpg">
-    <meta property="og:type"        content="website">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
@@ -72,38 +68,34 @@
         .btn-primary {
             background-color: #d1a34a;
             color: #12485c;
-            padding: 14px 24px;
+            padding: 12px 20px;
             border-radius: 9999px;
             font-weight: bold;
-            font-size: clamp(0.88rem, 2.5vw, 1rem);
+            font-size: 1rem;
             border: 2px solid #d1a34a;
             transition: all 0.3s ease;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            min-height: 48px;
             width: 100%;
-            max-width: 300px;
+            max-width: 280px;
             margin-bottom: 12px;
-            -webkit-tap-highlight-color: transparent;
         }
         .btn-primary:hover { background-color: transparent; color: #d1a34a; }
         
         .btn-secondary {
             background-color: transparent;
             color: #fff;
-            padding: 14px 24px;
+            padding: 12px 20px;
             border-radius: 9999px;
-            font-size: clamp(0.88rem, 2.5vw, 1rem);
+            font-size: 1rem;
             border: 2px solid #fff;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-height: 48px;
             width: 100%;
-            max-width: 300px;
+            max-width: 280px;
             margin-bottom: 12px;
-            -webkit-tap-highlight-color: transparent;
         }
         .btn-secondary:hover { background-color: #fff; color: #12485c; }
         
@@ -228,9 +220,9 @@
             Condividi Score
         </button>
 
-        <a id="btnAcquista" href="#" onclick="openAcquistaMail();return false;"
-           class="btn-primary block text-center no-underline flex items-center justify-center gap-2">
-           🛒 Acquista Ora
+        <a href="mailto:info@vinigermaniterzi.com?subject=Acquisto%20Pinot%20Nero%20Mr.%20Blues&body=Salve,%0A%0AVorrei%20ricevere%20informazioni%20per%20acquistare%20il%20Pinot%20Nero%20Mr.%20Blues%20di%20Germani%20Terzi.%0A%0APotete%20indicarmi%3A%0A-%20Prezzo%20per%20singola%20bottiglia%0A-%20Prezzo%20per%20cassa%20da%206%20bottiglie%0A-%20Prezzo%20per%20cassa%20da%2012%20bottiglie%0A-%20Modalit%C3%A0%20e%20costi%20di%20spedizione%0A%0ASono%20disponibile%20a%20essere%20ricontattato.%0A%0AGrazie%20mille" 
+           class="btn-primary block text-center no-underline flex items-center justify-center">
+           Acquista Ora
         </a>
         <button id="btnRestart" class="btn-secondary">Riprova Livello</button>
         <button onclick="goBackToLevels()" class="btn-secondary border-none underline">Cambia Livello</button>
@@ -290,7 +282,7 @@
 
         // --- Hardcoded (Non-jittering) Arrays for Vector Textures ---
         const STRAWBERRY_SEEDS = [[-0.3, -0.4], [0.3, -0.4], [0, -0.1], [-0.4, 0.2], [0.4, 0.2], [0, 0.5], [-0.2, 0.8], [0.2, 0.8]];
-        const SALAMI_FAT = [[-0.25, 0.15], [0.22, -0.28], [-0.05, -0.55]];
+        const SALAMI_FAT = [[0, 0.4], [-0.3, 0.1], [0.2, -0.2], [-0.1, -0.5], [0.1, -0.7], [0.3, 0.3], [-0.3, -0.2]];
         const SALAMI_PEPPER = [[-0.2, 0.3], [0.3, 0.5], [-0.1, -0.3], [0.2, -0.5]];
         const RISOTTO_RICE = [[-0.4, 0], [0.4, 0.2], [-0.2, 0.4], [0.2, -0.2], [0, 0.3], [-0.5, -0.1], [0.5, 0], [-0.1, -0.3]];
         const BERRY_DROPS = [{x:0, y:0.5, r:0.4}, {x:-0.45, y:0.2, r:0.4}, {x:0.45, y:0.2, r:0.4}, {x:-0.5, y:-0.25, r:0.4}, {x:0.5, y:-0.25, r:0.4}, {x:-0.2, y:-0.4, r:0.45}, {x:0.2, y:-0.4, r:0.45}, {x:0, y:0, r:0.45}];
@@ -346,70 +338,111 @@
         }
 
         function drawFlower(ctx, r, color) {
-            const isRose = (color === COLORS.rose);
-            const petalColor   = isRose ? '#e91e63' : '#9c27b0';
-            const petalLight   = isRose ? '#f48fb1' : '#ce93d8';
-            const petalDark    = isRose ? '#880e4f' : '#4a148c';
+            const isRose = color === COLORS.rose;
+            ctx.save();
 
-            // --- Outer petals (5) ---
-            for (let i = 0; i < 5; i++) {
-                ctx.save();
-                ctx.rotate((i / 5) * Math.PI * 2);
-                const og = ctx.createLinearGradient(0, 0, 0, -r);
-                og.addColorStop(0, petalLight);
-                og.addColorStop(0.55, petalColor);
-                og.addColorStop(1,    petalDark);
-                ctx.fillStyle = og;
+            if (isRose) {
+                // === ROSA elegante ===
+                // Stelo
+                ctx.strokeStyle = '#4a7c32';
+                ctx.lineWidth = r * 0.12;
+                ctx.lineCap = 'round';
                 ctx.beginPath();
-                ctx.moveTo(0, -r * 0.16);
-                ctx.bezierCurveTo( r*0.48, -r*0.22,  r*0.55, -r*0.85,  r*0.26, -r*0.98);
-                ctx.bezierCurveTo( r*0.06, -r*1.06, -r*0.06, -r*1.06, -r*0.26, -r*0.98);
-                ctx.bezierCurveTo(-r*0.55, -r*0.85, -r*0.48, -r*0.22, 0, -r * 0.16);
-                ctx.fill();
-                ctx.restore();
-            }
-            // --- Mid petals (5, offset) ---
-            for (let i = 0; i < 5; i++) {
-                ctx.save();
-                ctx.rotate((i / 5) * Math.PI * 2 + Math.PI / 5);
-                const mg = ctx.createLinearGradient(0, 0, 0, -r * 0.72);
-                mg.addColorStop(0, petalColor);
-                mg.addColorStop(1, petalDark);
-                ctx.fillStyle = mg;
+                ctx.moveTo(0, r * 0.3);
+                ctx.quadraticCurveTo(r * 0.3, r * 0.7, r * 0.2, r * 1.1);
+                ctx.stroke();
+
+                // Foglioline sul stelo
+                ctx.fillStyle = '#4a7c32';
                 ctx.beginPath();
-                ctx.moveTo(0, -r * 0.14);
-                ctx.bezierCurveTo( r*0.32, -r*0.18,  r*0.38, -r*0.62,  r*0.18, -r*0.72);
-                ctx.bezierCurveTo( r*0.04, -r*0.78, -r*0.04, -r*0.78, -r*0.18, -r*0.72);
-                ctx.bezierCurveTo(-r*0.38, -r*0.62, -r*0.32, -r*0.18, 0, -r * 0.14);
+                ctx.moveTo(r * 0.12, r * 0.65);
+                ctx.quadraticCurveTo(r * 0.55, r * 0.55, r * 0.4, r * 0.9);
+                ctx.quadraticCurveTo(r * 0.1, r * 0.75, r * 0.12, r * 0.65);
                 ctx.fill();
-                ctx.restore();
-            }
-            // --- Inner petals (4, tighter) ---
-            for (let i = 0; i < 4; i++) {
-                ctx.save();
-                ctx.rotate((i / 4) * Math.PI * 2 + 0.4);
-                ctx.fillStyle = isRose ? '#c2185b' : '#6a1b9a';
+
+                // Sepali (verde scuro, sotto i petali)
+                ctx.fillStyle = '#2e7d32';
+                for (let i = 0; i < 5; i++) {
+                    ctx.save();
+                    ctx.rotate(i * Math.PI * 2 / 5 + 0.3);
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.quadraticCurveTo(r * 0.25, -r * 0.35, 0, -r * 0.55);
+                    ctx.quadraticCurveTo(-r * 0.25, -r * 0.35, 0, 0);
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                // Petali esterni (5 larghi, colore pieno)
+                for (let i = 0; i < 5; i++) {
+                    ctx.save();
+                    ctx.rotate(i * Math.PI * 2 / 5);
+                    const pg = ctx.createRadialGradient(0, -r * 0.3, r * 0.05, 0, -r * 0.4, r * 0.75);
+                    pg.addColorStop(0, '#ff8fab');
+                    pg.addColorStop(0.5, '#e91e63');
+                    pg.addColorStop(1, '#880e4f');
+                    ctx.fillStyle = pg;
+                    ctx.beginPath();
+                    ctx.moveTo(0, r * 0.08);
+                    ctx.bezierCurveTo(r * 0.45, -r * 0.05, r * 0.5, -r * 0.7, 0, -r * 0.85);
+                    ctx.bezierCurveTo(-r * 0.5, -r * 0.7, -r * 0.45, -r * 0.05, 0, r * 0.08);
+                    ctx.fill();
+                    // Venatura petalo
+                    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+                    ctx.lineWidth = 0.8;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.quadraticCurveTo(r * 0.1, -r * 0.4, 0, -r * 0.78);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                // Petali interni spiralati (bocciolo semi-aperto)
+                for (let i = 0; i < 3; i++) {
+                    ctx.save();
+                    ctx.rotate(i * Math.PI * 2 / 3 + Math.PI / 6);
+                    const ig = ctx.createRadialGradient(0, -r * 0.15, r * 0.02, 0, -r * 0.2, r * 0.45);
+                    ig.addColorStop(0, '#ffb3c6');
+                    ig.addColorStop(1, '#c2185b');
+                    ctx.fillStyle = ig;
+                    ctx.beginPath();
+                    ctx.moveTo(0, r * 0.05);
+                    ctx.bezierCurveTo(r * 0.28, 0, r * 0.3, -r * 0.4, 0, -r * 0.5);
+                    ctx.bezierCurveTo(-r * 0.28, -r * 0.35, -r * 0.2, 0, 0, r * 0.05);
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                // Centro bocciolo (giallo-oro)
+                const cg = ctx.createRadialGradient(-r * 0.04, -r * 0.04, 0, 0, 0, r * 0.14);
+                cg.addColorStop(0, '#fff59d');
+                cg.addColorStop(1, '#f9a825');
+                ctx.fillStyle = cg;
                 ctx.beginPath();
-                ctx.moveTo(0, -r * 0.10);
-                ctx.bezierCurveTo( r*0.20, -r*0.12,  r*0.24, -r*0.44,  r*0.12, -r*0.50);
-                ctx.bezierCurveTo( r*0.02, -r*0.54, -r*0.02, -r*0.54, -r*0.12, -r*0.50);
-                ctx.bezierCurveTo(-r*0.24, -r*0.44, -r*0.20, -r*0.12, 0, -r * 0.10);
+                ctx.arc(0, 0, r * 0.13, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.restore();
+
+            } else {
+                // === VIOLA semplice (mantiene il look attuale) ===
+                const pCount = 6;
+                const angleStep = Math.PI * 2 / pCount;
+                for (let i = 0; i < pCount; i++) {
+                    ctx.save(); ctx.rotate(i * angleStep);
+                    const g = ctx.createRadialGradient(0, -r * .4, r * .1, 0, -r * .4, r * .7);
+                    g.addColorStop(0, '#ce93d8'); g.addColorStop(1, '#4a148c');
+                    ctx.fillStyle = g;
+                    ctx.beginPath(); ctx.moveTo(0,0);
+                    ctx.bezierCurveTo(r*.5,-r*.3,r*.4,-r*.9,0,-r);
+                    ctx.bezierCurveTo(-r*.4,-r*.9,-r*.5,-r*.3,0,0);
+                    ctx.fill(); ctx.restore();
+                }
+                ctx.fillStyle = '#ffeb3b';
+                ctx.beginPath(); ctx.arc(0, 0, r * .15, 0, Math.PI * 2); ctx.fill();
             }
-            // --- Centre disc with spiral ---
-            const ig = ctx.createRadialGradient(r*0.05, -r*0.05, r*0.01, 0, 0, r * 0.36);
-            ig.addColorStop(0,   isRose ? '#fce4ec' : '#f3e5f5');
-            ig.addColorStop(0.5, isRose ? '#f06292' : '#ab47bc');
-            ig.addColorStop(1,   isRose ? '#ad1457' : '#6a1b9a');
-            ctx.fillStyle = ig;
-            ctx.beginPath(); ctx.arc(0, 0, r * 0.36, 0, Math.PI * 2); ctx.fill();
-            // Spiral curl lines for realism
-            ctx.strokeStyle = isRose ? 'rgba(136,14,79,0.55)' : 'rgba(74,20,140,0.55)';
-            ctx.lineWidth = 1.2; ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.arc(0, 0, r * 0.20, Math.PI * 0.6, Math.PI * 2.4); ctx.stroke();
-            ctx.beginPath(); ctx.arc(r*0.06, r*0.04, r * 0.10, Math.PI * 1.0, Math.PI * 2.8); ctx.stroke();
+
+            ctx.restore();
         }
+
 
         function drawRock(ctx, r) {
             let g = ctx.createLinearGradient(-r, -r, r, r);
@@ -439,49 +472,27 @@
         }
 
         function drawSalami(ctx, r) {
-            ctx.save();
-            ctx.rotate(Math.PI / 7);
-
-            // 1 — Skin ring
-            const skinG = ctx.createRadialGradient(0,0,r*0.62,0,0,r);
-            skinG.addColorStop(0,'#7b0d0d'); skinG.addColorStop(1,'#3d0000');
-            ctx.fillStyle = skinG;
-            ctx.beginPath(); ctx.ellipse(0,0,r,r,0,0,Math.PI*2); ctx.fill();
-
-            // 2 — Meat body
-            const meatG = ctx.createRadialGradient(-r*0.15,-r*0.15,r*0.05,0,0,r*0.84);
-            meatG.addColorStop(0,'#d32f2f'); meatG.addColorStop(0.6,'#b71c1c'); meatG.addColorStop(1,'#7b0d0d');
-            ctx.fillStyle = meatG;
-            ctx.beginPath(); ctx.ellipse(0,0,r*0.84,r*0.84,0,0,Math.PI*2); ctx.fill();
-
-            // 3 — Fat marbling: 3 irregular blobs
-            ctx.fillStyle = 'rgba(250,240,228,0.90)';
-            [[r*0.28, r*0.18, r*0.095, r*0.07, 0.3],
-             [-r*0.30,-r*0.24, r*0.085, r*0.065,-0.4],
-             [-r*0.05,-r*0.46, r*0.07,  r*0.055, 0.1]
-            ].forEach(([fx,fy,fw,fh,fr2]) => {
-                ctx.save(); ctx.translate(fx,fy); ctx.rotate(fr2);
-                ctx.beginPath(); ctx.ellipse(0,0,fw,fh,0,0,Math.PI*2); ctx.fill();
-                ctx.restore();
-            });
-
-            // 4 — Pepper flecks
-            ctx.fillStyle = 'rgba(20,10,5,0.85)';
-            SALAMI_PEPPER.forEach(p => {
-                ctx.beginPath(); ctx.arc(p[0]*r*0.72,p[1]*r*0.72,r*0.038,0,Math.PI*2); ctx.fill();
-            });
-
-            // 5 — Specular highlight
-            const hlG = ctx.createRadialGradient(-r*0.3,-r*0.3,0,0,0,r*0.9);
-            hlG.addColorStop(0,'rgba(255,200,180,0.18)');
-            hlG.addColorStop(0.5,'rgba(255,150,120,0.06)');
-            hlG.addColorStop(1,'rgba(0,0,0,0)');
-            ctx.fillStyle = hlG;
-            ctx.beginPath(); ctx.ellipse(0,0,r,r,0,0,Math.PI*2); ctx.fill();
-
+            // Nuova fetta di salame diagonale, organica (no spago/linee rette)
+            ctx.save(); ctx.rotate(Math.PI/6);
+            
+            // Involucro (bordo scuro esterno)
+            ctx.fillStyle = '#6d1000'; 
+            ctx.beginPath(); ctx.ellipse(0, 0, r*0.8, r*1.0, 0, 0, Math.PI*2); ctx.fill();
+            
+            // Corpo di carne
+            ctx.fillStyle = '#c62828'; 
+            ctx.beginPath(); ctx.ellipse(0, 0, r*0.75, r*0.95, 0, 0, Math.PI*2); ctx.fill();
+            
+            // Grasso (punti bianchi)
+            ctx.fillStyle = '#f5f5f5';
+            SALAMI_FAT.forEach(f => { ctx.beginPath(); ctx.ellipse(f[0]*r*0.9, f[1]*r*0.9, 2.5, 3.5, f[0], 0, Math.PI*2); ctx.fill(); });
+            
+            // Pepe nero
+            ctx.fillStyle = '#1a1a1a';
+            SALAMI_PEPPER.forEach(p => { ctx.beginPath(); ctx.arc(p[0]*r*0.9, p[1]*r*0.9, 1.2, 0, Math.PI*2); ctx.fill(); });
+            
             ctx.restore();
         }
-
 
         function drawCheese(ctx, r) {
             ctx.fillStyle = '#fbc02d'; ctx.beginPath(); ctx.moveTo(0, -r); ctx.lineTo(r*.8, 0); ctx.lineTo(0, r*.5); ctx.lineTo(-r*.8, 0); ctx.closePath(); ctx.fill();
@@ -514,9 +525,7 @@
             ctx.save();
             ctx.rotate(-Math.PI / 8);
 
-            // Helper: organic steak path
-            function steakPath(scale) {
-                const s = scale;
+            function steakPath(s) {
                 ctx.beginPath();
                 ctx.moveTo(-r*0.75*s, -r*0.35*s);
                 ctx.bezierCurveTo(-r*0.45*s,-r*0.85*s, r*0.55*s,-r*0.75*s, r*0.88*s,-r*0.18*s);
@@ -525,61 +534,44 @@
                 ctx.closePath();
             }
 
-            // 1 — Fat cap (ivory, slightly larger)
-            ctx.fillStyle = '#e8ddd0';
-            steakPath(1.0);
-            ctx.fill();
+            // Fat cap
+            ctx.fillStyle = '#e8ddd0'; steakPath(1.0); ctx.fill();
 
-            // 2 — Seared surface gradient (dark mahogany crust)
-            const crustG = ctx.createRadialGradient(-r*0.1,-r*0.2,r*0.1,0,0,r*0.95);
-            crustG.addColorStop(0,   '#6d2b0e');
-            crustG.addColorStop(0.45,'#5a1f08');
-            crustG.addColorStop(0.78,'#3d1206');
-            crustG.addColorStop(1,   '#2a0c04');
-            ctx.fillStyle = crustG;
-            steakPath(0.90);
-            ctx.fill();
+            // Seared crust
+            const crustG = ctx.createRadialGradient(-r*.1,-r*.2,r*.1,0,0,r*.95);
+            crustG.addColorStop(0, '#6d2b0e'); crustG.addColorStop(.45,'#5a1f08');
+            crustG.addColorStop(.78,'#3d1206'); crustG.addColorStop(1,'#2a0c04');
+            ctx.fillStyle = crustG; steakPath(0.90); ctx.fill();
 
-            // 3 — Medium-rare pink interior (revealed slice zone)
-            ctx.save();
-            steakPath(0.90);
-            ctx.clip();
-            const pinkG = ctx.createRadialGradient(0, r*0.1, 0, 0, 0, r*0.55);
-            pinkG.addColorStop(0,   'rgba(210,90,60,0.72)');
-            pinkG.addColorStop(0.6, 'rgba(160,45,25,0.45)');
-            pinkG.addColorStop(1,   'rgba(0,0,0,0)');
-            ctx.fillStyle = pinkG;
-            ctx.fillRect(-r, -r, r*2, r*2);
+            // Medium-rare interior
+            ctx.save(); steakPath(0.90); ctx.clip();
+            const pinkG = ctx.createRadialGradient(0,r*.1,0,0,0,r*.55);
+            pinkG.addColorStop(0,'rgba(210,90,60,0.72)');
+            pinkG.addColorStop(.6,'rgba(160,45,25,0.45)');
+            pinkG.addColorStop(1,'rgba(0,0,0,0)');
+            ctx.fillStyle = pinkG; ctx.fillRect(-r,-r,r*2,r*2);
             ctx.restore();
 
-            // 4 — Grill marks (2 parallel diagonal dark lines)
-            ctx.save();
-            steakPath(0.88);
-            ctx.clip();
-            ctx.strokeStyle = 'rgba(18,8,4,0.80)';
-            ctx.lineWidth = r * 0.18;
-            ctx.lineCap = 'round';
-            ctx.beginPath(); ctx.moveTo(-r*0.55,-r*0.05); ctx.lineTo(r*0.20, r*0.55); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(-r*0.10,-r*0.42); ctx.lineTo(r*0.62, r*0.20); ctx.stroke();
+            // Grill marks
+            ctx.save(); steakPath(0.88); ctx.clip();
+            ctx.strokeStyle = 'rgba(18,8,4,0.80)'; ctx.lineWidth = r*.18; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(-r*.55,-r*.05); ctx.lineTo(r*.20,r*.55); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-r*.10,-r*.42); ctx.lineTo(r*.62,r*.20); ctx.stroke();
             ctx.restore();
 
-            // 5 — Fat cap highlight
-            ctx.strokeStyle = 'rgba(255,245,230,0.55)';
-            ctx.lineWidth = r * 0.11;
-            ctx.lineCap = 'round';
+            // Fat highlight
+            ctx.strokeStyle = 'rgba(255,245,230,0.55)'; ctx.lineWidth = r*.11; ctx.lineCap = 'round';
             ctx.beginPath();
-            ctx.moveTo(-r*0.75, -r*0.35);
-            ctx.bezierCurveTo(-r*0.45,-r*0.85, r*0.55,-r*0.75, r*0.88,-r*0.18);
+            ctx.moveTo(-r*.75,-r*.35);
+            ctx.bezierCurveTo(-r*.45,-r*.85,r*.55,-r*.75,r*.88,-r*.18);
             ctx.stroke();
 
-            // 6 — Specular sheen top-left
-            const sheen = ctx.createRadialGradient(-r*0.35,-r*0.35,0,0,0,r*0.85);
-            sheen.addColorStop(0,   'rgba(255,180,120,0.22)');
-            sheen.addColorStop(0.5, 'rgba(200,100,60,0.07)');
-            sheen.addColorStop(1,   'rgba(0,0,0,0)');
-            ctx.fillStyle = sheen;
-            steakPath(0.90);
-            ctx.fill();
+            // Specular sheen
+            const sheen = ctx.createRadialGradient(-r*.35,-r*.35,0,0,0,r*.85);
+            sheen.addColorStop(0,'rgba(255,180,120,0.22)');
+            sheen.addColorStop(.5,'rgba(200,100,60,0.07)');
+            sheen.addColorStop(1,'rgba(0,0,0,0)');
+            ctx.fillStyle = sheen; steakPath(0.90); ctx.fill();
 
             ctx.restore();
         }
@@ -636,8 +628,8 @@
             cheese: { id:'cheese', type:'cheese', radius:16, score:15, speed:3.7 },
             risotto:{ id:'risotto', type:'risotto', radius:20, score:20, speed:3.4 },
             meat:   { id:'meat', type:'meat', radius:18, score:20, speed:3.9 },
-            pizza:  { id:'pizza', type:'pizza', radius:18, score:0, action:'KO', speed:4.5 },
-            cake:   { id:'cake', type:'cake', radius:16, score:0, action:'KO', speed:4.5 },
+            pizza:  { id:'pizza', type:'pizza', radius:18, score:-50, action:'PENALTY', speed:4.5 },
+            cake:   { id:'cake', type:'cake', radius:16, score:-50, action:'PENALTY', speed:4.5 },
 
             logo_gt: { id:'logo_gt', type:'logo_gt', radius:22, score:50, speed:4.8 },
             logo_bl: { id:'logo_bl', type:'logo_bl', radius:20, score:50, speed:4.8 }
@@ -684,7 +676,7 @@
                         ${makeGridItem('risotto', 'Risotto', '+20')} ${makeGridItem('meat', 'Bistecca', '+20')}
                     </div>
                     <div class="grid grid-cols-4 gap-1 items-end">
-                        ${makeGridItem('pizza', 'Pizza', 'K.O.', true)} ${makeGridItem('cake', 'Dolci', 'K.O.', true)}
+                        ${makeGridItem('pizza', 'Pizza', '-50 pt', true)} ${makeGridItem('cake', 'Dolci', '-50 pt', true)}
                         ${makeGridImg('logo_gold.png', 'Bonus GT', '+50')} ${makeGridImg('Mrblues.jpg', 'Bonus MB', '+50', true)}
                     </div>
                 `
@@ -729,8 +721,7 @@
             mainCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
             mainCtx.imageSmoothingEnabled = true;
             mainCtx.imageSmoothingQuality = 'high';
-            glass.y = GAME_HEIGHT - 140;
-            if(glass.x > GAME_WIDTH) glass.x = GAME_WIDTH / 2;
+            glass.y = GAME_HEIGHT - 140; if(glass.x > GAME_WIDTH) glass.x = GAME_WIDTH/2;
         }
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 100));
@@ -822,74 +813,90 @@
         }
 
         // --- WhatsApp API ---
-        function openAcquistaMail() {
-            const pts = (document.getElementById('finalScore') || {}).innerText || '0';
-            const sub = encodeURIComponent('Acquisto Pinot Nero Mr. Blues - Germani Terzi');
-            const body = encodeURIComponent(
-                'Gentile Team Germani Terzi,\n\n' +
-                'Ho appena giocato al vostro gioco degustazione "Mr. Blues" e ho totalizzato ' + pts + ' punti!\n\n' +
-                'Sono interessato ad acquistare il Pinot Nero Mr. Blues e vi chiedo cortesemente:\n\n' +
-                '  - Prezzo per singola bottiglia\n' +
-                '  - Prezzo per cassa da 6 bottiglie\n' +
-                '  - Prezzo per cassa da 12 bottiglie\n' +
-                '  - Modalita e costi di spedizione\n\n' +
-                'Potete contattarmi a questo indirizzo per ulteriori informazioni o per finalizzare l\'ordine.\n\n' +
-                'In attesa di un vostro gentile riscontro,\n' +
-                'cordiali saluti.'
-            );
-            const mailUrl = `mailto:info@vinigermaniterzi.com?subject=${sub}&body=${body}`;
-            const opened = window.open(mailUrl, '_self');
-            if (!opened) { window.location.href = mailUrl; }
-        }
-
-                document.getElementById('btnShare').addEventListener('click', async () => {
+        document.getElementById('btnShare').addEventListener('click', async () => {
             const gameUrl = 'https://mfo78.github.io/Mr.Blues/';
 
-            // --- Build share canvas card ---
-            const W = 800, H = 480;
+            // Portrait card: 450×800 (9:16 optimised for mobile)
+            const W = 450, H = 800;
             const offCanvas = document.createElement('canvas');
-            offCanvas.width  = W * 2; // retina
+            offCanvas.width  = W * 2;
             offCanvas.height = H * 2;
             offCanvas.style.width  = W + 'px';
             offCanvas.style.height = H + 'px';
             const oc = offCanvas.getContext('2d');
             oc.scale(2, 2);
 
-            // Background gradient
-            const bgGrad = oc.createLinearGradient(0, 0, W, H);
-            bgGrad.addColorStop(0, '#0d1f2d');
-            bgGrad.addColorStop(1, '#1a0a1a');
+            // Background
+            const bgGrad = oc.createLinearGradient(0, 0, 0, H);
+            bgGrad.addColorStop(0,   '#0d1f2d');
+            bgGrad.addColorStop(0.5, '#1a0a1a');
+            bgGrad.addColorStop(1,   '#0d1f2d');
             oc.fillStyle = bgGrad;
+            oc.beginPath();
             oc.roundRect(0, 0, W, H, 20);
             oc.fill();
 
-            // Bordeaux accent band top
+            // Top accent band
             oc.fillStyle = '#7b1040';
-            oc.fillRect(0, 0, W, 6);
+            oc.fillRect(0, 0, W, 5);
+            oc.fillRect(0, H-5, W, 5);
 
             // Gold border
             oc.strokeStyle = '#c9a227';
-            oc.lineWidth = 2;
+            oc.lineWidth = 1.5;
+            oc.beginPath();
             oc.roundRect(8, 8, W-16, H-16, 16);
             oc.stroke();
 
-            // Title
+            // Brand name
             oc.fillStyle = '#c9a227';
-            oc.font = 'bold 28px Georgia, serif';
+            oc.font = 'bold 22px Georgia, serif';
             oc.textAlign = 'center';
-            oc.fillText('Mr. Blues — Pinot Nero Germani Terzi', W/2, 52);
+            oc.fillText('GERMANI TERZI', W/2, 52);
 
-            // Score
+            // Divider line
+            oc.strokeStyle = 'rgba(201,162,39,0.4)';
+            oc.lineWidth = 1;
+            oc.beginPath(); oc.moveTo(40, 62); oc.lineTo(W-40, 62); oc.stroke();
+
+            // Main title
             oc.fillStyle = '#ffffff';
-            oc.font = 'bold 64px Georgia, serif';
-            oc.fillText(score + ' pt', W/2, 128);
+            oc.font = 'italic bold 38px Georgia, serif';
+            oc.fillText('Mr. Blues', W/2, 110);
+            oc.fillStyle = 'rgba(201,162,39,0.7)';
+            oc.font = '14px sans-serif';
+            oc.fillText('Pinot Nero', W/2, 132);
 
-            // Subtitle
+            // Score circle
+            const cx = W/2, cy = 230, cr = 85;
+            const circGrad = oc.createRadialGradient(cx-20, cy-20, 10, cx, cy, cr);
+            circGrad.addColorStop(0, '#2a0a1a');
+            circGrad.addColorStop(1, '#0d1f2d');
+            oc.fillStyle = circGrad;
+            oc.beginPath(); oc.arc(cx, cy, cr, 0, Math.PI*2); oc.fill();
+            oc.strokeStyle = '#c9a227'; oc.lineWidth = 2.5;
+            oc.beginPath(); oc.arc(cx, cy, cr, 0, Math.PI*2); oc.stroke();
+
             oc.fillStyle = '#c9a227';
-            oc.font = '18px Georgia, serif';
-            oc.fillText('Ho degustato questi abbinamenti:', W/2, 162);
+            oc.font = '13px sans-serif';
+            oc.textAlign = 'center';
+            oc.fillText('PUNTEGGIO', cx, cy - 28);
+            oc.fillStyle = '#ffffff';
+            oc.font = 'bold 58px Georgia, serif';
+            oc.fillText(score, cx, cy + 22);
+            oc.fillStyle = 'rgba(201,162,39,0.7)';
+            oc.font = '14px sans-serif';
+            oc.fillText('punti', cx, cy + 48);
 
-            // Item label map
+            // Items section title
+            oc.fillStyle = '#c9a227';
+            oc.font = 'bold 14px sans-serif';
+            oc.textAlign = 'center';
+            oc.fillText('ABBINAMENTI RACCOLTI', W/2, 345);
+            oc.strokeStyle = 'rgba(201,162,39,0.3)';
+            oc.lineWidth = 1;
+            oc.beginPath(); oc.moveTo(40, 355); oc.lineTo(W-40, 355); oc.stroke();
+
             const ITEM_LABELS = {
                 cherry:'Ciliegie', rasp:'Lamponi', straw:'Fragole', grape:'Uva',
                 rose:'Rose', violet:'Viole', salami:'Salumi', cheese:'Formaggi',
@@ -901,100 +908,88 @@
                 risotto:'\uD83C\uDF5A', meat:'\uD83E\uDD69', logo_gt:'\uD83C\uDFC6', logo_bl:'\uD83C\uDFB7'
             };
 
-            // Collect positive items
             const caught = Object.entries(caughtItems)
                 .filter(([id]) => ITEM_LABELS[id])
-                .sort((a,b) => b[1]-a[1]);
-
-            // Draw item pills
-            const pillH = 42, pillPad = 14, startY = 188;
-            const maxCols = 4;
-            const pillW = Math.floor((W - 40) / maxCols);
-            caught.forEach(([id, cnt], i) => {
-                const col = i % maxCols;
-                const row = Math.floor(i / maxCols);
-                const px = 20 + col * pillW;
-                const py = startY + row * (pillH + 8);
-                if (py + pillH > H - 80) return;
-
-                // Pill background
-                oc.fillStyle = 'rgba(201,162,39,0.12)';
-                oc.strokeStyle = 'rgba(201,162,39,0.45)';
-                oc.lineWidth = 1;
-                oc.beginPath();
-                oc.roundRect(px, py, pillW - 8, pillH, 10);
-                oc.fill(); oc.stroke();
-
-                // Emoji + label + count
-                oc.textAlign = 'left';
-                oc.font = '20px serif';
-                oc.fillText(ITEM_EMOJI[id] || '', px + 8, py + 28);
-                oc.fillStyle = '#f0e6c8';
-                oc.font = '13px sans-serif';
-                oc.fillText(ITEM_LABELS[id], px + 34, py + 18);
-                oc.fillStyle = '#c9a227';
-                oc.font = 'bold 16px sans-serif';
-                oc.fillText('x' + cnt, px + 34, py + 34);
-                oc.fillStyle = '#ffffff';
-            });
+                .sort((a, b) => b[1] - a[1]);
 
             if (caught.length === 0) {
-                oc.fillStyle = '#888';
-                oc.font = '16px sans-serif';
+                oc.fillStyle = '#666';
+                oc.font = '15px sans-serif';
                 oc.textAlign = 'center';
-                oc.fillText('(nessun elemento raccolto)', W/2, 230);
+                oc.fillText('(nessun elemento raccolto)', W/2, 410);
+            } else {
+                // 2-column grid of pills
+                const cols = 2;
+                const pillW = (W - 60) / cols;
+                const pillH = 50;
+                const startY = 368;
+                const gap = 8;
+                caught.forEach(([id, cnt], i) => {
+                    const col = i % cols;
+                    const row = Math.floor(i / cols);
+                    const px = 30 + col * (pillW + gap/2);
+                    const py = startY + row * (pillH + gap);
+                    if (py + pillH > H - 110) return;
+
+                    oc.fillStyle = 'rgba(201,162,39,0.10)';
+                    oc.strokeStyle = 'rgba(201,162,39,0.40)';
+                    oc.lineWidth = 1;
+                    oc.beginPath();
+                    oc.roundRect(px, py, pillW - gap/2, pillH, 10);
+                    oc.fill(); oc.stroke();
+
+                    // Emoji
+                    oc.font = '22px serif';
+                    oc.textAlign = 'left';
+                    oc.fillText(ITEM_EMOJI[id] || '', px + 10, py + 32);
+                    // Label
+                    oc.fillStyle = '#f0e6c8';
+                    oc.font = '13px sans-serif';
+                    oc.fillText(ITEM_LABELS[id], px + 40, py + 20);
+                    // Count
+                    oc.fillStyle = '#c9a227';
+                    oc.font = 'bold 16px sans-serif';
+                    oc.fillText('×' + cnt, px + 40, py + 38);
+                });
             }
 
-            // Divider
+            // Bottom divider
             oc.strokeStyle = 'rgba(201,162,39,0.3)';
             oc.lineWidth = 1;
-            oc.beginPath(); oc.moveTo(40, H-72); oc.lineTo(W-40, H-72); oc.stroke();
+            oc.beginPath(); oc.moveTo(40, H-100); oc.lineTo(W-40, H-100); oc.stroke();
 
-            // Challenge footer
+            // Challenge text
             oc.fillStyle = '#c9a227';
             oc.font = 'bold 15px sans-serif';
             oc.textAlign = 'center';
-            oc.fillText('Riesci a battermi? \uD83C\uDF77  ' + gameUrl, W/2, H-44);
-
-            oc.fillStyle = 'rgba(255,255,255,0.45)';
+            oc.fillText('\uD83C\uDF77 Riesci a battermi?', W/2, H-72);
+            oc.fillStyle = 'rgba(255,255,255,0.6)';
             oc.font = '12px sans-serif';
-            oc.fillText('Gioco ufficiale Germani Terzi', W/2, H-22);
+            oc.fillText(gameUrl, W/2, H-50);
+            oc.fillStyle = 'rgba(255,255,255,0.3)';
+            oc.font = '11px sans-serif';
+            oc.fillText('Gioco ufficiale Germani Terzi', W/2, H-28);
 
-            // --- Convert to blob and share ---
+            // Share
             offCanvas.toBlob(async (blob) => {
-                if (!blob) {
-                    window.open(`https://wa.me/?text=${encodeURIComponent('🍷 ' + score + ' pt su Mr. Blues! Riesci a battermi? ' + gameUrl)}`, '_blank');
-                    return;
-                }
-                const file = new File([blob], 'mrblues-score.png', { type: 'image/png' });
                 const shareMsg = '\uD83C\uDF77 Ho totalizzato ' + score + ' pt nel gioco Mr. Blues di Germani Terzi! Riesci a battermi?\n' + gameUrl;
+                if (!blob) { window.open('https://wa.me/?text=' + encodeURIComponent(shareMsg), '_blank'); return; }
+                const file = new File([blob], 'mrblues-score.png', { type: 'image/png' });
                 try {
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        await navigator.share({
-                            title: 'Mr. Blues — Germani Terzi',
-                            text: shareMsg,
-                            files: [file]
-                        });
+                        await navigator.share({ title: 'Mr. Blues', text: shareMsg, files: [file] });
                         return;
                     }
                 } catch(_) {}
-                // Text-only Web Share
-                try {
-                    if (navigator.share) { await navigator.share({ title: 'Mr. Blues', text: shareMsg }); return; }
-                } catch(_) {}
-                // WhatsApp fallback
-                window.open(`https://wa.me/?text=${encodeURIComponent(shareMsg)}`, '_blank');
+                try { if (navigator.share) { await navigator.share({ title: 'Mr. Blues', text: shareMsg }); return; } } catch(_) {}
+                window.open('https://wa.me/?text=' + encodeURIComponent(shareMsg), '_blank');
             }, 'image/png');
         });
 
         function updateHUD() {
             document.getElementById('scoreDisplay').innerText = score;
-            const heartFull  = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin:0 2px"><path fill="#c0182e" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
-            const heartEmpty = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" style="display:inline-block;vertical-align:middle;margin:0 2px;opacity:0.22"><path fill="#c0182e" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
-            let ht = '';
-            const max = Math.max(3, lives);
-            for(let i = 0; i < max; i++) ht += (i < lives) ? heartFull : heartEmpty;
-            document.getElementById('livesDisplay').innerHTML = ht;
+            let ht = ""; for(let i=0; i<3; i++) ht += i < lives ? "❤" : "🖤";
+            document.getElementById('livesDisplay').innerHTML = `<span class="life-icon">${ht}</span>`;
         }
 
         function spawnFloatingText(x, y, text, color) {
@@ -1065,20 +1060,12 @@
         }
 
         function defineGlass(ctx, g) {
-            const hw = g.rimWidth / 2, bw = g.width / 2, hh = g.height / 2;
-            ctx.beginPath();
-            ctx.moveTo(-hw, -hh);
-            // Left side: curves inward then flares at base
-            ctx.bezierCurveTo(-hw - 8,  -hh * 0.4, -bw,  hh * 0.3, -bw * 0.35, hh);
-            ctx.bezierCurveTo(-bw * 0.15, hh + 4,   bw * 0.15, hh + 4,  bw * 0.35, hh);
-            // Right side symmetric
-            ctx.bezierCurveTo( bw,  hh * 0.3,  hw + 8, -hh * 0.4, hw, -hh);
-            ctx.closePath();
+            ctx.beginPath(); ctx.moveTo(-g.rimWidth/2, -g.height/2);
+            ctx.bezierCurveTo(-g.width/2-10, -g.height/4, -g.width/2, g.height/2, 0, g.height/2);
+            ctx.bezierCurveTo(g.width/2, g.height/2, g.width/2+10, -g.height/4, g.rimWidth/2, -g.height/2); ctx.closePath();
         }
 
         function drawMain(ctx) {
-            const _dpr = window.devicePixelRatio || 1;
-            mainCtx.setTransform(_dpr, 0, 0, _dpr, 0, 0);
             ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
             
             ctx.save(); ctx.translate(glass.x, glass.y);
