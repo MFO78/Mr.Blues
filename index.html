@@ -511,36 +511,79 @@
         }
 
         function drawMeat(ctx, r) {
-            // Nuova bistecca organica (Steak) - senza spigoli rigidi
-            ctx.save(); ctx.rotate(-Math.PI/8);
-            
-            let g = ctx.createLinearGradient(-r, -r, r, r);
-            g.addColorStop(0, '#5d4037'); g.addColorStop(0.5, '#4e342e'); g.addColorStop(1, '#3e2723');
-            ctx.fillStyle = g;
+            ctx.save();
+            ctx.rotate(-Math.PI / 8);
 
-            // Forma organica della carne
-            ctx.beginPath();
-            ctx.moveTo(-r*0.8, -r*0.4);
-            ctx.bezierCurveTo(-r*0.5, -r*0.8, r*0.6, -r*0.7, r*0.9, -r*0.2);
-            ctx.bezierCurveTo(r*1.1, r*0.3, r*0.6, r*0.8, 0, r*0.7);
-            ctx.bezierCurveTo(-r*0.6, r*0.6, -r*1.0, r*0.2, -r*0.8, -r*0.4);
+            // Helper: organic steak path
+            function steakPath(scale) {
+                const s = scale;
+                ctx.beginPath();
+                ctx.moveTo(-r*0.75*s, -r*0.35*s);
+                ctx.bezierCurveTo(-r*0.45*s,-r*0.85*s, r*0.55*s,-r*0.75*s, r*0.88*s,-r*0.18*s);
+                ctx.bezierCurveTo(r*1.05*s, r*0.32*s, r*0.55*s, r*0.80*s, 0, r*0.72*s);
+                ctx.bezierCurveTo(-r*0.58*s, r*0.62*s,-r*0.98*s, r*0.18*s,-r*0.75*s,-r*0.35*s);
+                ctx.closePath();
+            }
+
+            // 1 — Fat cap (ivory, slightly larger)
+            ctx.fillStyle = '#e8ddd0';
+            steakPath(1.0);
             ctx.fill();
 
-            // Bordo di grasso (solo su un lato)
-            ctx.strokeStyle = '#d7ccc8'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+            // 2 — Seared surface gradient (dark mahogany crust)
+            const crustG = ctx.createRadialGradient(-r*0.1,-r*0.2,r*0.1,0,0,r*0.95);
+            crustG.addColorStop(0,   '#6d2b0e');
+            crustG.addColorStop(0.45,'#5a1f08');
+            crustG.addColorStop(0.78,'#3d1206');
+            crustG.addColorStop(1,   '#2a0c04');
+            ctx.fillStyle = crustG;
+            steakPath(0.90);
+            ctx.fill();
+
+            // 3 — Medium-rare pink interior (revealed slice zone)
+            ctx.save();
+            steakPath(0.90);
+            ctx.clip();
+            const pinkG = ctx.createRadialGradient(0, r*0.1, 0, 0, 0, r*0.55);
+            pinkG.addColorStop(0,   'rgba(210,90,60,0.72)');
+            pinkG.addColorStop(0.6, 'rgba(160,45,25,0.45)');
+            pinkG.addColorStop(1,   'rgba(0,0,0,0)');
+            ctx.fillStyle = pinkG;
+            ctx.fillRect(-r, -r, r*2, r*2);
+            ctx.restore();
+
+            // 4 — Grill marks (2 parallel diagonal dark lines)
+            ctx.save();
+            steakPath(0.88);
+            ctx.clip();
+            ctx.strokeStyle = 'rgba(18,8,4,0.80)';
+            ctx.lineWidth = r * 0.18;
+            ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(-r*0.55,-r*0.05); ctx.lineTo(r*0.20, r*0.55); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-r*0.10,-r*0.42); ctx.lineTo(r*0.62, r*0.20); ctx.stroke();
+            ctx.restore();
+
+            // 5 — Fat cap highlight
+            ctx.strokeStyle = 'rgba(255,245,230,0.55)';
+            ctx.lineWidth = r * 0.11;
+            ctx.lineCap = 'round';
             ctx.beginPath();
-            ctx.moveTo(-r*0.8, -r*0.4);
-            ctx.bezierCurveTo(-r*0.5, -r*0.8, r*0.6, -r*0.7, r*0.9, -r*0.2);
+            ctx.moveTo(-r*0.75, -r*0.35);
+            ctx.bezierCurveTo(-r*0.45,-r*0.85, r*0.55,-r*0.75, r*0.88,-r*0.18);
             ctx.stroke();
 
-            // Segni di grigliatura (curvati per seguire il volume)
-            ctx.strokeStyle = '#212121'; ctx.lineWidth = 2.5;
-            ctx.beginPath(); ctx.moveTo(-r*0.5, -r*0.1); ctx.lineTo(r*0.2, r*0.5); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(-r*0.1, -r*0.4); ctx.lineTo(r*0.6, r*0.2); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(-r*0.7, 0.1); ctx.lineTo(-r*0.2, r*0.6); ctx.stroke();
-            
+            // 6 — Specular sheen top-left
+            const sheen = ctx.createRadialGradient(-r*0.35,-r*0.35,0,0,0,r*0.85);
+            sheen.addColorStop(0,   'rgba(255,180,120,0.22)');
+            sheen.addColorStop(0.5, 'rgba(200,100,60,0.07)');
+            sheen.addColorStop(1,   'rgba(0,0,0,0)');
+            ctx.fillStyle = sheen;
+            steakPath(0.90);
+            ctx.fill();
+
             ctx.restore();
         }
+
 
         function drawPizza(ctx, r) {
             ctx.save(); ctx.rotate(-Math.PI/6);
@@ -671,7 +714,7 @@
         
         let GAME_WIDTH = window.innerWidth, GAME_HEIGHT = window.innerHeight;
         let gameState = 'SPLASH', currentLevelKey = 'SENSORIALE';
-        let score = 0, lives = 3, lastLifeScore = 0, frameCount = 0, animationId, items = [], floatingTexts = [];
+        let score = 0, lives = 3, lastLifeScore = 0, frameCount = 0, animationId, items = [], floatingTexts = [], caughtItems = {};
         
         const glass = { x: GAME_WIDTH/2, y: 0, width: 90, rimWidth: 55, height: 90, stemHeight: 50, baseWidth: 60, fillLevel: 0 };
         let finalScreenshotData = null;
@@ -754,7 +797,7 @@
         function startGame() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('hud').classList.remove('hidden');
-            score = 0; lives = 3; lastLifeScore = 0; glass.fillLevel = 0; items = []; floatingTexts = []; frameCount = 0;
+            score = 0; lives = 3; lastLifeScore = 0; glass.fillLevel = 0; items = []; floatingTexts = []; frameCount = 0; caughtItems = {};
             gameState = 'PLAYING';
             updateHUD();
             if(animationId) cancelAnimationFrame(animationId);
@@ -800,34 +843,148 @@
         }
 
                 document.getElementById('btnShare').addEventListener('click', async () => {
-            const gameUrl  = 'https://mfo78.github.io/Mr.Blues/';
-            const shareMsg = `🍷 Ho totalizzato ${score} punti nel gioco ufficiale del Pinot Nero Mr. Blues di Germani Terzi!\nRiesci a battermi? 🎮\n${gameUrl}`;
-            
-            // Try Web Share API with hero image (best for mobile/WhatsApp)
-            try {
-                const heroResp = await fetch('1000087388-2.jpg');
-                const heroBlob = await heroResp.blob();
-                const heroFile = new File([heroBlob], 'mr-blues-pinot-nero.jpg', { type: 'image/jpeg' });
-                if (navigator.canShare && navigator.canShare({ files: [heroFile] })) {
-                    await navigator.share({
-                        title: 'Mr. Blues — Pinot Nero Germani Terzi',
-                        text: shareMsg,
-                        files: [heroFile]
-                    });
+            const gameUrl = 'https://mfo78.github.io/Mr.Blues/';
+
+            // --- Build share canvas card ---
+            const W = 800, H = 480;
+            const offCanvas = document.createElement('canvas');
+            offCanvas.width  = W * 2; // retina
+            offCanvas.height = H * 2;
+            offCanvas.style.width  = W + 'px';
+            offCanvas.style.height = H + 'px';
+            const oc = offCanvas.getContext('2d');
+            oc.scale(2, 2);
+
+            // Background gradient
+            const bgGrad = oc.createLinearGradient(0, 0, W, H);
+            bgGrad.addColorStop(0, '#0d1f2d');
+            bgGrad.addColorStop(1, '#1a0a1a');
+            oc.fillStyle = bgGrad;
+            oc.roundRect(0, 0, W, H, 20);
+            oc.fill();
+
+            // Bordeaux accent band top
+            oc.fillStyle = '#7b1040';
+            oc.fillRect(0, 0, W, 6);
+
+            // Gold border
+            oc.strokeStyle = '#c9a227';
+            oc.lineWidth = 2;
+            oc.roundRect(8, 8, W-16, H-16, 16);
+            oc.stroke();
+
+            // Title
+            oc.fillStyle = '#c9a227';
+            oc.font = 'bold 28px Georgia, serif';
+            oc.textAlign = 'center';
+            oc.fillText('Mr. Blues — Pinot Nero Germani Terzi', W/2, 52);
+
+            // Score
+            oc.fillStyle = '#ffffff';
+            oc.font = 'bold 64px Georgia, serif';
+            oc.fillText(score + ' pt', W/2, 128);
+
+            // Subtitle
+            oc.fillStyle = '#c9a227';
+            oc.font = '18px Georgia, serif';
+            oc.fillText('Ho degustato questi abbinamenti:', W/2, 162);
+
+            // Item label map
+            const ITEM_LABELS = {
+                cherry:'Ciliegie', rasp:'Lamponi', straw:'Fragole', grape:'Uva',
+                rose:'Rose', violet:'Viole', salami:'Salumi', cheese:'Formaggi',
+                risotto:'Risotto', meat:'Bistecca', logo_gt:'Bonus GT', logo_bl:'Bonus MB'
+            };
+            const ITEM_EMOJI = {
+                cherry:'\uD83C\uDF52', rasp:'\uD83E\uDED0', straw:'\uD83C\uDF53', grape:'\uD83C\uDF47',
+                rose:'\uD83C\uDF39', violet:'\uD83D\uDC9C', salami:'\uD83C\uDF56', cheese:'\uD83E\uDDC0',
+                risotto:'\uD83C\uDF5A', meat:'\uD83E\uDD69', logo_gt:'\uD83C\uDFC6', logo_bl:'\uD83C\uDFB7'
+            };
+
+            // Collect positive items
+            const caught = Object.entries(caughtItems)
+                .filter(([id]) => ITEM_LABELS[id])
+                .sort((a,b) => b[1]-a[1]);
+
+            // Draw item pills
+            const pillH = 42, pillPad = 14, startY = 188;
+            const maxCols = 4;
+            const pillW = Math.floor((W - 40) / maxCols);
+            caught.forEach(([id, cnt], i) => {
+                const col = i % maxCols;
+                const row = Math.floor(i / maxCols);
+                const px = 20 + col * pillW;
+                const py = startY + row * (pillH + 8);
+                if (py + pillH > H - 80) return;
+
+                // Pill background
+                oc.fillStyle = 'rgba(201,162,39,0.12)';
+                oc.strokeStyle = 'rgba(201,162,39,0.45)';
+                oc.lineWidth = 1;
+                oc.beginPath();
+                oc.roundRect(px, py, pillW - 8, pillH, 10);
+                oc.fill(); oc.stroke();
+
+                // Emoji + label + count
+                oc.textAlign = 'left';
+                oc.font = '20px serif';
+                oc.fillText(ITEM_EMOJI[id] || '', px + 8, py + 28);
+                oc.fillStyle = '#f0e6c8';
+                oc.font = '13px sans-serif';
+                oc.fillText(ITEM_LABELS[id], px + 34, py + 18);
+                oc.fillStyle = '#c9a227';
+                oc.font = 'bold 16px sans-serif';
+                oc.fillText('x' + cnt, px + 34, py + 34);
+                oc.fillStyle = '#ffffff';
+            });
+
+            if (caught.length === 0) {
+                oc.fillStyle = '#888';
+                oc.font = '16px sans-serif';
+                oc.textAlign = 'center';
+                oc.fillText('(nessun elemento raccolto)', W/2, 230);
+            }
+
+            // Divider
+            oc.strokeStyle = 'rgba(201,162,39,0.3)';
+            oc.lineWidth = 1;
+            oc.beginPath(); oc.moveTo(40, H-72); oc.lineTo(W-40, H-72); oc.stroke();
+
+            // Challenge footer
+            oc.fillStyle = '#c9a227';
+            oc.font = 'bold 15px sans-serif';
+            oc.textAlign = 'center';
+            oc.fillText('Riesci a battermi? \uD83C\uDF77  ' + gameUrl, W/2, H-44);
+
+            oc.fillStyle = 'rgba(255,255,255,0.45)';
+            oc.font = '12px sans-serif';
+            oc.fillText('Gioco ufficiale Germani Terzi', W/2, H-22);
+
+            // --- Convert to blob and share ---
+            offCanvas.toBlob(async (blob) => {
+                if (!blob) {
+                    window.open(`https://wa.me/?text=${encodeURIComponent('🍷 ' + score + ' pt su Mr. Blues! Riesci a battermi? ' + gameUrl)}`, '_blank');
                     return;
                 }
-            } catch(_) {}
-            
-            // Fallback: text only Web Share
-            try {
-                if (navigator.share) {
-                    await navigator.share({ title: 'Mr. Blues — Pinot Nero Germani Terzi', text: shareMsg });
-                    return;
-                }
-            } catch(_) {}
-            
-            // Final fallback: WhatsApp web/deep-link
-            window.open(`https://wa.me/?text=${encodeURIComponent(shareMsg)}`, '_blank');
+                const file = new File([blob], 'mrblues-score.png', { type: 'image/png' });
+                const shareMsg = '\uD83C\uDF77 Ho totalizzato ' + score + ' pt nel gioco Mr. Blues di Germani Terzi! Riesci a battermi?\n' + gameUrl;
+                try {
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            title: 'Mr. Blues — Germani Terzi',
+                            text: shareMsg,
+                            files: [file]
+                        });
+                        return;
+                    }
+                } catch(_) {}
+                // Text-only Web Share
+                try {
+                    if (navigator.share) { await navigator.share({ title: 'Mr. Blues', text: shareMsg }); return; }
+                } catch(_) {}
+                // WhatsApp fallback
+                window.open(`https://wa.me/?text=${encodeURIComponent(shareMsg)}`, '_blank');
+            }, 'image/png');
         });
 
         function updateHUD() {
@@ -890,6 +1047,7 @@
                         } else {
                             playSound('catch');
                             score += it.score;
+                            caughtItems[it.id] = (caughtItems[it.id] || 0) + 1;
                             spawnFloatingText(it.x, gT, "+"+it.score, "#d1a34a");
                             glass.fillLevel = Math.min(1, glass.fillLevel + 0.05); 
                         }
