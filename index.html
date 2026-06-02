@@ -275,6 +275,13 @@
                 <button id="btnVictoryMail" class="btn-primary w-full flex items-center justify-center gap-2">
                     ✉️ Invia richiesta a Germani Terzi
                 </button>
+
+                <!-- Token di verifica vittoria -->
+                <div id="vTokenBox" class="hidden w-full mt-3 p-3 rounded-xl text-center" style="background:rgba(14,55,71,0.85);border:1px solid rgba(209,163,74,0.6);">
+                    <p class="text-[#d1a34a] text-xs font-bold mb-1 uppercase tracking-widest">Codice Verifica Premio</p>
+                    <p id="vTokenCode" class="text-white font-mono text-lg font-bold tracking-wider mb-1"></p>
+                    <p class="text-gray-400 text-xs">Incluso automaticamente nella mail · Germani Terzi lo verificherà</p>
+                </div>
             </div>
 
             <button id="btnShareVictory" class="btn-primary btn-whatsapp w-full flex items-center justify-center gap-2 mb-2">
@@ -966,6 +973,24 @@ Cordiali saluti`
             }
         }
 
+        // ── Generazione token anti-frode (HMAC-SHA256 semplificato lato client) ──────
+        // SALT: cambia questa stringa su ogni stagione promozionale
+        const TOKEN_SALT = 'MrBlues2026GT';
+        const TOKEN_MIN_SCORE = 10000;
+
+        async function generateWinToken(playerScore, playerName) {
+            const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+            const payload = `${playerScore}|${playerName}|${date}|${TOKEN_SALT}`;
+            const msgBuffer = new TextEncoder().encode(payload);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            // Token leggibile: MRBLUES-YYYYMMDD-XXXXXX (6 char hex uppercase)
+            const datePart = date.replace(/-/g, '');
+            const code = hex.slice(0, 6).toUpperCase();
+            return `MRBLUES-${datePart}-${code}`;
+        }
+
         function showVictory() {
             document.getElementById('hud').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
@@ -989,25 +1014,41 @@ Cordiali saluti`
                 });
             }
 
-            // Genera scorecard subito (loghi già caricati a questo punto)
+            // Genera scorecard
             try { finalScreenshotData = generateShareCard(); } catch(e) { finalScreenshotData = null; }
 
-            // --- Mail vincitore (cloneNode elimina listener doppi da ripartite) ---
+            // Variabile token condivisa tra i listener
+            let currentToken = '';
+
+            // --- Mail vincitore ---
             const btnMail = document.getElementById('btnVictoryMail');
             const newBtnMail = btnMail.cloneNode(true);
             btnMail.parentNode.replaceChild(newBtnMail, btnMail);
-            newBtnMail.addEventListener('click', () => {
+            newBtnMail.addEventListener('click', async () => {
                 const name  = document.getElementById('vName').value.trim();
                 const email = document.getElementById('vEmail').value.trim();
                 const phone = document.getElementById('vPhone').value.trim();
                 const errEl = document.getElementById('vError');
                 if (!name || !email) { errEl.classList.remove('hidden'); return; }
                 errEl.classList.add('hidden');
+
+                // Genera token se non ancora fatto
+                if (!currentToken) currentToken = await generateWinToken(score, name);
+
+                // Mostra token nella UI
+                const tokenBox = document.getElementById('vTokenBox');
+                const tokenCode = document.getElementById('vTokenCode');
+                tokenCode.innerText = currentToken;
+                tokenBox.classList.remove('hidden');
+
                 const subject = encodeURIComponent('🏆 Ho vinto i calici Mr. Blues! – Richiesta premio e listino prezzi');
                 const body = encodeURIComponent(
 `Buongiorno,
 
 ho appena completato la sfida degustazione Mr. Blues con ${score.toLocaleString('it-IT')} punti e ho diritto al premio: una coppia di calici originali Mr. Blues!
+
+▶ CODICE VERIFICA PREMIO: ${currentToken}
+  (Germani Terzi può verificare questo codice su: https://mfo78.github.io/Mr.Blues/verify.html)
 
 Vorrei riscattare il premio e ricevere il listino prezzi, in particolare:
 - Prezzo bottiglia singola
@@ -1023,13 +1064,12 @@ In attesa di un vostro riscontro, porgo cordiali saluti.`
                 window.open(`mailto:info@vinigermaniterzi.com?subject=${subject}&body=${body}`, '_blank');
             });
 
-            // --- Condividi scorecard via WhatsApp (cloneNode elimina listener doppi) ---
+            // --- Condividi scorecard via WhatsApp ---
             const btnShare = document.getElementById('btnShareVictory');
             const newBtnShare = btnShare.cloneNode(true);
             btnShare.parentNode.replaceChild(newBtnShare, btnShare);
             newBtnShare.addEventListener('click', async () => {
                 const shareText = `🏆 Ho totalizzato ${score.toLocaleString('it-IT')} punti nel gioco Mr. Blues di Germani Terzi! Ho vinto i calici! Riesci a battermi?\n\nhttps://mfo78.github.io/Mr.Blues/`;
-                // Tenta Web Share API con immagine (funziona su mobile)
                 if (finalScreenshotData) {
                     try {
                         const blob = dataURLtoBlob(finalScreenshotData);
@@ -1038,18 +1078,18 @@ In attesa di un vostro riscontro, porgo cordiali saluti.`
                             await navigator.share({ title: 'Mr. Blues – Vittoria!', text: shareText, files: [file] });
                             return;
                         }
-                    } catch(e) { /* fallthrough al link diretto */ }
+                    } catch(e) { /* fallthrough */ }
                 }
-                // Fallback universale: wa.me funziona su mobile e desktop
                 window.open('https://wa.me/?text=' + encodeURIComponent(shareText), '_blank');
             });
 
-            // --- Riprova (cloneNode elimina listener doppi) ---
+            // --- Riprova ---
             const btnRestart = document.getElementById('btnRestartVictory');
             const newBtnRestart = btnRestart.cloneNode(true);
             btnRestart.parentNode.replaceChild(newBtnRestart, btnRestart);
             newBtnRestart.addEventListener('click', () => {
                 document.getElementById('victoryScreen').classList.add('hidden');
+                document.getElementById('vTokenBox').classList.add('hidden');
                 selectLevel(currentLevelKey);
             });
         }
