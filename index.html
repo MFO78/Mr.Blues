@@ -1048,18 +1048,19 @@ Cordiali saluti`
 ho appena completato la sfida degustazione Mr. Blues con ${score.toLocaleString('it-IT')} punti e ho diritto al premio: una coppia di calici originali Mr. Blues!
 
 ▶ CODICE VERIFICA PREMIO: ${currentToken}
-  (Germani Terzi può verificare questo codice su: https://mfo78.github.io/Mr.Blues/verify.html)
 
 Vorrei riscattare il premio e ricevere il listino prezzi, in particolare:
 - Prezzo bottiglia singola
 - Prezzo cassa da 6 bottiglie
+- Prezzo cassa da 12 bottiglie
 
 I miei dati:
 - Nome: ${name}
 - E-mail: ${email}
 - Telefono: ${phone || 'non fornito'}
 
-In attesa di un vostro riscontro, porgo cordiali saluti.`
+In attesa di un vostro riscontro, porgo cordiali saluti,
+${name}`
                 );
                 window.open(`mailto:info@vinigermaniterzi.com?subject=${subject}&body=${body}`, '_blank');
             });
