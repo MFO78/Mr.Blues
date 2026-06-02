@@ -668,10 +668,151 @@
         document.getElementById('btnStart').addEventListener('click', startGame);
         document.getElementById('btnRestart').addEventListener('click', () => selectLevel(currentLevelKey));
 
+        function generateShareCard() {
+            const W = 450, H = 800;
+            const sc = document.createElement('canvas');
+            sc.width = W; sc.height = H;
+            const c = sc.getContext('2d');
+
+            // Sfondo sfumato
+            const bgGrad = c.createLinearGradient(0, 0, 0, H);
+            bgGrad.addColorStop(0,   '#0a1628');
+            bgGrad.addColorStop(0.5, '#12485c');
+            bgGrad.addColorStop(1,   '#0a1628');
+            c.fillStyle = bgGrad;
+            c.fillRect(0, 0, W, H);
+
+            // Cornice oro
+            c.strokeStyle = '#d1a34a';
+            c.lineWidth = 4;
+            c.strokeRect(10, 10, W-20, H-20);
+            c.strokeStyle = 'rgba(209,163,74,0.3)';
+            c.lineWidth = 1;
+            c.strokeRect(16, 16, W-32, H-32);
+
+            // Header: Mr. Blues
+            c.fillStyle = '#d1a34a';
+            c.font = 'bold 42px Georgia, serif';
+            c.textAlign = 'center';
+            c.fillText('Mr. Blues', W/2, 80);
+
+            // Sottotitolo
+            c.fillStyle = '#8fb8c8';
+            c.font = 'italic 18px Georgia, serif';
+            c.fillText('Pinot Nero · Germani Terzi', W/2, 110);
+
+            // Linea separatore
+            c.strokeStyle = 'rgba(209,163,74,0.5)';
+            c.lineWidth = 1;
+            c.beginPath(); c.moveTo(40, 128); c.lineTo(W-40, 128); c.stroke();
+
+            // Punteggio
+            c.fillStyle = '#ffffff';
+            c.font = 'bold 96px Georgia, serif';
+            c.fillText(score.toString(), W/2, 240);
+            c.fillStyle = '#8fb8c8';
+            c.font = '20px Georgia, serif';
+            c.fillText('punti', W/2, 272);
+
+            // Separatore
+            c.strokeStyle = 'rgba(209,163,74,0.5)';
+            c.lineWidth = 1;
+            c.beginPath(); c.moveTo(40, 296); c.lineTo(W-40, 296); c.stroke();
+
+            // Raccolta abbinamenti
+            c.fillStyle = '#d1a34a';
+            c.font = 'bold 16px Georgia, serif';
+            c.fillText('Abbinamenti raccolti:', W/2, 328);
+
+            // Tally items (conta per tipo dalle items raccolte via collectedStats)
+            const stats = window._collectedStats || {};
+            const labels = {
+                cherry:'Ciliegie', rasp:'Lamponi', straw:'Fragole', grape:'Uva',
+                rose:'Rosa', violet:'Viola', salami:'Salumi', cheese:'Formaggi',
+                risotto:'Risotto', meat:'Bistecca',
+                logo_gt:'Bonus GT', logo_bl:'Bonus MB'
+            };
+
+            const entries = Object.entries(stats).filter(([k,v]) => v > 0 && labels[k]);
+            const cols = 2, rowH = 72, startY = 350;
+            const cellW = (W - 80) / cols;
+
+            entries.forEach(([key, cnt], idx) => {
+                const col = idx % cols;
+                const row = Math.floor(idx / cols);
+                const cx = 40 + col * cellW + cellW/2;
+                const cy = startY + row * rowH;
+                if (cy + rowH > H - 120) return; // non sforare
+
+                // Box
+                c.fillStyle = 'rgba(18,72,92,0.7)';
+                roundRect(c, 40 + col*cellW, cy, cellW - 8, rowH - 8, 8);
+                c.fill();
+                c.strokeStyle = 'rgba(209,163,74,0.4)';
+                c.lineWidth = 1;
+                roundRect(c, 40 + col*cellW, cy, cellW - 8, rowH - 8, 8);
+                c.stroke();
+
+                // Disegna icona con le funzioni draw esistenti
+                const iconX = 40 + col*cellW + 28, iconY = cy + rowH/2;
+                c.save();
+                c.translate(iconX, iconY);
+                const r = 16;
+                const drawFn = {
+                    cherry: drawCherry, rasp: drawRasp, straw: drawStraw, grape: drawGrape,
+                    rose: drawRose, violet: drawViolet,
+                    salami: drawSalami, cheese: drawCheese, risotto: drawRisotto, meat: drawMeat
+                }[key];
+                if (drawFn) drawFn(c, r);
+                c.restore();
+
+                // Label
+                c.fillStyle = '#ffffff';
+                c.font = 'bold 14px Arial, sans-serif';
+                c.textAlign = 'left';
+                c.fillText(labels[key] || key, 40 + col*cellW + 52, cy + rowH/2 - 6);
+                c.fillStyle = '#d1a34a';
+                c.font = 'bold 18px Arial, sans-serif';
+                c.fillText('x' + cnt, 40 + col*cellW + 52, cy + rowH/2 + 14);
+                c.textAlign = 'center';
+            });
+
+            // Footer CTA
+            const footerY = H - 110;
+            c.strokeStyle = 'rgba(209,163,74,0.5)';
+            c.lineWidth = 1;
+            c.beginPath(); c.moveTo(40, footerY); c.lineTo(W-40, footerY); c.stroke();
+
+            c.fillStyle = '#ffffff';
+            c.font = 'bold 20px Georgia, serif';
+            c.fillText('🍷 Riesci a battermi?', W/2, footerY + 34);
+
+            c.fillStyle = '#d1a34a';
+            c.font = '13px Arial, sans-serif';
+            c.fillText('https://mfo78.github.io/Mr.Blues/', W/2, footerY + 58);
+
+            c.fillStyle = '#8fb8c8';
+            c.font = '12px Arial, sans-serif';
+            c.fillText('Germani Terzi · Mr. Blues · Pinot Nero', W/2, footerY + 82);
+
+            return sc.toDataURL('image/jpeg', 0.93);
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x+r, y);
+            ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+            ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+            ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+            ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
+            ctx.closePath();
+        }
+
         function startGame() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('hud').classList.remove('hidden');
             score = 0; lives = 3; lastLifeScore = 0; glass.fillLevel = 0; items = []; floatingTexts = []; frameCount = 0;
+            window._collectedStats = {};
             gameState = 'PLAYING';
             updateHUD();
             if(animationId) cancelAnimationFrame(animationId);
@@ -683,7 +824,10 @@
             playSound('ko'); // Audio Feedback
             
             // Generate Screenshot
-            try { finalScreenshotData = mainCanvas.toDataURL('image/jpeg', 0.9); } catch(e) { console.error(e); }
+            // Genera share card portrait
+            try { finalScreenshotData = generateShareCard(); } catch(e) { console.error(e); }
+            // Fallback screenshot canvas
+            if(!finalScreenshotData) { try { finalScreenshotData = mainCanvas.toDataURL('image/jpeg', 0.92); } catch(e2){} }
             
             document.getElementById('hud').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.remove('hidden');
@@ -782,7 +926,9 @@ https://whatsapp.com/channel/0029Vb7wYAu6rsQrrDdorX3R`;
                             playSound('catch');
                             score += it.score;
                             spawnFloatingText(it.x, gT, "+"+it.score, "#d1a34a");
-                            glass.fillLevel = Math.min(1, glass.fillLevel + 0.05); 
+                            glass.fillLevel = Math.min(1, glass.fillLevel + 0.05);
+                            if(!window._collectedStats) window._collectedStats = {};
+                            window._collectedStats[it.type] = (window._collectedStats[it.type] || 0) + 1;
                         }
                         updateHUD(); items.splice(i, 1); continue;
                     }
