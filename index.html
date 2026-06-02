@@ -990,14 +990,15 @@ Cordiali saluti`
         }
 
         document.getElementById('btnVictoryMail').addEventListener('click', () => {
-            const name  = document.getElementById('vName').value.trim();
-            const email = document.getElementById('vEmail').value.trim();
-            const phone = document.getElementById('vPhone').value.trim();
-            const errEl = document.getElementById('vError');
-            if (!name || !email) { errEl.classList.remove('hidden'); return; }
-            errEl.classList.add('hidden');
-            const subject = encodeURIComponent('🏆 Ho vinto i calici Mr. Blues! – Richiesta premio e listino prezzi');
-            const body = encodeURIComponent(
+  const name  = document.getElementById('vName').value.trim();
+  const email = document.getElementById('vEmail').value.trim();
+  const phone = document.getElementById('vPhone').value.trim();
+  const errEl = document.getElementById('vError');
+  if (!name || !email) { errEl.classList.remove('hidden'); return; }
+  errEl.classList.add('hidden');
+
+  const subject = encodeURIComponent('Ho vinto i calici Mr. Blues! Richiesta premio e listino prezzi');
+  const body = encodeURIComponent(
 `Buongiorno,
 
 ho appena completato la sfida degustazione Mr. Blues con ${score.toLocaleString('it-IT')} punti e ho diritto al premio: una coppia di calici originali Mr. Blues!
@@ -1005,34 +1006,18 @@ ho appena completato la sfida degustazione Mr. Blues con ${score.toLocaleString(
 Vorrei riscattare il premio e ricevere il listino prezzi, in particolare:
 - Prezzo bottiglia singola
 - Prezzo cassa da 6 bottiglie
+- Prezzo cassa da 12 bottiglie
 
 I miei dati:
-- Nome:
-- E-mail: 
-- Telefono: 
+- Nome: ${name}
+- E-mail: ${email}
+- Telefono: ${phone || 'non fornito'}
 
-In attesa di un vostro riscontro, porgo cordiali saluti.
-${name}`
-            );
-            window.open(`mailto:info@vinigermaniterzi.com?subject=${subject}&body=${body}`, '_blank');
-        });
+In attesa di un vostro riscontro, porgo cordiali saluti.`
+  );
 
-        document.getElementById('btnShareVictory').addEventListener('click', async () => {
-            const shareText = `🏆 Ho totalizzato ${score.toLocaleString('it-IT')} punti nel gioco Mr. Blues di Germani Terzi! Ho vinto i calici! Riesci a battermi?
-
-https://mfo78.github.io/Mr.Blues/`;
-            try {
-                if (!finalScreenshotData) throw new Error('no img');
-                const blob = dataURLtoBlob(finalScreenshotData);
-                const file = new File([blob], 'mrblues_victory.jpg', { type: 'image/jpeg' });
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ title: 'Mr. Blues – Vittoria!', text: shareText, files: [file] });
-                } else throw new Error('no share');
-            } catch(e) {
-                window.open('whatsapp://send?text=' + encodeURIComponent(shareText), '_blank');
-            }
-        });
-
+  window.open(`mailto:info@vinigermaniterzi.com?subject=${subject}&body=${body}`, '_blank');
+});
         document.getElementById('btnRestartVictory').addEventListener('click', () => {
             document.getElementById('victoryScreen').classList.add('hidden');
             selectLevel(currentLevelKey);
