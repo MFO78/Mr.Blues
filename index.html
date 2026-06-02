@@ -220,9 +220,10 @@
             Condividi Score
         </button>
 
-        <button onclick="openAcquistaMail()" class="btn-primary block text-center flex items-center justify-center">
+        <a href="mailto:info@vinigermaniterzi.com?subject=Acquisto%20Pinot%20Nero%20Mr.%20Blues&body=Salve,%20vorrei%20acquistare%20il%20Pinot%20Nero%20Mr.%20Blues." 
+           class="btn-primary block text-center no-underline flex items-center justify-center">
            Acquista Ora
-        </button>
+        </a>
         <button id="btnRestart" class="btn-secondary">Riprova Livello</button>
         <button onclick="goBackToLevels()" class="btn-secondary border-none underline">Cambia Livello</button>
     </div>
@@ -337,55 +338,24 @@
         }
 
         function drawFlower(ctx, r, color) {
-            const isRose = (color === COLORS.rose);
-            if (!isRose) {
-                const pCount = 6, angleStep = Math.PI*2/pCount, darkColor = '#4a148c';
-                for (let i=0;i<pCount;i++) {
-                    ctx.save(); ctx.rotate(i*angleStep);
-                    let g=ctx.createRadialGradient(0,-r*.4,r*.1,0,-r*.4,r*.7);
-                    g.addColorStop(0,color); g.addColorStop(1,darkColor);
-                    ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(0,0);
-                    ctx.bezierCurveTo(r*.5,-r*.3,r*.4,-r*.9,0,-r);
-                    ctx.bezierCurveTo(-r*.4,-r*.9,-r*.5,-r*.3,0,0);
-                    ctx.fill(); ctx.restore();
-                }
-                ctx.fillStyle='#ffeb3b'; ctx.beginPath(); ctx.arc(0,0,r*.15,0,Math.PI*2); ctx.fill();
-                return;
+            const pCount = color === COLORS.rose ? 12 : 6; 
+            const angleStep = Math.PI * 2 / pCount;
+            const darkColor = color === COLORS.rose ? '#880e4f' : '#4a148c';
+            
+            for(let i=0; i<pCount; i++) {
+                ctx.save(); ctx.rotate(i * angleStep);
+                let g = ctx.createRadialGradient(0, -r*.4, r*.1, 0, -r*.4, r*.7);
+                g.addColorStop(0, color); g.addColorStop(1, darkColor); ctx.fillStyle = g;
+                ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(r*.5, -r*.3, r*.4, -r*.9, 0, -r); ctx.bezierCurveTo(-r*.4, -r*.9, -r*.5, -r*.3, 0, 0); ctx.fill();
+                ctx.restore();
             }
-            const roseDark='#880e4f', roseMid='#c2185b', roseMain='#e91e63', rosePale='#f48fb1';
-            ctx.strokeStyle='#388e3c'; ctx.lineWidth=r*.12; ctx.lineCap='round';
-            ctx.beginPath(); ctx.moveTo(0,r*.6); ctx.lineTo(0,r*1.2); ctx.stroke();
-            ctx.fillStyle='#43a047';
-            [[-0.28,0.54,0.18],[0.28,0.52,-0.18],[0,0.58,0]].forEach(([sx,sy,a]) => {
-                ctx.save(); ctx.translate(sx*r,sy*r); ctx.rotate(a);
-                ctx.beginPath(); ctx.ellipse(0,0,r*.08,r*.22,0,0,Math.PI*2); ctx.fill(); ctx.restore();
-            });
-            [0,Math.PI*2/3,Math.PI*4/3].forEach(a => {
-                ctx.save(); ctx.rotate(a);
-                let gO=ctx.createRadialGradient(0,r*.1,0,0,0,r*.75);
-                gO.addColorStop(0,rosePale); gO.addColorStop(0.5,roseMain); gO.addColorStop(1,roseDark);
-                ctx.fillStyle=gO; ctx.beginPath(); ctx.moveTo(0,0);
-                ctx.bezierCurveTo(r*.55,r*.05,r*.65,r*.55,r*.20,r*.72);
-                ctx.bezierCurveTo(-r*.10,r*.82,-r*.55,r*.60,-r*.35,r*.18);
-                ctx.closePath(); ctx.fill(); ctx.restore();
-            });
-            [Math.PI/3,Math.PI,Math.PI*5/3].forEach(a => {
-                ctx.save(); ctx.rotate(a);
-                let gM=ctx.createRadialGradient(0,r*.05,0,0,0,r*.58);
-                gM.addColorStop(0,rosePale); gM.addColorStop(0.4,roseMid); gM.addColorStop(1,roseDark);
-                ctx.fillStyle=gM; ctx.beginPath(); ctx.moveTo(0,0);
-                ctx.bezierCurveTo(r*.42,r*.05,r*.50,r*.42,r*.15,r*.56);
-                ctx.bezierCurveTo(-r*.08,r*.65,-r*.42,r*.45,-r*.28,r*.12);
-                ctx.closePath(); ctx.fill(); ctx.restore();
-            });
-            let gIn=ctx.createRadialGradient(0,0,0,0,0,r*.35);
-            gIn.addColorStop(0,'#fce4ec'); gIn.addColorStop(0.5,roseMid); gIn.addColorStop(1,roseDark);
-            ctx.fillStyle=gIn; ctx.beginPath(); ctx.arc(0,0,r*.35,0,Math.PI*2); ctx.fill();
-            ctx.strokeStyle='rgba(136,14,79,0.45)'; ctx.lineWidth=r*.04; ctx.lineCap='round';
-            ctx.beginPath(); ctx.moveTo(r*.05,-r*.08);
-            ctx.bezierCurveTo(r*.22,-r*.25,r*.28,r*.10,r*.08,r*.22); ctx.stroke();
+            for(let i=0; i<pCount-2; i++) {
+                ctx.save(); ctx.rotate((i * angleStep) + 0.5); ctx.fillStyle = color;
+                ctx.beginPath(); ctx.moveTo(0,0); ctx.bezierCurveTo(r*.3, -r*.2, r*.2, -r*.6, 0, -r*.7); ctx.bezierCurveTo(-r*.2, -r*.6, -r*.3, -r*.2, 0, 0); ctx.fill();
+                ctx.restore();
+            }
+            ctx.fillStyle = '#ffeb3b'; ctx.beginPath(); ctx.arc(0, 0, r*.15, 0, Math.PI*2); ctx.fill();
         }
-
 
         function drawRock(ctx, r) {
             let g = ctx.createLinearGradient(-r, -r, r, r);
@@ -465,37 +435,30 @@
         }
 
         function drawMeat(ctx, r) {
-            // Nuova bistecca organica (Steak) - senza spigoli rigidi
-            ctx.save(); ctx.rotate(-Math.PI/8);
-            
-            let g = ctx.createLinearGradient(-r, -r, r, r);
-            g.addColorStop(0, '#5d4037'); g.addColorStop(0.5, '#4e342e'); g.addColorStop(1, '#3e2723');
-            ctx.fillStyle = g;
-
-            // Forma organica della carne
+            ctx.fillStyle = '#7b2c2c';
             ctx.beginPath();
-            ctx.moveTo(-r*0.8, -r*0.4);
-            ctx.bezierCurveTo(-r*0.5, -r*0.8, r*0.6, -r*0.7, r*0.9, -r*0.2);
-            ctx.bezierCurveTo(r*1.1, r*0.3, r*0.6, r*0.8, 0, r*0.7);
-            ctx.bezierCurveTo(-r*0.6, r*0.6, -r*1.0, r*0.2, -r*0.8, -r*0.4);
+            ctx.ellipse(0, 0, r * 0.9, r * 0.65, 0, 0, Math.PI * 2);
             ctx.fill();
-
-            // Bordo di grasso (solo su un lato)
-            ctx.strokeStyle = '#d7ccc8'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(-r*0.8, -r*0.4);
-            ctx.bezierCurveTo(-r*0.5, -r*0.8, r*0.6, -r*0.7, r*0.9, -r*0.2);
+            ctx.strokeStyle = '#3e1717';
+            ctx.lineWidth = 2;
             ctx.stroke();
 
-            // Segni di grigliatura (curvati per seguire il volume)
-            ctx.strokeStyle = '#212121'; ctx.lineWidth = 2.5;
-            ctx.beginPath(); ctx.moveTo(-r*0.5, -r*0.1); ctx.lineTo(r*0.2, r*0.5); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(-r*0.1, -r*0.4); ctx.lineTo(r*0.6, r*0.2); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(-r*0.7, 0.1); ctx.lineTo(-r*0.2, r*0.6); ctx.stroke();
-            
-            ctx.restore();
-        }
+            ctx.fillStyle = '#e3dac9';
+            ctx.beginPath();
+            ctx.arc(-r * 0.4, -r * 0.1, r * 0.25, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(-r * 0.4, r * 0.2, r * 0.2, 0, Math.PI * 2);
+            ctx.fill();
 
+            ctx.strokeStyle = '#2a0808';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(-r * 0.1, -r * 0.4); ctx.lineTo(r * 0.6, r * 0.1);
+            ctx.moveTo(-r * 0.3, 0); ctx.lineTo(r * 0.4, r * 0.5);
+            ctx.stroke();
+        }
+        
         function drawPizza(ctx, r) {
             ctx.save(); ctx.rotate(-Math.PI/6);
             ctx.fillStyle = '#ffb300'; ctx.beginPath(); ctx.moveTo(-r*.8, -r*.6); ctx.quadraticCurveTo(0, -r*.9, r*.8, -r*.6); ctx.lineTo(r*.8, -r*.4); ctx.quadraticCurveTo(0, -r*.7, -r*.8, -r*.4); ctx.fill();
@@ -625,21 +588,14 @@
         
         let GAME_WIDTH = window.innerWidth, GAME_HEIGHT = window.innerHeight;
         let gameState = 'SPLASH', currentLevelKey = 'SENSORIALE';
-        let score = 0, lives = 3, lastLifeScore = 0, frameCount = 0, animationId, items = [], floatingTexts = [], caughtItems = {};
+        let score = 0, lives = 3, lastLifeScore = 0, frameCount = 0, animationId, items = [], floatingTexts = [];
         
         const glass = { x: GAME_WIDTH/2, y: 0, width: 90, rimWidth: 55, height: 90, stemHeight: 50, baseWidth: 60, fillLevel: 0 };
         let finalScreenshotData = null;
 
         function resizeCanvas() {
             GAME_WIDTH = window.innerWidth; GAME_HEIGHT = window.innerHeight;
-            const dpr = window.devicePixelRatio || 1;
-            mainCanvas.width  = Math.round(GAME_WIDTH  * dpr);
-            mainCanvas.height = Math.round(GAME_HEIGHT * dpr);
-            mainCanvas.style.width  = GAME_WIDTH  + 'px';
-            mainCanvas.style.height = GAME_HEIGHT + 'px';
-            mainCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            mainCtx.imageSmoothingEnabled = true;
-            mainCtx.imageSmoothingQuality = 'high';
+            mainCanvas.width = GAME_WIDTH; mainCanvas.height = GAME_HEIGHT;
             glass.y = GAME_HEIGHT - 140; if(glass.x > GAME_WIDTH) glass.x = GAME_WIDTH/2;
         }
         window.addEventListener('resize', resizeCanvas);
@@ -707,7 +663,7 @@
         function startGame() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('hud').classList.remove('hidden');
-            score = 0; lives = 3; lastLifeScore = 0; glass.fillLevel = 0; items = []; floatingTexts = []; frameCount = 0; caughtItems = {};
+            score = 0; lives = 3; lastLifeScore = 0; glass.fillLevel = 0; items = []; floatingTexts = []; frameCount = 0;
             gameState = 'PLAYING';
             updateHUD();
             if(animationId) cancelAnimationFrame(animationId);
@@ -733,69 +689,26 @@
 
         // --- WhatsApp API ---
         document.getElementById('btnShare').addEventListener('click', async () => {
-            const gameUrl = 'https://mfo78.github.io/Mr.Blues/';
-            const W = 450, H = 800;
-            const oc2 = document.createElement('canvas');
-            oc2.width = W * 2; oc2.height = H * 2;
-            const oc = oc2.getContext('2d');
-            oc.scale(2, 2);
-            const bgG = oc.createLinearGradient(0,0,0,H); bgG.addColorStop(0,'#0a1520'); bgG.addColorStop(1,'#1a0818');
-            oc.fillStyle=bgG; oc.beginPath(); oc.roundRect(0,0,W,H,24); oc.fill();
-            oc.fillStyle='#7b1040'; oc.beginPath(); oc.roundRect(0,0,W,8,[24,24,0,0]); oc.fill();
-            oc.strokeStyle='#c9a227'; oc.lineWidth=2; oc.beginPath(); oc.roundRect(8,8,W-16,H-16,18); oc.stroke();
-            oc.fillStyle='#c9a227'; oc.textAlign='center';
-            oc.font='bold 22px Georgia,serif'; oc.fillText('Mr. Blues',W/2,52);
-            oc.font='italic 14px Georgia,serif'; oc.fillStyle='rgba(201,162,39,0.75)';
-            oc.fillText('Pinot Nero \u00B7 Germani Terzi',W/2,72);
-            oc.strokeStyle='rgba(201,162,39,0.35)'; oc.lineWidth=1;
-            oc.beginPath(); oc.moveTo(40,82); oc.lineTo(W-40,82); oc.stroke();
-            oc.fillStyle='#ffffff'; oc.font='bold 80px Georgia,serif'; oc.fillText(score,W/2,180);
-            oc.fillStyle='rgba(255,255,255,0.55)'; oc.font='20px sans-serif'; oc.fillText('punti',W/2,208);
-            oc.strokeStyle='rgba(201,162,39,0.35)'; oc.lineWidth=1;
-            oc.beginPath(); oc.moveTo(40,225); oc.lineTo(W-40,225); oc.stroke();
-            oc.fillStyle='#c9a227'; oc.font='15px Georgia,serif'; oc.fillText('Abbinamenti raccolti:',W/2,252);
-            const ITEM_LABELS={cherry:'Ciliegie',rasp:'Lamponi',straw:'Fragole',grape:'Uva',rose:'Rose',violet:'Viole',salami:'Salumi',cheese:'Formaggi',risotto:'Risotto',meat:'Bistecca',logogt:'Bonus GT',logobl:'Bonus MB'};
-            const ITEM_EMOJI={cherry:'\uD83C\uDF52',rasp:'\uD83E\uDED0',straw:'\uD83C\uDF53',grape:'\uD83C\uDF47',rose:'\uD83C\uDF39',violet:'\uD83D\uDC9C',salami:'\uD83C\uDF56',cheese:'\uD83E\uDDC0',risotto:'\uD83C\uDF5A',meat:'\uD83E\uDD69',logogt:'\uD83C\uDFC6',logobl:'\uD83C\uDFB7'};
-            const caught=Object.entries(caughtItems).filter(([id])=>ITEM_LABELS[id]).sort((a,b)=>b[1]-a[1]);
-            const colW=(W-60)/2,pillH=48,pillGap=10,startY=266;
-            caught.forEach(([id,cnt],i)=>{
-                const col=i%2,row=Math.floor(i/2);
-                const px=30+col*(colW+12),py=startY+row*(pillH+pillGap);
-                if(py+pillH>H-130)return;
-                oc.fillStyle='rgba(201,162,39,0.10)'; oc.strokeStyle='rgba(201,162,39,0.40)'; oc.lineWidth=1;
-                oc.beginPath(); oc.roundRect(px,py,colW,pillH,10); oc.fill(); oc.stroke();
-                oc.font='22px serif'; oc.textAlign='left'; oc.fillStyle='#f0e6c8';
-                oc.fillText(ITEM_EMOJI[id]||'',px+8,py+32);
-                oc.font='13px sans-serif'; oc.fillStyle='#f0e6c8'; oc.fillText(ITEM_LABELS[id],px+38,py+20);
-                oc.font='bold 16px sans-serif'; oc.fillStyle='#c9a227'; oc.fillText('x'+cnt,px+38,py+38);
-            });
-            if(!caught.length){oc.fillStyle='#666';oc.font='15px sans-serif';oc.textAlign='center';oc.fillText('(nessun elemento raccolto)',W/2,320);}
-            oc.strokeStyle='rgba(201,162,39,0.30)'; oc.lineWidth=1;
-            oc.beginPath(); oc.moveTo(40,H-115); oc.lineTo(W-40,H-115); oc.stroke();
-            oc.fillStyle='#ffffff'; oc.font='bold 16px sans-serif'; oc.textAlign='center';
-            oc.fillText('\uD83C\uDF77 Riesci a battermi?',W/2,H-85);
-            oc.fillStyle='rgba(201,162,39,0.90)'; oc.font='13px sans-serif'; oc.fillText(gameUrl,W/2,H-60);
-            oc.fillStyle='rgba(255,255,255,0.35)'; oc.font='11px sans-serif';
-            oc.fillText('Germani Terzi \u00B7 Mr. Blues \u00B7 Pinot Nero',W/2,H-35);
-            const shareMsg='\uD83C\uDF77 Ho totalizzato '+score+' pt nel gioco Mr. Blues di Germani Terzi! Riesci a battermi?\n'+gameUrl;
-            oc2.toBlob(async(blob)=>{
-                if(!blob){window.open('https://wa.me/?text='+encodeURIComponent(shareMsg),'_blank');return;}
-                const file=new File([blob],'mrblues-score.png',{type:'image/png'});
-                try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'Mr. Blues',text:shareMsg,files:[file]});return;}}catch(_){}
-                try{if(navigator.share){await navigator.share({title:'Mr. Blues',text:shareMsg});return;}}catch(_){}
-                window.open('https://wa.me/?text='+encodeURIComponent(shareMsg),'_blank');
-            },'image/png');
+            const shareText = `🍷 Ho totalizzato ${score} punti nel gioco degustazione del Pinot Nero Mr. Blues! Riesci a battermi?`;
+            
+            try {
+                if(!finalScreenshotData) throw new Error("No image");
+                const blob = await (await fetch(finalScreenshotData)).blob();
+                const file = new File([blob], 'mrblues_score.jpg', { type: 'image/jpeg' });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ title: 'Mr. Blues Score', text: shareText, files: [file] });
+                } else { throw new Error("Web Share Files not supported"); }
+            } catch (err) {
+                console.log('Fallback Share:', err);
+                window.open(`whatsapp://send?text=${encodeURIComponent(shareText)}`, '_blank');
+            }
         });
 
         function updateHUD() {
             document.getElementById('scoreDisplay').innerText = score;
-            let ht = "";
-            const maxLives = Math.max(3, lives);
-            for (let i = 0; i < maxLives; i++) {
-                const full = i < lives;
-                ht += `<span style="display:inline-block;width:1.2em;height:1.2em;line-height:1.2em;text-align:center;font-size:1.4rem;font-family:sans-serif;vertical-align:middle;color:${full?'#c0143c':'#222'};text-shadow:${full?'0 0 4px rgba(192,20,60,0.5)':'none'}">${full?'♥':'♥'}</span>`;
-            }
-            document.getElementById('livesDisplay').innerHTML = ht;
+            let ht = ""; for(let i=0; i<3; i++) ht += i < lives ? "❤" : "🖤";
+            document.getElementById('livesDisplay').innerHTML = `<span class="life-icon">${ht}</span>`;
         }
 
         function spawnFloatingText(x, y, text, color) {
@@ -842,28 +755,12 @@
                         else if (it.action === 'PENALTY') {
                             playSound('bad');
                             score = Math.max(0, score + it.score);
-                            // In ABBINAMENTI, pizza/cake also cost a life
-                            if (currentLevelKey === 'ABBINAMENTI') {
-                                lives--;
-                                spawnFloatingText(it.x, gT, '-50 -❤️', '#e8436b');
-                                mainCanvas.style.backgroundColor = '#5c1212';
-                                setTimeout(() => mainCanvas.style.backgroundColor = '#12485c', 100);
-                                updateHUD();
-                                if (lives <= 0) {
-                                    items.splice(i, 1);
-                                    gameOver();
-                                    return;
-                                }
-                            } else {
-                                spawnFloatingText(it.x, gT, '-50', '#e8436b');
-                                mainCanvas.style.backgroundColor = '#5c3a12';
-                                setTimeout(() => mainCanvas.style.backgroundColor = '#12485c', 100);
-                            }
+                            spawnFloatingText(it.x, gT, "-50", "#e8436b");
+                            mainCanvas.style.backgroundColor = '#5c3a12'; setTimeout(() => mainCanvas.style.backgroundColor = '#12485c', 100);
                             glass.fillLevel = Math.max(0, glass.fillLevel - 0.1);
                         } else {
                             playSound('catch');
                             score += it.score;
-                            caughtItems[it.id] = (caughtItems[it.id] || 0) + 1;
                             spawnFloatingText(it.x, gT, "+"+it.score, "#d1a34a");
                             glass.fillLevel = Math.min(1, glass.fillLevel + 0.05); 
                         }
@@ -942,23 +839,6 @@
         function gameLoop() {
             if (gameState === 'PLAYING') { update(); drawMain(mainCtx); animationId = requestAnimationFrame(gameLoop); }
         }
-    
-        function openAcquistaMail() {
-            const pts = document.getElementById('finalScore').innerText || '0';
-            const sub = encodeURIComponent('Acquisto Pinot Nero Mr. Blues - Germani Terzi');
-            const body = encodeURIComponent(
-                'Gentile Team Germani Terzi,\n\n' +
-                'Ho giocato al gioco degustazione "Mr. Blues" e ho totalizzato ' + pts + ' punti!\n\n' +
-                'Sono interessato ad acquistare il Pinot Nero Mr. Blues. Vi chiedo:\n\n' +
-                '  - Prezzo per singola bottiglia\n' +
-                '  - Prezzo per cassa da 6 bottiglie\n' +
-                '  - Prezzo per cassa da 12 bottiglie\n' +
-                '  - Modalita e costi di spedizione\n\n' +
-                'Cordiali saluti.'
-            );
-            window.location.href = 'mailto:info@vinigermaniterzi.com?subject=' + sub + '&body=' + body;
-        }
-
-</script>
+    </script>
 </body>
 </html>
