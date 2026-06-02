@@ -756,25 +756,42 @@ Cordiali saluti`
             c.font = 'bold 16px Georgia, serif';
             c.fillText('Abbinamenti raccolti:', W/2, 328);
 
-            // drawMap: usa b64 cached per i loghi (già caricati a inizio gioco)
-            const _drawLogoOnCard = (imgEl, b64, isRound) => (ctx, r) => {
-                // Usa l'elemento img originale se completo, altrimenti il b64 cached
-                const img = (imgEl && imgEl.complete && imgEl.naturalWidth > 0) ? imgEl : null;
-                if (img) {
-                    ctx.save();
-                    if (isRound) { ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.clip(); }
-                    ctx.drawImage(img, -r, -r, r*2, r*2);
-                    ctx.restore();
-                    if (isRound) {
-                        ctx.strokeStyle = '#d1a34a'; ctx.lineWidth = 2;
-                        ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.stroke();
-                    }
-                } else {
-                    // Fallback cerchio oro
-                    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2);
-                    ctx.fillStyle = '#d1a34a'; ctx.fill();
-                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
-                }
+            // Icone vettoriali per i bonus — niente bitmap, zero sgranatura
+            const _drawBonusGT = (ctx, r) => {
+                // Scudo dorato con lettere GT
+                const g = ctx.createRadialGradient(0, -r*0.1, r*0.1, 0, 0, r);
+                g.addColorStop(0, '#f5d06a'); g.addColorStop(1, '#a87820');
+                ctx.beginPath();
+                ctx.moveTo(0, -r);
+                ctx.bezierCurveTo( r*0.9, -r*0.7,  r*0.9, -r*0.1,  r*0.5,  r*0.4);
+                ctx.bezierCurveTo( r*0.2,  r*0.75,  0,     r,       0,      r);
+                ctx.bezierCurveTo( 0,      r,      -r*0.2, r*0.75, -r*0.5,  r*0.4);
+                ctx.bezierCurveTo(-r*0.9, -r*0.1, -r*0.9, -r*0.7,  0,     -r);
+                ctx.closePath();
+                ctx.fillStyle = g; ctx.fill();
+                ctx.strokeStyle = '#fff8dc'; ctx.lineWidth = r*0.08; ctx.stroke();
+                // Lettera G
+                ctx.fillStyle = '#1a0a00';
+                ctx.font = `bold ${r*0.72}px Arial, sans-serif`;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText('GT', 0, r*0.05);
+            };
+            const _drawBonusMB = (ctx, r) => {
+                // Medaglione circolare blu scuro con MB
+                const g = ctx.createRadialGradient(-r*0.3, -r*0.3, r*0.05, 0, 0, r);
+                g.addColorStop(0, '#3a6b8a'); g.addColorStop(1, '#0d2235');
+                ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2);
+                ctx.fillStyle = g; ctx.fill();
+                // Bordo oro
+                ctx.strokeStyle = '#d1a34a'; ctx.lineWidth = r*0.12; ctx.stroke();
+                // Bordo interno sottile
+                ctx.strokeStyle = '#f5d06a'; ctx.lineWidth = r*0.04;
+                ctx.beginPath(); ctx.arc(0, 0, r*0.82, 0, Math.PI*2); ctx.stroke();
+                // Lettera MB
+                ctx.fillStyle = '#f0e6c0';
+                ctx.font = `bold ${r*0.68}px Arial, sans-serif`;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText('MB', 0, r*0.05);
             };
             const drawMap = {
                 cherry:   (ctx,r) => drawCherry(ctx, r),
@@ -789,8 +806,8 @@ Cordiali saluti`
                 meat:     (ctx,r) => drawMeat(ctx, r),
                 pizza:    (ctx,r) => drawPizza(ctx, r),
                 cake:     (ctx,r) => drawCake(ctx, r),
-                logo_gt:  _drawLogoOnCard(imgLogoGT, imgLogoGT_b64, false),
-                logo_bl:  _drawLogoOnCard(imgLogoBlues, imgLogoBlues_b64, true)
+                logo_gt:  _drawBonusGT,
+                logo_bl:  _drawBonusMB
             };
             const labels = {
                 cherry:'Ciliegie', rasp:'Lamponi', straw:'Fragole', grape:'Uva',
