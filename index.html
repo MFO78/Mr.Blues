@@ -138,6 +138,22 @@
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
         .preview-canvas { display: block; margin: 0 auto 2px auto; }
+        @keyframes trophyBounce {
+            0%   { transform: scale(0) rotate(-20deg); opacity:0; }
+            60%  { transform: scale(1.2) rotate(5deg);  opacity:1; }
+            80%  { transform: scale(0.95) rotate(-2deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        @keyframes confettiFall {
+            0%   { transform: translateY(-20px) rotate(0deg); opacity:1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity:0; }
+        }
+        #victoryScreen { background: linear-gradient(160deg, #0a1628 0%, #0e3747 50%, #0a1628 100%); }
+        .confetti-piece {
+            position: fixed; top: -20px; width: 10px; height: 10px; border-radius: 2px;
+            animation: confettiFall linear forwards;
+            pointer-events: none; z-index: 9999;
+        }
     </style>
 </head>
 <body>
@@ -226,6 +242,47 @@
         </button>
         <button id="btnRestart" class="btn-secondary">Riprova Livello</button>
         <button onclick="goBackToLevels()" class="btn-secondary border-none underline">Cambia Livello</button>
+    </div>
+
+    <!-- Victory Screen (10.000 punti) -->
+    <div id="victoryScreen" class="overlay solid-bg hidden overflow-y-auto">
+        <div class="flex flex-col items-center w-full max-w-md px-4 pt-8 pb-6">
+            <!-- Header animato -->
+            <div id="victoryTrophy" style="font-size:4rem;margin-bottom:0.5rem;animation:trophyBounce 0.6s ease-out;">🏆</div>
+            <h2 class="text-3xl md:text-4xl serif text-[#d1a34a] font-bold mb-1" style="text-shadow:0 0 20px rgba(209,163,74,0.8);">STRAORDINARIO!</h2>
+            <p class="text-white text-base mb-1">Hai raggiunto</p>
+            <p class="text-6xl font-bold text-white mb-1" id="victoryScore">10.000</p>
+            <p class="text-[#d1a34a] text-lg mb-4">punti</p>
+
+            <div class="w-full bg-[#0e3747] border border-[#d1a34a] rounded-xl p-4 mb-5" style="text-align:center">
+                <p class="text-[#d1a34a] font-bold text-base mb-1">🥂 Hai vinto i calici Mr. Blues!</p>
+                <p class="text-white text-sm">Inserisci i tuoi dati: ti invieremo una mail precompilata da inviare a Germani Terzi per riscattare il premio e richiedere il listino prezzi.</p>
+            </div>
+
+            <!-- Form dati vincitore -->
+            <div class="w-full mb-4">
+                <input id="vName" type="text" placeholder="Nome e Cognome *" autocomplete="name"
+                    class="w-full mb-2 px-4 py-3 rounded-lg text-white text-sm outline-none"
+                    style="background:rgba(14,55,71,0.9);border:1px solid rgba(209,163,74,0.5);">
+                <input id="vEmail" type="email" placeholder="La tua e-mail *" autocomplete="email"
+                    class="w-full mb-2 px-4 py-3 rounded-lg text-white text-sm outline-none"
+                    style="background:rgba(14,55,71,0.9);border:1px solid rgba(209,163,74,0.5);">
+                <input id="vPhone" type="tel" placeholder="Telefono (opzionale)" autocomplete="tel"
+                    class="w-full mb-3 px-4 py-3 rounded-lg text-white text-sm outline-none"
+                    style="background:rgba(14,55,71,0.9);border:1px solid rgba(209,163,74,0.5);">
+                <p id="vError" class="text-red-400 text-xs mb-2 hidden">Inserisci nome e indirizzo e-mail.</p>
+                <button id="btnVictoryMail" class="btn-primary w-full flex items-center justify-center gap-2">
+                    ✉️ Invia richiesta a Germani Terzi
+                </button>
+            </div>
+
+            <button id="btnShareVictory" class="btn-primary btn-whatsapp w-full flex items-center justify-center gap-2 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                Condividi Score
+            </button>
+            <button id="btnRestartVictory" class="btn-secondary w-full">Riprova</button>
+            <button onclick="goBackToLevels()" class="btn-secondary border-none underline text-sm">Cambia Livello</button>
+        </div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
@@ -678,6 +735,7 @@
         function goBackToLevels() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('victoryScreen').classList.add('hidden');
             document.getElementById('levelSelectScreen').classList.remove('hidden');
         }
 
@@ -889,7 +947,98 @@ Cordiali saluti`
             ctx.closePath();
         }
 
-        function startGame() {
+        // ── VICTORY (10.000 punti) ───────────────────────────────────
+        function launchConfetti() {
+            const colors = ['#d1a34a','#fff','#e8436b','#5e235e','#3a6b8a','#f5d06a','#e91e63'];
+            for (let i = 0; i < 80; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti-piece';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                el.style.width  = (8 + Math.random() * 8) + 'px';
+                el.style.height = (8 + Math.random() * 8) + 'px';
+                el.style.animationDuration = (2 + Math.random() * 3) + 's';
+                el.style.animationDelay    = (Math.random() * 1.5) + 's';
+                el.style.borderRadius      = Math.random() > 0.5 ? '50%' : '2px';
+                document.body.appendChild(el);
+                el.addEventListener('animationend', () => el.remove());
+            }
+        }
+
+        function showVictory() {
+            document.getElementById('hud').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            document.getElementById('victoryScreen').classList.remove('hidden');
+            document.getElementById('victoryScore').innerText = score.toLocaleString('it-IT');
+            launchConfetti();
+            // Suono vittoria
+            if (audioCtx) {
+                const notes = [523, 659, 784, 1047];
+                notes.forEach((freq, i) => {
+                    const osc = audioCtx.createOscillator();
+                    const g   = audioCtx.createGain();
+                    osc.connect(g); g.connect(audioCtx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.18);
+                    g.gain.setValueAtTime(0.35, audioCtx.currentTime + i * 0.18);
+                    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.18 + 0.4);
+                    osc.start(audioCtx.currentTime + i * 0.18);
+                    osc.stop(audioCtx.currentTime + i * 0.18 + 0.45);
+                });
+            }
+        }
+
+        document.getElementById('btnVictoryMail').addEventListener('click', () => {
+            const name  = document.getElementById('vName').value.trim();
+            const email = document.getElementById('vEmail').value.trim();
+            const phone = document.getElementById('vPhone').value.trim();
+            const errEl = document.getElementById('vError');
+            if (!name || !email) { errEl.classList.remove('hidden'); return; }
+            errEl.classList.add('hidden');
+            const subject = encodeURIComponent('🏆 Ho vinto i calici Mr. Blues! – Richiesta premio e listino prezzi');
+            const body = encodeURIComponent(
+`Buongiorno,
+
+ho appena completato la sfida degustazione Mr. Blues con ${score.toLocaleString('it-IT')} punti e ho diritto al premio: una coppia di calici originali Mr. Blues!
+
+Vorrei riscattare il premio e ricevere il listino prezzi, in particolare:
+- Prezzo bottiglia singola
+- Prezzo cassa da 6 bottiglie
+
+I miei dati:
+- Nome: ${name}
+- E-mail: ${email}${phone ? '
+- Telefono: ' + phone : ''}
+
+In attesa di un vostro riscontro, porgo cordiali saluti.
+${name}`
+            );
+            window.open(`mailto:info@vinigermaniterzi.com?subject=${subject}&body=${body}`, '_blank');
+        });
+
+        document.getElementById('btnShareVictory').addEventListener('click', async () => {
+            const shareText = `🏆 Ho totalizzato ${score.toLocaleString('it-IT')} punti nel gioco Mr. Blues di Germani Terzi! Ho vinto i calici! Riesci a battermi?
+
+https://mfo78.github.io/Mr.Blues/`;
+            try {
+                if (!finalScreenshotData) throw new Error('no img');
+                const blob = dataURLtoBlob(finalScreenshotData);
+                const file = new File([blob], 'mrblues_victory.jpg', { type: 'image/jpeg' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ title: 'Mr. Blues – Vittoria!', text: shareText, files: [file] });
+                } else throw new Error('no share');
+            } catch(e) {
+                window.open('whatsapp://send?text=' + encodeURIComponent(shareText), '_blank');
+            }
+        });
+
+        document.getElementById('btnRestartVictory').addEventListener('click', () => {
+            document.getElementById('victoryScreen').classList.add('hidden');
+            selectLevel(currentLevelKey);
+        });
+        // ────────────────────────────────────────────────────────────
+
+                function startGame() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('hud').classList.remove('hidden');
             score = 0; lives = 3; lastLifeScore = 0; glass.fillLevel = 0; items = []; floatingTexts = []; frameCount = 0;
@@ -918,14 +1067,16 @@ Cordiali saluti`
             // Fallback screenshot canvas
             if(!finalScreenshotData) { try { finalScreenshotData = mainCanvas.toDataURL('image/jpeg', 0.92); } catch(e2){} }
 
-            document.getElementById('hud').classList.add('hidden');
-            document.getElementById('gameOverScreen').classList.remove('hidden');
-            document.getElementById('finalScore').innerText = score;
-
-            const msgEl = document.getElementById('marketingMessage');
-            if(score >= 10000) msgEl.innerText = "🏆 INCREDIBILE! Contattaci per richiedere i calici in omaggio.";
-            else if (score > 2000) msgEl.innerText = "Ottimo palato! Sfiorato il premio. Consola i sensi con Mr. Blues.";
-            else msgEl.innerText = "La ricerca della perfezione richiede tempo. Riprova o gusta Mr. Blues.";
+            if (score >= 10000) {
+                showVictory();
+            } else {
+                document.getElementById('hud').classList.add('hidden');
+                document.getElementById('gameOverScreen').classList.remove('hidden');
+                document.getElementById('finalScore').innerText = score;
+                const msgEl = document.getElementById('marketingMessage');
+                if (score > 2000) msgEl.innerText = "Ottimo palato! Sfiorato il premio. Consola i sensi con Mr. Blues.";
+                else msgEl.innerText = "La ricerca della perfezione richiede tempo. Riprova o gusta Mr. Blues.";
+            }
         }
 
                 function dataURLtoBlob(dataurl) {
