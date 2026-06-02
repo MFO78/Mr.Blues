@@ -847,7 +847,7 @@
         }
 
         // --- WhatsApp API ---
-        document.        function dataURLtoBlob(dataurl) {
+        function dataURLtoBlob(dataurl) {
             const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1];
             const bstr = atob(arr[1]);
             let n = bstr.length;
@@ -856,7 +856,7 @@
             return new Blob([u8arr], { type: mime });
         }
 
-        getElementById('btnShare').addEventListener('click', async () => {
+        document.getElementById('btnShare').addEventListener('click', async () => {
             const shareText = `🍷 Ho totalizzato ${score} punti nel gioco degustazione del Pinot Nero Mr. Blues di Germani Terzi! Riesci a battermi?\n\n🎷 Seguici sul canale Mr. Blues Club:\nhttps://whatsapp.com/channel/0029Vb7wYAu6rsQrrDdorX3R`;
 
             try {
