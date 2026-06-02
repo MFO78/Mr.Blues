@@ -972,6 +972,7 @@ Cordiali saluti`
             document.getElementById('victoryScreen').classList.remove('hidden');
             document.getElementById('victoryScore').innerText = score.toLocaleString('it-IT');
             launchConfetti();
+
             // Suono vittoria
             if (audioCtx) {
                 const notes = [523, 659, 784, 1047];
@@ -987,18 +988,23 @@ Cordiali saluti`
                     osc.stop(audioCtx.currentTime + i * 0.18 + 0.45);
                 });
             }
-        }
 
-        document.getElementById('btnVictoryMail').addEventListener('click', () => {
-  const name  = document.getElementById('vName').value.trim();
-  const email = document.getElementById('vEmail').value.trim();
-  const phone = document.getElementById('vPhone').value.trim();
-  const errEl = document.getElementById('vError');
-  if (!name || !email) { errEl.classList.remove('hidden'); return; }
-  errEl.classList.add('hidden');
+            // Genera scorecard subito (loghi già caricati a questo punto)
+            try { finalScreenshotData = generateShareCard(); } catch(e) { finalScreenshotData = null; }
 
-  const subject = encodeURIComponent('Ho vinto i calici Mr. Blues! Richiesta premio e listino prezzi');
-  const body = encodeURIComponent(
+            // --- Mail vincitore (cloneNode elimina listener doppi da ripartite) ---
+            const btnMail = document.getElementById('btnVictoryMail');
+            const newBtnMail = btnMail.cloneNode(true);
+            btnMail.parentNode.replaceChild(newBtnMail, btnMail);
+            newBtnMail.addEventListener('click', () => {
+                const name  = document.getElementById('vName').value.trim();
+                const email = document.getElementById('vEmail').value.trim();
+                const phone = document.getElementById('vPhone').value.trim();
+                const errEl = document.getElementById('vError');
+                if (!name || !email) { errEl.classList.remove('hidden'); return; }
+                errEl.classList.add('hidden');
+                const subject = encodeURIComponent('🏆 Ho vinto i calici Mr. Blues! – Richiesta premio e listino prezzi');
+                const body = encodeURIComponent(
 `Buongiorno,
 
 ho appena completato la sfida degustazione Mr. Blues con ${score.toLocaleString('it-IT')} punti e ho diritto al premio: una coppia di calici originali Mr. Blues!
@@ -1006,7 +1012,6 @@ ho appena completato la sfida degustazione Mr. Blues con ${score.toLocaleString(
 Vorrei riscattare il premio e ricevere il listino prezzi, in particolare:
 - Prezzo bottiglia singola
 - Prezzo cassa da 6 bottiglie
-- Prezzo cassa da 12 bottiglie
 
 I miei dati:
 - Nome: ${name}
@@ -1014,14 +1019,40 @@ I miei dati:
 - Telefono: ${phone || 'non fornito'}
 
 In attesa di un vostro riscontro, porgo cordiali saluti.`
-  );
+                );
+                window.open(`mailto:info@vinigermaniterzi.com?subject=${subject}&body=${body}`, '_blank');
+            });
 
-  window.open(`mailto:info@vinigermaniterzi.com?subject=${subject}&body=${body}`, '_blank');
-});
-        document.getElementById('btnRestartVictory').addEventListener('click', () => {
-            document.getElementById('victoryScreen').classList.add('hidden');
-            selectLevel(currentLevelKey);
-        });
+            // --- Condividi scorecard via WhatsApp (cloneNode elimina listener doppi) ---
+            const btnShare = document.getElementById('btnShareVictory');
+            const newBtnShare = btnShare.cloneNode(true);
+            btnShare.parentNode.replaceChild(newBtnShare, btnShare);
+            newBtnShare.addEventListener('click', async () => {
+                const shareText = `🏆 Ho totalizzato ${score.toLocaleString('it-IT')} punti nel gioco Mr. Blues di Germani Terzi! Ho vinto i calici! Riesci a battermi?\n\nhttps://mfo78.github.io/Mr.Blues/`;
+                // Tenta Web Share API con immagine (funziona su mobile)
+                if (finalScreenshotData) {
+                    try {
+                        const blob = dataURLtoBlob(finalScreenshotData);
+                        const file = new File([blob], 'mrblues_victory.jpg', { type: 'image/jpeg' });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            await navigator.share({ title: 'Mr. Blues – Vittoria!', text: shareText, files: [file] });
+                            return;
+                        }
+                    } catch(e) { /* fallthrough al link diretto */ }
+                }
+                // Fallback universale: wa.me funziona su mobile e desktop
+                window.open('https://wa.me/?text=' + encodeURIComponent(shareText), '_blank');
+            });
+
+            // --- Riprova (cloneNode elimina listener doppi) ---
+            const btnRestart = document.getElementById('btnRestartVictory');
+            const newBtnRestart = btnRestart.cloneNode(true);
+            btnRestart.parentNode.replaceChild(newBtnRestart, btnRestart);
+            newBtnRestart.addEventListener('click', () => {
+                document.getElementById('victoryScreen').classList.add('hidden');
+                selectLevel(currentLevelKey);
+            });
+        }
         // ────────────────────────────────────────────────────────────
 
                 function startGame() {
