@@ -585,6 +585,23 @@
         const mainCtx = mainCanvas.getContext('2d');
         const imgLogoGT = new Image(); imgLogoGT.src = 'logo_gold.png';
         const imgLogoBlues = new Image(); imgLogoBlues.src = 'Mrblues.jpg';
+        let imgLogoGT_b64 = null, imgLogoBlues_b64 = null;
+        imgLogoGT.onload = function() {
+            try {
+                const tmp = document.createElement('canvas');
+                tmp.width = imgLogoGT.naturalWidth; tmp.height = imgLogoGT.naturalHeight;
+                tmp.getContext('2d').drawImage(imgLogoGT, 0, 0);
+                imgLogoGT_b64 = tmp.toDataURL('image/png');
+            } catch(e) { imgLogoGT_b64 = null; }
+        };
+        imgLogoBlues.onload = function() {
+            try {
+                const tmp = document.createElement('canvas');
+                tmp.width = imgLogoBlues.naturalWidth; tmp.height = imgLogoBlues.naturalHeight;
+                tmp.getContext('2d').drawImage(imgLogoBlues, 0, 0);
+                imgLogoBlues_b64 = tmp.toDataURL('image/jpeg', 0.95);
+            } catch(e) { imgLogoBlues_b64 = null; }
+        };
         
         let GAME_WIDTH = window.innerWidth, GAME_HEIGHT = window.innerHeight;
         let gameState = 'SPLASH', currentLevelKey = 'SENSORIALE';
@@ -739,20 +756,41 @@ Cordiali saluti`
             c.font = 'bold 16px Georgia, serif';
             c.fillText('Abbinamenti raccolti:', W/2, 328);
 
-            // FIX 1: mappa corretta con nomi funzioni reali
+            // drawMap: usa b64 cached per i loghi (già caricati a inizio gioco)
+            const _drawLogoOnCard = (imgEl, b64, isRound) => (ctx, r) => {
+                // Usa l'elemento img originale se completo, altrimenti il b64 cached
+                const img = (imgEl && imgEl.complete && imgEl.naturalWidth > 0) ? imgEl : null;
+                if (img) {
+                    ctx.save();
+                    if (isRound) { ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.clip(); }
+                    ctx.drawImage(img, -r, -r, r*2, r*2);
+                    ctx.restore();
+                    if (isRound) {
+                        ctx.strokeStyle = '#d1a34a'; ctx.lineWidth = 2;
+                        ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.stroke();
+                    }
+                } else {
+                    // Fallback cerchio oro
+                    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2);
+                    ctx.fillStyle = '#d1a34a'; ctx.fill();
+                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+                }
+            };
             const drawMap = {
-                cherry:  (ctx,r) => drawCherry(ctx, r),
-                rasp:    (ctx,r) => drawBerry(ctx, r, '#e8436b', '#ff6b8f'),
-                straw:   (ctx,r) => drawStrawberry(ctx, r),
-                grape:   (ctx,r) => drawGrapeCluster(ctx, r),
-                rose:    (ctx,r) => drawFlower(ctx, r, '#e91e63'),
-                violet:  (ctx,r) => drawFlower(ctx, r, '#7f00ff'),
-                salami:  (ctx,r) => drawSalami(ctx, r),
-                cheese:  (ctx,r) => drawCheese(ctx, r),
-                risotto: (ctx,r) => drawRisotto(ctx, r),
-                meat:    (ctx,r) => drawMeat(ctx, r),
-                pizza:   (ctx,r) => drawPizza(ctx, r),
-                cake:    (ctx,r) => drawCake(ctx, r)
+                cherry:   (ctx,r) => drawCherry(ctx, r),
+                rasp:     (ctx,r) => drawBerry(ctx, r, '#e8436b', '#ff6b8f'),
+                straw:    (ctx,r) => drawStrawberry(ctx, r),
+                grape:    (ctx,r) => drawGrapeCluster(ctx, r),
+                rose:     (ctx,r) => drawFlower(ctx, r, '#e91e63'),
+                violet:   (ctx,r) => drawFlower(ctx, r, '#7f00ff'),
+                salami:   (ctx,r) => drawSalami(ctx, r),
+                cheese:   (ctx,r) => drawCheese(ctx, r),
+                risotto:  (ctx,r) => drawRisotto(ctx, r),
+                meat:     (ctx,r) => drawMeat(ctx, r),
+                pizza:    (ctx,r) => drawPizza(ctx, r),
+                cake:     (ctx,r) => drawCake(ctx, r),
+                logo_gt:  _drawLogoOnCard(imgLogoGT, imgLogoGT_b64, false),
+                logo_bl:  _drawLogoOnCard(imgLogoBlues, imgLogoBlues_b64, true)
             };
             const labels = {
                 cherry:'Ciliegie', rasp:'Lamponi', straw:'Fragole', grape:'Uva',
@@ -845,28 +883,35 @@ Cordiali saluti`
             gameLoop();
         }
 
-        function gameOver() {
+        async function gameOver() {
             gameState = 'GAMEOVER';
-            playSound('ko'); // Audio Feedback
-            
-            // Generate Screenshot
+            playSound('ko');
+
+            // Pre-carica loghi prima di disegnare la share card
+            const _ensureImg = (imgEl) => new Promise(res => {
+                if (imgEl && imgEl.complete && imgEl.naturalWidth > 0) { res(imgEl); return; }
+                if (!imgEl) { res(null); return; }
+                imgEl.onload = () => res(imgEl);
+                imgEl.onerror = () => res(null);
+            });
+            await Promise.all([_ensureImg(imgLogoGT), _ensureImg(imgLogoBlues)]);
+
             // Genera share card portrait
-            try { finalScreenshotData = generateShareCard(); } catch(e) { console.error(e); }
+            try { finalScreenshotData = generateShareCard(); } catch(e) { console.error('sharecard err:', e); }
             // Fallback screenshot canvas
             if(!finalScreenshotData) { try { finalScreenshotData = mainCanvas.toDataURL('image/jpeg', 0.92); } catch(e2){} }
-            
+
             document.getElementById('hud').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.remove('hidden');
             document.getElementById('finalScore').innerText = score;
-            
+
             const msgEl = document.getElementById('marketingMessage');
             if(score >= 10000) msgEl.innerText = "🏆 INCREDIBILE! Contattaci per richiedere i calici in omaggio.";
             else if (score > 2000) msgEl.innerText = "Ottimo palato! Sfiorato il premio. Consola i sensi con Mr. Blues.";
             else msgEl.innerText = "La ricerca della perfezione richiede tempo. Riprova o gusta Mr. Blues.";
         }
 
-        // --- WhatsApp API ---
-        function dataURLtoBlob(dataurl) {
+                function dataURLtoBlob(dataurl) {
             const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1];
             const bstr = atob(arr[1]);
             let n = bstr.length;
