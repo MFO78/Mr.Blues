@@ -1072,7 +1072,7 @@ ${name}`
             const newBtnShare = btnShare.cloneNode(true);
             btnShare.parentNode.replaceChild(newBtnShare, btnShare);
             newBtnShare.addEventListener('click', async () => {
-                const shareText = `🏆 Ho totalizzato ${score.toLocaleString('it-IT')} punti nel gioco Mr. Blues di Germani Terzi! Ho vinto i calici! Riesci a battermi?\n\nhttps://mfo78.github.io/Mr.Blues/`;
+                const shareText = `🏆 Ho totalizzato ${score.toLocaleString('it-IT')} punti nel gioco Mr. Blues di Germani Terzi! Ho vinto i calici! Riesci a battermi?\nhttps://mfo78.github.io/Mr.Blues/`;
                 if (finalScreenshotData) {
                     try {
                         const blob = dataURLtoBlob(finalScreenshotData);
